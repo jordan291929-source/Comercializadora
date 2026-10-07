@@ -6,6 +6,25 @@
       "owner": {
         ".read": "auth != null",
         ".write": "auth != null && !data.exists() && newData.val() === auth.uid"
+      },
+      "negocio": {
+        ".read": "auth != null && root.child('usuarios/' + auth.uid + '/rol').exists()",
+        ".write": "auth != null && root.child('usuarios/' + auth.uid + '/rol').val() === 'admin'",
+        "nombre": {
+          ".validate": "newData.isString() && newData.val().length <= 80"
+        },
+        "ruc": {
+          ".validate": "newData.isString() && newData.val().matches(/^([0-9]{11})?$/)"
+        },
+        "telefono": {
+          ".validate": "newData.isString() && newData.val().length <= 25"
+        },
+        "direccion": {
+          ".validate": "newData.isString() && newData.val().length <= 150"
+        },
+        "$other": {
+          ".validate": false
+        }
       }
     },
     "usuarios": {
@@ -14,11 +33,21 @@
         ".read": "auth != null && auth.uid === $uid",
         ".write": "auth != null && (auth.uid === $uid || root.child('usuarios/' + auth.uid + '/rol').val() === 'admin')",
         ".validate": "newData.hasChildren(['email', 'nombre'])",
-        "email": { ".validate": "newData.isString() && newData.val().length <= 200" },
-        "nombre": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 80" },
-        "creado": { ".validate": "newData.isString()" },
-        "rol": { ".validate": "(newData.val() === 'admin' || newData.val() === 'ventas') && (root.child('usuarios/' + auth.uid + '/rol').val() === 'admin' || root.child('config/owner').val() === auth.uid)" },
-        "$other": { ".validate": false }
+        "email": {
+          ".validate": "newData.isString() && newData.val().length <= 200"
+        },
+        "nombre": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 80"
+        },
+        "creado": {
+          ".validate": "newData.isString()"
+        },
+        "rol": {
+          ".validate": "(newData.val() === 'admin' || newData.val() === 'ventas') && (root.child('usuarios/' + auth.uid + '/rol').val() === 'admin' || root.child('config/owner').val() === auth.uid)"
+        },
+        "$other": {
+          ".validate": false
+        }
       }
     },
     "seq": {
@@ -33,15 +62,33 @@
       "$id": {
         ".write": "auth != null && root.child('usuarios/' + auth.uid + '/rol').exists() && newData.exists()",
         ".validate": "newData.hasChildren(['name', 'code', 'created_at'])",
-        "name": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 150" },
-        "code": { ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())" },
-        "created_at": { ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())" },
-        "document": { ".validate": "newData.isString() && newData.val().length <= 20" },
-        "phone": { ".validate": "newData.isString() && newData.val().length <= 25" },
-        "address": { ".validate": "newData.isString() && newData.val().length <= 200" },
-        "district": { ".validate": "newData.isString() && newData.val().length <= 100" },
-        "notes": { ".validate": "newData.isString() && newData.val().length <= 500" },
-        "$other": { ".validate": false }
+        "name": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 150"
+        },
+        "code": {
+          ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())"
+        },
+        "created_at": {
+          ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())"
+        },
+        "document": {
+          ".validate": "newData.isString() && newData.val().length <= 20"
+        },
+        "phone": {
+          ".validate": "newData.isString() && newData.val().length <= 25"
+        },
+        "address": {
+          ".validate": "newData.isString() && newData.val().length <= 200"
+        },
+        "district": {
+          ".validate": "newData.isString() && newData.val().length <= 100"
+        },
+        "notes": {
+          ".validate": "newData.isString() && newData.val().length <= 500"
+        },
+        "$other": {
+          ".validate": false
+        }
       }
     },
     "productos": {
@@ -49,39 +96,93 @@
       "$id": {
         ".write": "auth != null && root.child('usuarios/' + auth.uid + '/rol').exists() && newData.exists()",
         ".validate": "newData.hasChildren(['name', 'category', 'unit', 'sold_by_weight', 'price_cents', 'active'])",
-        "name": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 120" },
-        "category": { ".validate": "newData.isString() && newData.val().length <= 80" },
-        "unit": { ".validate": "newData.isString() && newData.val().length <= 30" },
-        "sold_by_weight": { ".validate": "newData.isBoolean()" },
-        "price_cents": { ".validate": "newData.isNumber() && newData.val() >= 0" },
-        "active": { ".validate": "newData.isBoolean()" },
-        "$other": { ".validate": false }
+        "name": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 120"
+        },
+        "category": {
+          ".validate": "newData.isString() && newData.val().length <= 80"
+        },
+        "unit": {
+          ".validate": "newData.isString() && newData.val().length <= 30"
+        },
+        "sold_by_weight": {
+          ".validate": "newData.isBoolean()"
+        },
+        "price_cents": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "active": {
+          ".validate": "newData.isBoolean()"
+        },
+        "$other": {
+          ".validate": false
+        }
       }
     },
     "pedidos": {
       ".read": "auth != null && root.child('usuarios/' + auth.uid + '/rol').exists()",
-      ".indexOn": ["created_at"],
+      ".indexOn": [
+        "created_at"
+      ],
       "$id": {
         ".write": "auth != null && root.child('usuarios/' + auth.uid + '/rol').exists() && newData.exists() && (!data.exists() || (data.child('status').val() !== 'Atendido' && data.child('status').val() !== 'Cancelado'))",
         ".validate": "newData.hasChildren(['code', 'client_id', 'client_name', 'product_id', 'product_name', 'created_by', 'created_at', 'status', 'weights', 'price_cents', 'weight_grams', 'total_cents']) && ((!data.exists() && (newData.child('status').val() === 'Pendiente' || newData.child('status').val() === 'Atendido') && newData.child('created_by').val() === auth.uid) || (data.exists() && (newData.child('status').val() === data.child('status').val() || (data.child('status').val() === 'Pendiente' && (newData.child('status').val() === 'En preparación' || newData.child('status').val() === 'Atendido' || newData.child('status').val() === 'Cancelado')) || (data.child('status').val() === 'En preparación' && (newData.child('status').val() === 'Listo' || newData.child('status').val() === 'Atendido' || newData.child('status').val() === 'Cancelado')) || (data.child('status').val() === 'Listo' && (newData.child('status').val() === 'Atendido' || newData.child('status').val() === 'Cancelado'))))) && (newData.child('status').val() !== 'Atendido' || (newData.child('attended_at').isString() && newData.child('weight_grams').val() > 0 && newData.child('total_cents').val() > 0 && newData.child('weights').hasChildren()))",
-        "code": { ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())" },
-        "client_id": { ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val()) && root.child('clientes/' + newData.val()).exists()" },
-        "client_name": { ".validate": "newData.isString()" },
-        "client_phone": { ".validate": "newData.isString()" },
-        "product_id": { ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())" },
-        "product_name": { ".validate": "newData.isString()" },
-        "created_by": { ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())" },
-        "created_by_name": { ".validate": "newData.isString()" },
-        "created_at": { ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())" },
-        "attended_at": { ".validate": "newData.isString()" },
-        "status": { ".validate": "newData.isString()" },
-        "sale_type": { ".validate": "newData.val() === 'Mayorista' || newData.val() === 'Minorista'" },
-        "notes": { ".validate": "newData.isString() && newData.val().length <= 500" },
-        "weights": { "$i": { ".validate": "newData.isString() && newData.val().length <= 12 && (newData.parent().parent().child('status').val() !== 'Atendido' || newData.val().matches(/^[0-9]+(\\.[0-9]{1,3})?$/) && !newData.val().matches(/^0*(\\.0*)?$/))" } },
-        "price_cents": { ".validate": "newData.isNumber() && newData.val() > 0 && (!data.exists() || newData.val() === data.val())" },
-        "weight_grams": { ".validate": "newData.isNumber() && newData.val() >= 0" },
-        "total_cents": { ".validate": "newData.isNumber() && newData.val() >= 0" },
-        "$other": { ".validate": false }
+        "code": {
+          ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())"
+        },
+        "client_id": {
+          ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val()) && root.child('clientes/' + newData.val()).exists()"
+        },
+        "client_name": {
+          ".validate": "newData.isString()"
+        },
+        "client_phone": {
+          ".validate": "newData.isString()"
+        },
+        "product_id": {
+          ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())"
+        },
+        "product_name": {
+          ".validate": "newData.isString()"
+        },
+        "created_by": {
+          ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())"
+        },
+        "created_by_name": {
+          ".validate": "newData.isString()"
+        },
+        "created_at": {
+          ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())"
+        },
+        "attended_at": {
+          ".validate": "newData.isString()"
+        },
+        "status": {
+          ".validate": "newData.isString()"
+        },
+        "sale_type": {
+          ".validate": "newData.val() === 'Mayorista' || newData.val() === 'Minorista'"
+        },
+        "notes": {
+          ".validate": "newData.isString() && newData.val().length <= 500"
+        },
+        "weights": {
+          "$i": {
+            ".validate": "newData.isString() && newData.val().length <= 12 && (newData.parent().parent().child('status').val() !== 'Atendido' || newData.val().matches(/^[0-9]+(\\.[0-9]{1,3})?$/) && !newData.val().matches(/^0*(\\.0*)?$/))"
+          }
+        },
+        "price_cents": {
+          ".validate": "newData.isNumber() && newData.val() > 0 && (!data.exists() || newData.val() === data.val())"
+        },
+        "weight_grams": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "total_cents": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "$other": {
+          ".validate": false
+        }
       }
     }
   }
