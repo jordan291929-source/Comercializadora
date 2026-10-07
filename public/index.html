@@ -46,7 +46,7 @@ input,select,textarea{font-size:16px}
 .button.danger{color:#b3263b;border-color:#f0c9cf;background:#fff}.button.danger-solid{background:#b3263b;border-color:#b3263b;color:#fff}.void-note{margin-top:16px;padding:12px 14px;border-radius:12px;background:#fdf0f2;color:#7a1d2c;font-size:13px;line-height:1.5}
 html,body,*,*::before,*::after{touch-action:manipulation}
 .price-since{display:block;color:#4f6867;font-size:11px;margin-top:3px}.price-history{margin-top:20px;border-top:1px solid #e2e0d9;padding-top:14px}.price-history h3{font-size:14px;margin:0 0 8px}.price-history li{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:7px 0;border-bottom:1px solid #f0eee8}.price-history ul{list-style:none;margin:0;padding:0}.price-history small{color:#4f6867}
-@media(max-width:760px){#products-table td:last-child{grid-column:span 2}#products-table td:last-child .mini-button{width:100%;min-height:44px}}
+@media(max-width:760px){#products-table td:last-child,#clients-table td:last-child{grid-column:span 2}#products-table td:last-child .mini-button,#clients-table td:last-child .mini-button{width:100%;min-height:44px}}
 .eyebrow,.nav-label{letter-spacing:.08em}
 </style>
 </head>
@@ -117,8 +117,9 @@ html,body,*,*::before,*::after{touch-action:manipulation}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
 'use strict';
-const APP_VERSION='2.06';
+const APP_VERSION='2.07';
 const CHANGELOG=[
+  {v:'2.07',f:'2026-10-07',t:'Clientes editables (nombre, DNI/RUC, teléfono, dirección, distrito y observaciones). Los pedidos, WhatsApp y la nota de pedido muestran los datos actualizados.'},
   {v:'2.06',f:'2026-10-07',t:'Se pueden anular ventas ya atendidas (con motivo obligatorio): quedan registradas como anuladas y dejan de sumar. Cancelar un pedido pendiente también pide el motivo.'},
   {v:'2.05',f:'2026-10-07',t:'Productos editables: precio de la semana con historial, nombre, categoría, unidad y activar/desactivar. La venta usa el precio nuevo apenas lo cambias. Se elimina el zoom por doble toque en el celular.'},
   {v:'2.04',f:'2026-10-07',t:'Nuevo diseño con tipografía Inter (estilo Finanzas JSG), el celular ya no hace zoom al escribir, nota de pedido en PDF con formato de boleta y datos del negocio editables.'},
@@ -205,13 +206,14 @@ function route(){
 function listen(path,fn){const ref=db.ref(path);const cb=ref.on('value',snap=>{fn(snap);render();},err=>notify(err.message));dataOffs.push(()=>ref.off('value',cb));}
 function attachData(rol){
   dataRole=rol;
-  listen('clientes',s=>state.clients=listOf(s).sort((a,b)=>a.name.localeCompare(b.name,'es')));
+  listen('clientes',s=>{state.clients=listOf(s).sort((a,b)=>a.name.localeCompare(b.name,'es'));syncClients();});
   listen('productos',s=>state.products=listOf(s).sort((a,b)=>(a.active===false)-(b.active===false)||(a.category+a.name).localeCompare(b.category+b.name,'es')));
-  listen('pedidos',s=>state.orders=listOf(s).map(o=>({...o,weights:o.weights||[]})).sort((a,b)=>b.created_at.localeCompare(a.created_at)||b.code.localeCompare(a.code)));
+  listen('pedidos',s=>{state.orders=listOf(s).map(o=>({...o,weights:o.weights||[]})).sort((a,b)=>b.created_at.localeCompare(a.created_at)||b.code.localeCompare(a.code));syncClients();});
   if(rol==='admin')listen('usuarios',s=>state.users=listOf(s));
   listen('config/negocio',s=>{state.negocio=s.val()||{};fillNegocio();});
   db.ref('productos/huevo-comercial').transaction(cur=>cur===null?{name:'Huevo comercial',category:'Huevos',unit:'kg',sold_by_weight:true,price_cents:0,active:true}:undefined).catch(()=>{});
 }
+function syncClients(){const byId=Object.fromEntries(state.clients.map(c=>[c.id,c]));state.orders=state.orders.map(o=>{const c=byId[o.client_id];return c?{...o,client_name:c.name,client_phone:c.phone||''}:o;});}
 function detachData(){dataOffs.forEach(off=>off());dataOffs=[];dataRole=null;Object.assign(state,{orders:[],clients:[],products:[],users:[]});}
 
 const AUTH_ERRORS={'auth/invalid-credential':'Correo o contraseña incorrectos','auth/wrong-password':'Correo o contraseña incorrectos','auth/user-not-found':'Correo o contraseña incorrectos','auth/invalid-email':'Correo inválido','auth/email-already-in-use':'Ese correo ya tiene una cuenta','auth/weak-password':'La contraseña es muy débil','auth/too-many-requests':'Demasiados intentos. Espera unos minutos.','auth/missing-email':'Escribe tu correo'};
@@ -252,7 +254,7 @@ function render(){
   const term=$('#order-search').value.trim().toLowerCase();
   const visible=state.orders.filter(o=>(!term||`${o.code} ${o.client_name}`.toLowerCase().includes(term))&&(state.orderTab==='all'||(state.orderTab==='attended'?o.status==='Atendido':!CLOSED.includes(o.status))));
   $('#orders-table').innerHTML=orderCards(visible,'No hay pedidos en esta vista');
-  $('#clients-table').innerHTML=table(['Cliente','Documento','Teléfono','Distrito','Pedidos'],state.clients.map(c=>`<tr><td><strong>${esc(c.name)}</strong><small>${esc(c.code||'')}</small></td><td>${esc(c.document)||'—'}</td><td>${esc(c.phone)||'—'}</td><td>${esc(c.district)||'—'}</td><td>${state.orders.filter(o=>o.client_id===c.id).length}</td></tr>`),'Todavía no hay clientes');
+  $('#clients-table').innerHTML=table(['Cliente','Documento','Teléfono','Distrito','Pedidos',''],state.clients.map(c=>`<tr><td><strong>${esc(c.name)}</strong><small>${esc(c.code||'')}</small></td><td>${esc(c.document)||'—'}</td><td>${esc(c.phone)||'—'}</td><td>${esc(c.district)||'—'}</td><td>${state.orders.filter(o=>o.client_id===c.id).length}</td><td><button class="mini-button" data-edit-client="${esc(c.id)}">Editar</button></td></tr>`),'Todavía no hay clientes');
   $('#products-table').innerHTML=table(['Producto','Categoría','Unidad','Precio vigente','Estado',''],state.products.map(p=>`<tr><td><strong>${esc(p.name)}</strong></td><td>${esc(p.category)}</td><td>${esc(p.unit)}${p.sold_by_weight?' · venta por peso':''}</td><td><strong>${money(p.price_cents||0)}</strong>${p.price_updated_at?`<small class="price-since">desde ${shortDate(p.price_updated_at)}</small>`:''}</td><td>${p.active===false?'<span class="pill cancelado">Inactivo</span>':'<span class="pill atendido">Activo</span>'}</td><td><button class="mini-button" data-edit-product="${esc(p.id)}">Editar precio y datos</button></td></tr>`),'Todavía no hay productos');
   if(state.profile?.rol==='admin'){
     const users=[...state.users].sort((a,b)=>(a.rol?1:0)-(b.rol?1:0)||(a.creado||'').localeCompare(b.creado||''));
@@ -262,11 +264,15 @@ function render(){
 
 // ---------- Formularios ----------
 function submitWith(form,fn){form.onsubmit=async e=>{e.preventDefault();const btn=form.querySelector('[type=submit]');btn.disabled=true;try{await fn(e);}catch(err){notify(err.message);}finally{btn.disabled=false;}};}
-function openClient(){
-  openModal('Nuevo cliente','CLIENTES',`<form id="client-form" class="modal-content"><div class="field-grid">${field('name','Nombre o razón social',{required:true,wide:true,max:150})}${field('document','DNI / RUC',{max:20})}${field('phone','Teléfono',{type:'tel',max:25})}${field('address','Dirección',{wide:true,max:200})}${field('district','Distrito',{max:100})}${field('notes','Observaciones',{wide:true,max:500})}</div>${footer('Guardar cliente')}</form>`);
+function openClient(id){
+  const c=id?state.clients.find(x=>x.id===id):null;if(id&&!c)return;
+  const v=(k)=>c?(c[k]||''):undefined;
+  openModal(c?c.name:'Nuevo cliente',c?`EDITAR CLIENTE · ${c.code||''}`:'CLIENTES',`<form id="client-form" class="modal-content"><div class="field-grid">${field('name','Nombre o razón social',{required:true,wide:true,max:150,value:v('name')})}${field('document','DNI / RUC',{max:20,value:v('document')})}${field('phone','Teléfono',{type:'tel',max:25,value:v('phone')})}${field('address','Dirección',{wide:true,max:200,value:v('address')})}${field('district','Distrito',{max:100,value:v('district')})}${field('notes','Observaciones',{wide:true,max:500,value:v('notes')})}</div>${c?'<p class="muted" style="font-size:12px;margin-top:14px">Los cambios se ven también en sus pedidos, en WhatsApp y en la nota de pedido.</p>':''}${footer(c?'Guardar cambios':'Guardar cliente')}</form>`);
   submitWith($('#client-form'),async e=>{
     const data=Object.fromEntries([...new FormData(e.target)].map(([k,v])=>[k,String(v).trim()]));
     if(!data.name)throw new Error('Escribe el nombre del cliente');
+    if(state.clients.some(x=>x.id!==c?.id&&x.name.toLowerCase()===data.name.toLowerCase())&&!confirm(`Ya existe un cliente llamado «${data.name}». ¿Guardar de todas formas?`))return;
+    if(c){await db.ref('clientes/'+c.id).update(data);closeModal();notify('Cliente actualizado');return;}
     const seq=await db.ref('seq/clientes').transaction(n=>(n||0)+1);
     await db.ref('clientes').push({...data,code:`CL-${String(seq.snapshot.val()).padStart(4,'0')}`,created_at:nowLima()});
     closeModal();notify('Cliente registrado');
@@ -501,6 +507,7 @@ document.addEventListener('click',e=>{
   const t=e.target,get=(attr)=>t.closest(`[data-${attr}]`)?.dataset;
   if(t.closest('[data-logout]')){auth.signOut();return;}
   if(get('page')&&!t.closest('[data-role]'))nav(get('page').page);
+  if(get('edit-client'))openClient(get('edit-client').editClient);
   if(get('edit-product'))openProduct(get('edit-product').editProduct);
   if(get('open'))({order:openOrder,client:openClient,product:openProduct,user:openUser}[get('open').open])();
   if(get('detail'))showOrder(get('detail').detail);
