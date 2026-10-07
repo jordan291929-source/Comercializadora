@@ -25,6 +25,9 @@ from reportlab.pdfgen import canvas
 ROOT = Path(__file__).resolve().parent
 DB_PATH = Path(os.getenv("COMERCIALIZADORA_DB", ROOT / "data" / "app.sqlite3"))
 COOKIE_SECURE = os.getenv("COMERCIALIZADORA_SECURE_COOKIE", "0") == "1"
+SETUP_KEY = os.getenv("COMERCIALIZADORA_SETUP_KEY", "")
+if COOKIE_SECURE and not SETUP_KEY:
+    raise RuntimeError("COMERCIALIZADORA_SETUP_KEY is required for public deployment")
 BUSINESS_TZ = ZoneInfo("America/Lima")
 app = FastAPI(title="Comercializadora Viviana", docs_url=None, redoc_url=None)
 
@@ -118,6 +121,10 @@ def issue_session(db, response: Response, user_id: int):
 class Credentials(BaseModel):
     username: str = Field(min_length=3, max_length=50)
     password: str = Field(min_length=10, max_length=200)
+
+
+class SetupCredentials(Credentials):
+    setup_key: str = ""
 
 
 class ClientIn(BaseModel):
@@ -220,11 +227,13 @@ def bootstrap(request: Request):
         user = require_user(request)
     except HTTPException:
         pass
-    return {"configured": configured, "user": user}
+    return {"configured": configured, "user": user, "setup_key_required": bool(SETUP_KEY)}
 
 
 @app.post("/api/setup")
-def setup(data: Credentials, response: Response):
+def setup(data: SetupCredentials, response: Response):
+    if SETUP_KEY and not hmac.compare_digest(data.setup_key, SETUP_KEY):
+        raise HTTPException(403, "Clave de instalación incorrecta")
     with database() as db:
         db.execute("BEGIN IMMEDIATE")
         if db.execute("SELECT EXISTS(SELECT 1 FROM users)").fetchone()[0]:

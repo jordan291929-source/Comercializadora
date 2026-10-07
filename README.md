@@ -26,6 +26,12 @@ Abre la aplicación en el navegador y crea la cuenta inicial. La contraseña deb
 
 En Windows, usa `py -m venv .venv`, `.venv\Scripts\python -m pip install -r requirements.txt` y `.venv\Scripts\python -m uvicorn app:app --host 127.0.0.1 --port 8000`. La dependencia `tzdata` proporciona la zona horaria de Perú en instalaciones de Windows que no la incluyen.
 
+## Publicación en Render
+
+El archivo `render.yaml` prepara un servicio Python con disco persistente de 1 GB. **El plan con disco tiene costo**; Render solicita una cuenta, conexión al repositorio de GitHub y método de pago antes de crearlo. En el panel de Render, crea un Blueprint desde este repositorio y proporciona `COMERCIALIZADORA_SETUP_KEY` como valor secreto largo y aleatorio. Al abrir la URL publicada, introduce esa clave una sola vez para crear la primera cuenta. La clave protege el registro inicial mientras el sitio ya es público. La cuenta y los pedidos se guardan en el disco del servicio, no en GitHub. Programa copias de seguridad del archivo `/var/data/app.sqlite3` antes de usar datos reales.
+
+GitHub Pages puede servir una vista estática, pero no puede ejecutar el servidor Python ni guardar pedidos. El repositorio de GitHub contiene el código; la aplicación completa necesita un alojamiento como el Blueprint anterior.
+
 Para pruebas aisladas, `COMERCIALIZADORA_DB=/ruta/temporal.sqlite3` cambia la ubicación de la base de datos. No guardes credenciales en el repositorio.
 
 ## Decisiones y siguientes fases
