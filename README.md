@@ -4,15 +4,33 @@ Sistema web para ventas mayoristas de huevo. Permite registrar clientes, product
 
 Es una sola página (`public/index.html`) sobre **Firebase**: Hosting, Authentication (correo y contraseña) y Realtime Database. No hay servidor propio: el navegador habla directo con Firebase y la seguridad la aplican las reglas de `database.rules.json`. Los cambios se ven al instante en todos los equipos conectados.
 
-## Flujo de trabajo
+## Qué hace (v2.10)
 
-1. Se registra el cliente y el precio por kg del pedido.
-2. Se indica cuántas jabas pidió. Los pesos pueden quedar pendientes si todavía no se preparó la mercadería.
-3. Al pesar las jabas, se registran los pesos reales. El total se calcula sobre su suma, sin asumir un peso promedio fijo.
-4. El pedido pasa por **Pendiente → En preparación → Listo → Atendido**. No se puede atender mientras falte algún peso. También se puede cancelar antes de atender.
-5. La atención fija la fecha y hora, habilita el PDF interno y el mensaje de WhatsApp. El pedido atendido o cancelado no puede modificarse ni borrarse (lo impiden las reglas de la base de datos).
+- **Vender en 2 pasos:** elegir o crear el cliente; jabas con −/+, peso por jaba y precio por kg con el total en vivo. «Atender ahora» pregunta **¿Cómo pagó?**: Efectivo, Yape/Plin, Transferencia (un toque) o Fiado, con lo que dejó a cuenta.
+- **Pedidos:** Pendiente → En preparación → Listo → Atendido. Un pedido pendiente se atiende con el mismo selector de pago. Cancelar o anular pide motivo; nada se borra.
+- **Cobros:** saldo por cliente (ventas fiadas menos pagos), «Registrar pago» con recibo por WhatsApp, «Recordar por WhatsApp» con el detalle de notas pendientes, cobrado hoy por medio de pago y pagos anulables con motivo. Lo dejado a cuenta al vender se aplica a esa nota y el resto de los pagos a las notas más antiguas.
+- **Nota de pedido:** PDF con los datos del negocio y enlace público de solo lectura (`/?nota=TOKEN`) que se envía por WhatsApp en dos toques.
+- **Productos** con precio semanal e historial; **clientes** editables; **usuarios** con roles admin/ventas.
+- **App instalable** en el celular (Más → Instalar en el celular).
 
-El sustento interno no es una boleta o factura electrónica. El enlace de WhatsApp comparte texto; el PDF se descarga desde el pedido y puede adjuntarse manualmente.
+## Cómo seguimos mejorando
+
+1. **Usar y anotar.** Durante la semana, anota lo que molesta o falta (con captura si se puede).
+2. **Pedir el cambio.** Una cosa por pedido, contando el problema real («mi mamá no encuentra…»), no solo la solución.
+3. **Construir y probar.** Cada cambio se prueba en los emuladores (`firebase emulators:start --project demo-comercializadora`), sube `APP_VERSION` y agrega una entrada al `CHANGELOG`.
+4. **Publicar.** `git pull` y `firebase deploy --only database,hosting`; comprobar la versión en la barra lateral.
+5. **Revisar con ella.** Ver a tu mamá usarlo unos minutos; ahí aparecen los siguientes cambios.
+
+### Próximas mejoras
+
+| Prioridad | Mejora | Para qué |
+|---|---|---|
+| Alta | Repetir último pedido | Clientes fijos en un toque |
+| Alta | Cierre del día por WhatsApp | Resumen diario de ventas, cobros y fiado |
+| Media | Ingreso de mercadería semanal | Stock, costo y ganancia por semana |
+| Media | Exportar a Excel | Contador y respaldo |
+| Media | Modo letra grande | Lectura más cómoda |
+| Por definir | Tara de la jaba | Solo si el precio por kg no debe incluir el peso de la jaba |
 
 ## Usuarios y roles
 
