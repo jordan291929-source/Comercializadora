@@ -1,4 +1,4 @@
-# Comercializadora Viviana
+# Comercializadora 
 
 Primera fase de un sistema web para ventas mayoristas de huevo. Permite registrar clientes, productos vendidos por peso y pedidos con una o varias jabas; registrar el peso real de cada jaba; avanzar por los estados de preparación; calcular el total; descargar un sustento interno en PDF; y compartir el resumen por WhatsApp. Incluye un panel con pedidos, ventas y kilos atendidos durante el día.
 
