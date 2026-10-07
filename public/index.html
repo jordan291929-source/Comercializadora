@@ -43,6 +43,7 @@ h1,h2,h3{font-family:Inter,system-ui,sans-serif;letter-spacing:-.02em;font-weigh
 .stat,.order-card,.panel,.auth-card,.more-list button,.client-choice{border-radius:16px}
 .button,.mini-button{font-weight:600}
 input,select,textarea{font-size:16px}
+.wa-text{display:block;text-align:center;font-size:13px;padding:10px;text-decoration:none}
 .button.danger{color:#b3263b;border-color:#f0c9cf;background:#fff}.button.danger-solid{background:#b3263b;border-color:#b3263b;color:#fff}.void-note{margin-top:16px;padding:12px 14px;border-radius:12px;background:#fdf0f2;color:#7a1d2c;font-size:13px;line-height:1.5}
 html,body,*,*::before,*::after{touch-action:manipulation}
 .price-since{display:block;color:#4f6867;font-size:11px;margin-top:3px}.price-history{margin-top:20px;border-top:1px solid #e2e0d9;padding-top:14px}.price-history h3{font-size:14px;margin:0 0 8px}.price-history li{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:7px 0;border-bottom:1px solid #f0eee8}.price-history ul{list-style:none;margin:0;padding:0}.price-history small{color:#4f6867}
@@ -117,8 +118,9 @@ html,body,*,*::before,*::after{touch-action:manipulation}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
 'use strict';
-const APP_VERSION='2.07';
+const APP_VERSION='2.08';
 const CHANGELOG=[
+  {v:'2.08',f:'2026-10-07',t:'«Enviar nota por WhatsApp» adjunta el PDF: en el celular abre «Compartir» con la nota como archivo. En la computadora la descarga y abre el chat del cliente para adjuntarla.'},
   {v:'2.07',f:'2026-10-07',t:'Clientes editables (nombre, DNI/RUC, teléfono, dirección, distrito y observaciones). Los pedidos, WhatsApp y la nota de pedido muestran los datos actualizados.'},
   {v:'2.06',f:'2026-10-07',t:'Se pueden anular ventas ya atendidas (con motivo obligatorio): quedan registradas como anuladas y dejan de sumar. Cancelar un pedido pendiente también pide el motivo.'},
   {v:'2.05',f:'2026-10-07',t:'Productos editables: precio de la semana con historial, nombre, categoría, unidad y activar/desactivar. La venta usa el precio nuevo apenas lo cambias. Se elimina el zoom por doble toque en el celular.'},
@@ -374,18 +376,18 @@ function openOrder(){
   }
   function showSuccess(order){
     const attended=order.status==='Atendido';$('#modal-title').textContent=attended?'Venta atendida':'Pedido guardado';$('#modal-eyebrow').textContent='OPERACIÓN REGISTRADA';
-    body.innerHTML=`<div class="sale-body sale-success"><div class="success-mark">✓</div><h3>${attended?'Venta lista para compartir':'Ya está en pedidos pendientes'}</h3><p class="sale-code">${esc(order.code)}</p><p class="muted">${esc(order.client_name)} · ${order.weights.length} ${order.weights.length===1?'jaba':'jabas'}</p>${attended?`<div class="success-total">${money(order.total_cents)}</div>`:''}</div><div class="sale-actions">${attended?`<a class="button primary" href="${esc(whatsapp(order))}" target="_blank" rel="noopener">Enviar por WhatsApp</a><button class="button secondary" id="sale-success-pdf">Descargar nota de pedido</button>`:''}<button class="button ${attended?'':'primary'}" id="sale-success-new">+ Nueva venta</button><button class="text-button" id="sale-success-orders">Ver pedidos</button></div>`;
-    if(attended)$('#sale-success-pdf').onclick=()=>downloadPdf(order);
+    body.innerHTML=`<div class="sale-body sale-success"><div class="success-mark">✓</div><h3>${attended?'Venta lista para compartir':'Ya está en pedidos pendientes'}</h3><p class="sale-code">${esc(order.code)}</p><p class="muted">${esc(order.client_name)} · ${order.weights.length} ${order.weights.length===1?'jaba':'jabas'}</p>${attended?`<div class="success-total">${money(order.total_cents)}</div>`:''}</div><div class="sale-actions">${attended?`<button class="button primary" id="sale-success-share">Enviar nota por WhatsApp</button><a class="text-button wa-text" href="${esc(whatsapp(order))}" target="_blank" rel="noopener">Enviar solo el resumen en texto</a><button class="button secondary" id="sale-success-pdf">Descargar nota de pedido</button>`:''}<button class="button ${attended?'':'primary'}" id="sale-success-new">+ Nueva venta</button><button class="text-button" id="sale-success-orders">Ver pedidos</button></div>`;
+    if(attended){$('#sale-success-pdf').onclick=()=>downloadPdf(order);$('#sale-success-share').onclick=()=>shareOrder(order);}
     $('#sale-success-new').onclick=()=>{closeModal();openOrder();};
     $('#sale-success-orders').onclick=()=>{closeModal();nav('pedidos');};
   }
   showClients();
 }
-function whatsapp(o){const name=o.client_name.split(' ')[0];const detail=`Hola ${name}, te compartimos el detalle de tu pedido:\n\nNota: ${o.code}\nProducto: ${o.product_name}\nJabas: ${o.weights.length}\nPeso total: ${(o.weight_grams/1000).toFixed(3)} kg\nPrecio: ${money(o.price_cents)}/kg\nTotal: ${money(o.total_cents)}\n\nGracias por tu compra.`;const digits=(o.client_phone||'').replace(/\D/g,'');return `https://wa.me/${digits.startsWith('51')?digits:digits?'51'+digits:''}?text=${encodeURIComponent(detail)}`;}
+function whatsapp(o,message){const name=o.client_name.split(' ')[0];const detail=message||`Hola ${name}, te compartimos el detalle de tu pedido:\n\nNota: ${o.code}\nProducto: ${o.product_name}\nJabas: ${o.weights.length}\nPeso total: ${(o.weight_grams/1000).toFixed(3)} kg\nPrecio: ${money(o.price_cents)}/kg\nTotal: ${money(o.total_cents)}\n\nGracias por tu compra.`;const digits=(o.client_phone||'').replace(/\D/g,'');return `https://wa.me/${digits.startsWith('51')?digits:digits?'51'+digits:''}?text=${encodeURIComponent(detail)}`;}
 function showOrder(id){
   const o=state.orders.find(x=>x.id===id);if(!o)return;
   const pending=pendingWeights(o);
-  openModal(o.code,'DETALLE DEL PEDIDO',`<div class="modal-content"><div class="detail-list"><div><small>Cliente</small><strong>${esc(o.client_name)}</strong></div><div><small>Estado</small>${statusPill(o.status)}</div><div><small>Registrado</small><strong>${date(o.created_at)}</strong></div><div><small>Atendido</small><strong>${date(o.attended_at)}</strong></div><div><small>Producto</small><strong>${esc(o.product_name)}</strong></div><div><small>Registrado por</small><strong>${esc(o.created_by_name)}</strong></div></div><h3 style="font-size:14px">Peso de las jabas</h3><div class="detail-list">${o.weights.map((w,i)=>`<div><small>Jaba ${i+1}</small><strong>${w?esc(w)+' kg':'Pendiente'}</strong></div>`).join('')}</div><div class="detail-total"><div><small>${pending?'Peso pendiente':(o.weight_grams/1000).toFixed(3)+' kg'} × ${money(o.price_cents)}/kg</small><br><b>Total de la venta</b></div><strong>${pending?'Por calcular':money(o.total_cents)}</strong></div>${o.notes?`<p class="muted">${esc(o.notes)}</p>`:''}<div class="modal-footer" style="flex-wrap:wrap">${o.status==='Atendido'?`<button class="button" data-pdf="${esc(o.id)}">↓ Descargar nota de pedido</button><a class="button primary" href="${esc(whatsapp(o))}" target="_blank" rel="noopener">Compartir por WhatsApp</a>`:''}${nextStatus[o.status]?`<button class="button" data-weigh="${esc(o.id)}">Registrar peso real</button><button class="button primary" data-attend="${esc(o.id)}">✓ Atender</button><button class="button" data-cancel="${esc(o.id)}">Cancelar pedido</button>`:''}${o.status==='Atendido'?`<button class="button danger" data-cancel="${esc(o.id)}">Anular venta</button>`:''}</div>${o.anulado_motivo?`<div class="void-note"><strong>${o.status==='Anulado'?'Venta anulada':'Pedido cancelado'}</strong> el ${date(o.anulado_at)} por ${esc(o.anulado_por_nombre||'')}<br>Motivo: ${esc(o.anulado_motivo)}</div>`:''}${o.status==='Atendido'?'<p class="muted" style="font-size:11px;margin-top:15px">Sustento interno: no reemplaza boleta ni factura electrónica. El PDF se descarga aquí; WhatsApp comparte el resumen del pedido.</p>':''}</div>`);
+  openModal(o.code,'DETALLE DEL PEDIDO',`<div class="modal-content"><div class="detail-list"><div><small>Cliente</small><strong>${esc(o.client_name)}</strong></div><div><small>Estado</small>${statusPill(o.status)}</div><div><small>Registrado</small><strong>${date(o.created_at)}</strong></div><div><small>Atendido</small><strong>${date(o.attended_at)}</strong></div><div><small>Producto</small><strong>${esc(o.product_name)}</strong></div><div><small>Registrado por</small><strong>${esc(o.created_by_name)}</strong></div></div><h3 style="font-size:14px">Peso de las jabas</h3><div class="detail-list">${o.weights.map((w,i)=>`<div><small>Jaba ${i+1}</small><strong>${w?esc(w)+' kg':'Pendiente'}</strong></div>`).join('')}</div><div class="detail-total"><div><small>${pending?'Peso pendiente':(o.weight_grams/1000).toFixed(3)+' kg'} × ${money(o.price_cents)}/kg</small><br><b>Total de la venta</b></div><strong>${pending?'Por calcular':money(o.total_cents)}</strong></div>${o.notes?`<p class="muted">${esc(o.notes)}</p>`:''}<div class="modal-footer" style="flex-wrap:wrap">${o.status==='Atendido'?`<button class="button" data-pdf="${esc(o.id)}">↓ Descargar nota de pedido</button><button class="button primary" data-share="${esc(o.id)}">Enviar nota por WhatsApp</button><a class="text-button wa-text" href="${esc(whatsapp(o))}" target="_blank" rel="noopener">Solo resumen en texto</a>`:''}${nextStatus[o.status]?`<button class="button" data-weigh="${esc(o.id)}">Registrar peso real</button><button class="button primary" data-attend="${esc(o.id)}">✓ Atender</button><button class="button" data-cancel="${esc(o.id)}">Cancelar pedido</button>`:''}${o.status==='Atendido'?`<button class="button danger" data-cancel="${esc(o.id)}">Anular venta</button>`:''}</div>${o.anulado_motivo?`<div class="void-note"><strong>${o.status==='Anulado'?'Venta anulada':'Pedido cancelado'}</strong> el ${date(o.anulado_at)} por ${esc(o.anulado_por_nombre||'')}<br>Motivo: ${esc(o.anulado_motivo)}</div>`:''}${o.status==='Atendido'?'<p class="muted" style="font-size:11px;margin-top:15px">Sustento interno: no reemplaza boleta ni factura electrónica. El PDF se descarga aquí; WhatsApp comparte el resumen del pedido.</p>':''}</div>`);
 }
 function weighOrder(id){
   const o=state.orders.find(x=>x.id===id);if(!o)return;
@@ -436,8 +438,7 @@ function openUser(){
   });
 }
 async function setRole(uid,rol){try{await db.ref(`usuarios/${uid}/rol`).set(rol||null);notify(rol?'Rol asignado':'Acceso retirado');}catch(err){notify(err.message);render();}}
-function downloadPdf(target){
-  const o=typeof target==='string'?state.orders.find(x=>x.id===target):target;if(!o||o.status!=='Atendido')return;
+function buildPdf(o){
   const n=state.negocio||{},c=state.clients.find(x=>x.id===o.client_id)||{};
   const doc=new window.jspdf.jsPDF({unit:'pt',format:'a4'}),W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight(),L=40,R=W-40;
   const TEAL=[0,99,109],INK=[16,32,31],MUT=[79,104,103],LINE=[226,224,217],SOFT=[245,244,240];
@@ -479,7 +480,24 @@ function downloadPdf(target){
   // Pie en todas las páginas.
   const pages=doc.getNumberOfPages();
   for(let i=1;i<=pages;i++){doc.setPage(i);doc.setDrawColor(...LINE);doc.line(L,H-58,R,H-58);font('normal',7.5,MUT);doc.text('Documento interno sin valor tributario. No reemplaza la boleta ni la factura electrónica.',L,H-44);doc.text('Gracias por su compra.',L,H-33);doc.text(`Página ${i} de ${pages}`,R,H-44,{align:'right'});}
-  doc.save(`Nota-${o.code}.pdf`);
+  return doc;
+}
+const orderOf=(target)=>{const o=typeof target==='string'?state.orders.find(x=>x.id===target):target;return o&&o.status==='Atendido'?o:null;};
+function downloadPdf(target){const o=orderOf(target);if(o)buildPdf(o).save(`Nota-${o.code}.pdf`);}
+// WhatsApp no acepta adjuntos por enlace: en el celular se usa «Compartir» del sistema con el PDF como archivo.
+async function shareOrder(target){
+  const o=orderOf(target);if(!o)return;
+  const file=new File([buildPdf(o).output('blob')],`Nota-${o.code}.pdf`,{type:'application/pdf'});
+  const text=`Hola ${o.client_name.split(' ')[0]}, te enviamos la nota de pedido ${o.code} por ${money(o.total_cents)}. Gracias por tu compra.`;
+  if(navigator.canShare&&navigator.canShare({files:[file]})){
+    try{await navigator.share({files:[file],title:`Nota de pedido ${o.code}`,text});}
+    catch(err){if(err.name!=='AbortError')notify('No se pudo compartir. Descarga la nota y adjúntala en WhatsApp.');}
+    return;
+  }
+  // Computadora u otro navegador sin «Compartir»: descarga la nota y abre el chat del cliente para adjuntarla.
+  downloadPdf(o);
+  notify('Nota descargada. Adjúntala en el chat de WhatsApp que se abrió.');
+  window.open(whatsapp(o,`${text}\n\n(Te adjunto la nota en PDF)`),'_blank','noopener');
 }
 function fillNegocio(){const f=$('#negocio-form');if(!f||f.contains(document.activeElement))return;const n=state.negocio||{};['nombre','ruc','telefono','direccion'].forEach(k=>f.elements[k].value=n[k]||'');}
 submitWith($('#negocio-form'),async e=>{
@@ -516,6 +534,7 @@ document.addEventListener('click',e=>{
   if(get('attend'))attendOrder(get('attend').attend);
   if(get('cancel'))cancelOrder(get('cancel').cancel);
   if(get('pdf'))downloadPdf(get('pdf').pdf);
+  if(get('share'))shareOrder(get('share').share);
   if(t.closest('[data-close]'))closeModal();
 });
 start().catch(err=>{$('#loading').innerHTML=`<p class="error">${esc(err.message)}</p>`;});
