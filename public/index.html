@@ -59,7 +59,7 @@
         <section id="page-pedidos" class="page" hidden><div class="section-heading"><div><h2>Pedidos</h2><p>Del pedido a la atención, sin registrar dos veces la venta.</p></div><button class="button primary" data-open="order">+ Nuevo pedido</button></div><div class="panel"><div class="filters"><input id="order-search" placeholder="Buscar por cliente o código"><select id="status-filter"><option value="">Todos los estados</option><option>Pendiente</option><option>En preparación</option><option>Listo</option><option>Atendido</option><option>Cancelado</option></select></div><div id="orders-table"></div></div></section>
         <section id="page-clientes" class="page" hidden><div class="section-heading"><div><h2>Clientes</h2><p>Información de contacto e historial de compras.</p></div><button class="button primary" data-open="client">+ Nuevo cliente</button></div><div class="panel" id="clients-table"></div></section>
         <section id="page-productos" class="page" hidden><div class="section-heading"><div><h2>Productos</h2><p>El huevo es el centro de la operación; el catálogo puede crecer.</p></div><button class="button primary" data-open="product">+ Nuevo producto</button></div><div class="panel" id="products-table"></div></section>
-        <section id="page-usuarios" class="page" hidden><div class="section-heading"><div><h2>Usuarios</h2><p>Aprueba las cuentas nuevas y asigna su rol. Sin rol no pueden ver nada.</p></div></div><div class="panel" id="users-table"></div></section>
+        <section id="page-usuarios" class="page" hidden><div class="section-heading"><div><h2>Usuarios</h2><p>Crea cuentas para tu equipo o aprueba las que se registraron solas. Sin rol no pueden ver nada.</p></div><button class="button primary" data-open="user">+ Crear cuenta</button></div><div class="panel" id="users-table"></div></section>
       </div>
     </main>
   </div>
@@ -72,8 +72,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
 'use strict';
-const APP_VERSION='2.00';
+const APP_VERSION='2.01';
 const CHANGELOG=[
+  {v:'2.01',f:'2026-10-07',t:'El administrador puede crear cuentas desde Usuarios (nombre, correo, contraseña inicial y rol) sin cerrar su propia sesión.'},
   {v:'2.00',f:'2026-10-07',t:'Migración a Firebase (Hosting + Auth + Realtime Database). Registro con aprobación del administrador, roles admin/ventas, datos en tiempo real entre equipos y PDF generado en el navegador.'},
   {v:'1.00',f:'2026-10-01',t:'Primera fase: clientes, productos por peso, pedidos por jabas, estados, PDF interno y WhatsApp (servidor Python).'}
 ];
@@ -86,7 +87,7 @@ const date=(value)=>value?new Date(value).toLocaleString('es-PE',{dateStyle:'sho
 // Perú no tiene horario de verano: la hora del negocio es siempre UTC-5.
 const nowLima=()=>new Date(Date.now()-5*3600e3).toISOString().slice(0,19)+'-05:00';
 const state={user:null,profile:null,orders:[],clients:[],products:[],users:[],page:'inicio',mode:'login'};
-let auth,db,profileOff=null,dataOffs=[],dataRole=null,pendingName='';
+let auth,db,appConfig,local=false,profileOff=null,dataOffs=[],dataRole=null,pendingName='';
 
 function notify(message){const el=$('#toast');el.textContent=message;el.classList.add('visible');clearTimeout(notify.timer);notify.timer=setTimeout(()=>el.classList.remove('visible'),3500);}
 function openModal(title,eyebrow,html){$('#modal-title').textContent=title;$('#modal-eyebrow').textContent=eyebrow;$('#modal-body').innerHTML=html;if(!$('#modal').open)$('#modal').showModal();}
@@ -105,12 +106,12 @@ const pendingWeights=(o)=>o.weights.some(w=>!w);
 // ---------- Arranque y sesión ----------
 async function start(){
   $('#ver-chip').textContent='v'+APP_VERSION;
-  const local=['localhost','127.0.0.1'].includes(location.hostname);
+  local=['localhost','127.0.0.1'].includes(location.hostname);
   const response=await fetch('/__/firebase/init.json');
   if(!response.ok)throw new Error('Abre la aplicación desde Firebase Hosting (firebase deploy o firebase emulators:start).');
   const config=await response.json();
   if(local)config.databaseURL=`http://127.0.0.1:9000?ns=${config.projectId}-default-rtdb`;
-  firebase.initializeApp(config);
+  appConfig=config;firebase.initializeApp(config);
   auth=firebase.auth();db=firebase.database();
   if(local){auth.useEmulator('http://127.0.0.1:9099');db.useEmulator('127.0.0.1',9000);}
   auth.onAuthStateChanged(user=>onAuth(user).catch(err=>notify(err.message)));
@@ -264,6 +265,23 @@ async function advance(id){
   try{await db.ref('pedidos/'+id).update(status==='Atendido'?{status,attended_at:nowLima()}:{status});closeModal();notify('Pedido actualizado');}catch(err){notify(err.message);}
 }
 async function cancelOrder(id){if(!confirm('¿Cancelar este pedido?'))return;try{await db.ref('pedidos/'+id).update({status:'Cancelado'});closeModal();notify('Pedido cancelado');}catch(err){notify(err.message);}}
+// Crea la cuenta en una instancia secundaria de Firebase para no cerrar la sesión del administrador.
+function openUser(){
+  openModal('Crear cuenta','USUARIOS',`<form id="user-form" class="modal-content"><div class="field-grid">${field('nombre','Nombre',{required:true,wide:true,max:80})}${field('email','Correo',{type:'email',required:true,wide:true})}${field('password','Contraseña inicial (mínimo 10 caracteres)',{type:'text',required:true})}<label>Rol<select name="rol">${Object.entries(ROLES).reverse().map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select></label></div><p class="muted" style="font-size:12px;margin-top:16px">Entrégale el correo y la contraseña a la persona. Puede cambiarla luego con «¿Olvidaste tu contraseña?».</p>${footer('Crear cuenta')}</form>`);
+  submitWith($('#user-form'),async e=>{
+    const f=e.target.elements,nombre=f.nombre.value.trim(),email=f.email.value.trim(),rol=f.rol.value;
+    if(f.password.value.length<10)throw new Error('La contraseña inicial debe tener al menos 10 caracteres');
+    const second=firebase.apps.find(a=>a.name==='altas')||firebase.initializeApp(appConfig,'altas');
+    const secondAuth=second.auth();
+    if(local&&!secondAuth.emulatorConfig)secondAuth.useEmulator('http://127.0.0.1:9099');
+    await secondAuth.setPersistence(firebase.auth.Auth.Persistence.NONE);
+    let cred;
+    try{cred=await secondAuth.createUserWithEmailAndPassword(email,f.password.value);}catch(err){throw new Error(authMessage(err));}
+    await secondAuth.signOut();
+    await db.ref('usuarios/'+cred.user.uid).set({email,nombre,creado:nowLima(),rol});
+    closeModal();notify(`Cuenta creada para ${nombre}`);
+  });
+}
 async function setRole(uid,rol){try{await db.ref(`usuarios/${uid}/rol`).set(rol||null);notify(rol?'Rol asignado':'Acceso retirado');}catch(err){notify(err.message);render();}}
 function downloadPdf(id){
   const o=state.orders.find(x=>x.id===id);if(!o||o.status!=='Atendido')return;
@@ -306,7 +324,7 @@ document.addEventListener('click',e=>{
   const t=e.target,get=(attr)=>t.closest(`[data-${attr}]`)?.dataset;
   if(t.closest('[data-logout]')){auth.signOut();return;}
   if(get('page')&&!t.closest('[data-role]'))nav(get('page').page);
-  if(get('open'))({order:openOrder,client:openClient,product:openProduct}[get('open').open])();
+  if(get('open'))({order:openOrder,client:openClient,product:openProduct,user:openUser}[get('open').open])();
   if(get('detail'))showOrder(get('detail').detail);
   if(get('weigh'))weighOrder(get('weigh').weigh);
   if(get('status'))advance(get('status').status);
