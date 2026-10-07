@@ -133,8 +133,8 @@
         "created_at"
       ],
       "$id": {
-        ".write": "auth != null && root.child('usuarios/' + auth.uid + '/rol').exists() && newData.exists() && (!data.exists() || (data.child('status').val() !== 'Atendido' && data.child('status').val() !== 'Cancelado'))",
-        ".validate": "newData.hasChildren(['code', 'client_id', 'client_name', 'product_id', 'product_name', 'created_by', 'created_at', 'status', 'weights', 'price_cents', 'weight_grams', 'total_cents']) && ((!data.exists() && (newData.child('status').val() === 'Pendiente' || newData.child('status').val() === 'Atendido') && newData.child('created_by').val() === auth.uid) || (data.exists() && (newData.child('status').val() === data.child('status').val() || (data.child('status').val() === 'Pendiente' && (newData.child('status').val() === 'En preparación' || newData.child('status').val() === 'Atendido' || newData.child('status').val() === 'Cancelado')) || (data.child('status').val() === 'En preparación' && (newData.child('status').val() === 'Listo' || newData.child('status').val() === 'Atendido' || newData.child('status').val() === 'Cancelado')) || (data.child('status').val() === 'Listo' && (newData.child('status').val() === 'Atendido' || newData.child('status').val() === 'Cancelado'))))) && (newData.child('status').val() !== 'Atendido' || (newData.child('attended_at').isString() && newData.child('weight_grams').val() > 0 && newData.child('total_cents').val() > 0 && newData.child('weights').hasChildren()))",
+        ".write": "auth != null && root.child('usuarios/' + auth.uid + '/rol').exists() && newData.exists() && (!data.exists() || (data.child('status').val() !== 'Atendido' && data.child('status').val() !== 'Cancelado' && data.child('status').val() !== 'Anulado') || (data.child('status').val() === 'Atendido' && newData.child('status').val() === 'Anulado'))",
+        ".validate": "newData.hasChildren(['code', 'client_id', 'client_name', 'product_id', 'product_name', 'created_by', 'created_at', 'status', 'weights', 'price_cents', 'weight_grams', 'total_cents']) && ((!data.exists() && (newData.child('status').val() === 'Pendiente' || newData.child('status').val() === 'Atendido') && newData.child('created_by').val() === auth.uid) || (data.exists() && (newData.child('status').val() === data.child('status').val() || (data.child('status').val() === 'Pendiente' && (newData.child('status').val() === 'En preparación' || newData.child('status').val() === 'Atendido' || newData.child('status').val() === 'Cancelado')) || (data.child('status').val() === 'En preparación' && (newData.child('status').val() === 'Listo' || newData.child('status').val() === 'Atendido' || newData.child('status').val() === 'Cancelado')) || (data.child('status').val() === 'Listo' && (newData.child('status').val() === 'Atendido' || newData.child('status').val() === 'Cancelado')) || (data.child('status').val() === 'Atendido' && newData.child('status').val() === 'Anulado')))) && (newData.child('status').val() !== 'Atendido' || (newData.child('attended_at').isString() && newData.child('weight_grams').val() > 0 && newData.child('total_cents').val() > 0 && newData.child('weights').hasChildren())) && (data.child('status').val() !== 'Atendido' || (newData.child('total_cents').val() === data.child('total_cents').val() && newData.child('weight_grams').val() === data.child('weight_grams').val() && newData.child('attended_at').val() === data.child('attended_at').val())) && (newData.child('status').val() !== 'Anulado' || data.child('status').val() === 'Anulado' || (newData.child('anulado_motivo').isString() && newData.child('anulado_motivo').val().length >= 3 && newData.child('anulado_por').val() === auth.uid && newData.child('anulado_at').isString()))",
         "code": {
           ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())"
         },
@@ -176,7 +176,7 @@
         },
         "weights": {
           "$i": {
-            ".validate": "newData.isString() && newData.val().length <= 12 && (newData.parent().parent().child('status').val() !== 'Atendido' || newData.val().matches(/^[0-9]+(\\.[0-9]{1,3})?$/) && !newData.val().matches(/^0*(\\.0*)?$/))"
+            ".validate": "newData.isString() && newData.val().length <= 12 && (newData.parent().parent().child('status').val() !== 'Atendido' || newData.val().matches(/^[0-9]+(\\.[0-9]{1,3})?$/) && !newData.val().matches(/^0*(\\.0*)?$/)) && (newData.parent().parent().child('status').val() !== 'Anulado' || newData.val() === data.val())"
           }
         },
         "price_cents": {
@@ -187,6 +187,18 @@
         },
         "total_cents": {
           ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "anulado_motivo": {
+          ".validate": "newData.isString() && newData.val().length <= 200"
+        },
+        "anulado_at": {
+          ".validate": "newData.isString()"
+        },
+        "anulado_por": {
+          ".validate": "newData.isString()"
+        },
+        "anulado_por_nombre": {
+          ".validate": "newData.isString() && newData.val().length <= 80"
         },
         "$other": {
           ".validate": false

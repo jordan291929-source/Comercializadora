@@ -43,6 +43,7 @@ h1,h2,h3{font-family:Inter,system-ui,sans-serif;letter-spacing:-.02em;font-weigh
 .stat,.order-card,.panel,.auth-card,.more-list button,.client-choice{border-radius:16px}
 .button,.mini-button{font-weight:600}
 input,select,textarea{font-size:16px}
+.button.danger{color:#b3263b;border-color:#f0c9cf;background:#fff}.button.danger-solid{background:#b3263b;border-color:#b3263b;color:#fff}.void-note{margin-top:16px;padding:12px 14px;border-radius:12px;background:#fdf0f2;color:#7a1d2c;font-size:13px;line-height:1.5}
 html,body,*,*::before,*::after{touch-action:manipulation}
 .price-since{display:block;color:#4f6867;font-size:11px;margin-top:3px}.price-history{margin-top:20px;border-top:1px solid #e2e0d9;padding-top:14px}.price-history h3{font-size:14px;margin:0 0 8px}.price-history li{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:7px 0;border-bottom:1px solid #f0eee8}.price-history ul{list-style:none;margin:0;padding:0}.price-history small{color:#4f6867}
 @media(max-width:760px){#products-table td:last-child{grid-column:span 2}#products-table td:last-child .mini-button{width:100%;min-height:44px}}
@@ -116,8 +117,9 @@ html,body,*,*::before,*::after{touch-action:manipulation}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
 'use strict';
-const APP_VERSION='2.05';
+const APP_VERSION='2.06';
 const CHANGELOG=[
+  {v:'2.06',f:'2026-10-07',t:'Se pueden anular ventas ya atendidas (con motivo obligatorio): quedan registradas como anuladas y dejan de sumar. Cancelar un pedido pendiente también pide el motivo.'},
   {v:'2.05',f:'2026-10-07',t:'Productos editables: precio de la semana con historial, nombre, categoría, unidad y activar/desactivar. La venta usa el precio nuevo apenas lo cambias. Se elimina el zoom por doble toque en el celular.'},
   {v:'2.04',f:'2026-10-07',t:'Nuevo diseño con tipografía Inter (estilo Finanzas JSG), el celular ya no hace zoom al escribir, nota de pedido en PDF con formato de boleta y datos del negocio editables.'},
   {v:'2.03',f:'2026-10-07',t:'Corrige las reglas de la base de datos: ya se pueden publicar y la venta «Atender ahora» se guarda correctamente.'},
@@ -228,26 +230,27 @@ function showAuth(){
 
 // ---------- Vistas ----------
 function nav(page){state.page=page;document.querySelectorAll('.page').forEach(el=>el.hidden=el.id!==`page-${page}`);document.querySelectorAll('[data-page]').forEach(el=>el.classList.toggle('active',el.dataset.page===page||(el.dataset.page==='mas'&&['clientes','productos','usuarios','negocio'].includes(page))));$('#page-title').textContent={inicio:'Inicio',pedidos:'Pedidos',clientes:'Clientes',productos:'Productos',usuarios:'Usuarios',negocio:'Negocio',mas:'Más'}[page];render();window.scrollTo(0,0);}
-function statusPill(s){const cls={'En preparación':'preparacion','Listo':'listo','Atendido':'atendido','Cancelado':'cancelado'}[s]||'';return `<span class="pill ${cls}">${esc(s)}</span>`;}
+function statusPill(s){const cls={'En preparación':'preparacion','Listo':'listo','Atendido':'atendido','Cancelado':'cancelado','Anulado':'cancelado'}[s]||'';return `<span class="pill ${cls}">${esc(s)}</span>`;}
+const CLOSED=['Atendido','Cancelado','Anulado'];
 const nextStatus={'Pendiente':'En preparación','En preparación':'Listo','Listo':'Atendido'};
 function table(headers,rows,empty){if(!rows.length)return `<div class="empty"><strong>${esc(empty)}</strong>Los registros aparecerán aquí.</div>`;return `<table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table>`;}
-function orderCard(o){const open=!['Atendido','Cancelado'].includes(o.status),missing=pendingWeights(o);return `<article class="order-card"><div class="order-card-top"><small>${esc(o.code)} · ${date(o.created_at)}</small>${statusPill(o.status)}</div><div class="order-card-main"><strong>${esc(o.client_name)}</strong><strong class="order-amount">${missing?'Por pesar':money(o.total_cents)}</strong></div><div class="order-card-detail">${o.weights.length} ${o.weights.length===1?'jaba':'jabas'} · ${missing?'Peso pendiente':(o.weight_grams/1000).toFixed(3)+' kg'} · ${esc(o.product_name)}</div><div class="order-card-bottom"><span class="muted" style="font-size:11px">${o.status==='Atendido'?date(o.attended_at):''}</span><div class="row-actions"><button class="mini-button" data-detail="${esc(o.id)}">Ver detalle</button>${open?`<button class="mini-button" data-${missing?'weigh':'attend'}="${esc(o.id)}">${missing?'Registrar peso':'✓ Atender'}</button>`:''}</div></div></article>`;}
+function orderCard(o){const open=!CLOSED.includes(o.status),missing=pendingWeights(o);return `<article class="order-card"><div class="order-card-top"><small>${esc(o.code)} · ${date(o.created_at)}</small>${statusPill(o.status)}</div><div class="order-card-main"><strong>${esc(o.client_name)}</strong><strong class="order-amount">${missing?'Por pesar':money(o.total_cents)}</strong></div><div class="order-card-detail">${o.weights.length} ${o.weights.length===1?'jaba':'jabas'} · ${missing?'Peso pendiente':(o.weight_grams/1000).toFixed(3)+' kg'} · ${esc(o.product_name)}</div><div class="order-card-bottom"><span class="muted" style="font-size:11px">${o.status==='Atendido'?date(o.attended_at):''}</span><div class="row-actions"><button class="mini-button" data-detail="${esc(o.id)}">Ver detalle</button>${open?`<button class="mini-button" data-${missing?'weigh':'attend'}="${esc(o.id)}">${missing?'Registrar peso':'✓ Atender'}</button>`:''}</div></div></article>`;}
 function orderCards(orders,empty){return orders.length?orders.map(orderCard).join(''):`<div class="empty"><strong>${esc(empty)}</strong></div>`;}
 function dashboard(){
   const today=nowLima().slice(0,10),orders=state.orders;
   const attended=orders.filter(o=>o.status==='Atendido'&&(o.attended_at||'').startsWith(today));
-  return{orders_today:orders.filter(o=>o.created_at.startsWith(today)).length,pending:orders.filter(o=>!['Atendido','Cancelado'].includes(o.status)).length,attended_today:attended.length,jabas_today:attended.reduce((a,o)=>a+o.weights.length,0),kg_today:attended.reduce((a,o)=>a+o.weight_grams,0)/1000,sales_today_cents:attended.reduce((a,o)=>a+o.total_cents,0)};
+  return{orders_today:orders.filter(o=>o.created_at.startsWith(today)).length,pending:orders.filter(o=>!CLOSED.includes(o.status)).length,attended_today:attended.length,jabas_today:attended.reduce((a,o)=>a+o.weights.length,0),kg_today:attended.reduce((a,o)=>a+o.weight_grams,0)/1000,sales_today_cents:attended.reduce((a,o)=>a+o.total_cents,0)};
 }
 function render(){
   if($('#app').hidden)return;
   const d=dashboard();
   $('#stats').innerHTML=[['Venta de hoy',money(d.sales_today_cents),`${d.attended_today} ${d.attended_today===1?'venta atendida':'ventas atendidas'}`],['Por atender',d.pending,`${d.orders_today} ${d.orders_today===1?'pedido creado':'pedidos creados'} hoy`],['Jabas vendidas',d.jabas_today,`${d.kg_today.toFixed(3)} kg hoy`]].map(([label,num,hint])=>`<div class="stat"><span class="label">${label}</span><span class="number">${num}</span><span class="hint">${hint}</span></div>`).join('');
-  const pending=state.orders.filter(o=>!['Atendido','Cancelado'].includes(o.status));
+  const pending=state.orders.filter(o=>!CLOSED.includes(o.status));
   $('#pending-count').textContent=pending.length;
   $('#home-pending').innerHTML=orderCards(pending.slice(0,3),'Todo está atendido por ahora');
   $('#recent-orders').innerHTML=orderCards(state.orders.filter(o=>o.status==='Atendido').slice(0,3),'Aún no hay ventas atendidas');
   const term=$('#order-search').value.trim().toLowerCase();
-  const visible=state.orders.filter(o=>(!term||`${o.code} ${o.client_name}`.toLowerCase().includes(term))&&(state.orderTab==='all'||(state.orderTab==='attended'?o.status==='Atendido':!['Atendido','Cancelado'].includes(o.status))));
+  const visible=state.orders.filter(o=>(!term||`${o.code} ${o.client_name}`.toLowerCase().includes(term))&&(state.orderTab==='all'||(state.orderTab==='attended'?o.status==='Atendido':!CLOSED.includes(o.status))));
   $('#orders-table').innerHTML=orderCards(visible,'No hay pedidos en esta vista');
   $('#clients-table').innerHTML=table(['Cliente','Documento','Teléfono','Distrito','Pedidos'],state.clients.map(c=>`<tr><td><strong>${esc(c.name)}</strong><small>${esc(c.code||'')}</small></td><td>${esc(c.document)||'—'}</td><td>${esc(c.phone)||'—'}</td><td>${esc(c.district)||'—'}</td><td>${state.orders.filter(o=>o.client_id===c.id).length}</td></tr>`),'Todavía no hay clientes');
   $('#products-table').innerHTML=table(['Producto','Categoría','Unidad','Precio vigente','Estado',''],state.products.map(p=>`<tr><td><strong>${esc(p.name)}</strong></td><td>${esc(p.category)}</td><td>${esc(p.unit)}${p.sold_by_weight?' · venta por peso':''}</td><td><strong>${money(p.price_cents||0)}</strong>${p.price_updated_at?`<small class="price-since">desde ${shortDate(p.price_updated_at)}</small>`:''}</td><td>${p.active===false?'<span class="pill cancelado">Inactivo</span>':'<span class="pill atendido">Activo</span>'}</td><td><button class="mini-button" data-edit-product="${esc(p.id)}">Editar precio y datos</button></td></tr>`),'Todavía no hay productos');
@@ -376,7 +379,7 @@ function whatsapp(o){const name=o.client_name.split(' ')[0];const detail=`Hola $
 function showOrder(id){
   const o=state.orders.find(x=>x.id===id);if(!o)return;
   const pending=pendingWeights(o);
-  openModal(o.code,'DETALLE DEL PEDIDO',`<div class="modal-content"><div class="detail-list"><div><small>Cliente</small><strong>${esc(o.client_name)}</strong></div><div><small>Estado</small>${statusPill(o.status)}</div><div><small>Registrado</small><strong>${date(o.created_at)}</strong></div><div><small>Atendido</small><strong>${date(o.attended_at)}</strong></div><div><small>Producto</small><strong>${esc(o.product_name)}</strong></div><div><small>Registrado por</small><strong>${esc(o.created_by_name)}</strong></div></div><h3 style="font-size:14px">Peso de las jabas</h3><div class="detail-list">${o.weights.map((w,i)=>`<div><small>Jaba ${i+1}</small><strong>${w?esc(w)+' kg':'Pendiente'}</strong></div>`).join('')}</div><div class="detail-total"><div><small>${pending?'Peso pendiente':(o.weight_grams/1000).toFixed(3)+' kg'} × ${money(o.price_cents)}/kg</small><br><b>Total de la venta</b></div><strong>${pending?'Por calcular':money(o.total_cents)}</strong></div>${o.notes?`<p class="muted">${esc(o.notes)}</p>`:''}<div class="modal-footer" style="flex-wrap:wrap">${o.status==='Atendido'?`<button class="button" data-pdf="${esc(o.id)}">↓ Descargar nota de pedido</button><a class="button primary" href="${esc(whatsapp(o))}" target="_blank" rel="noopener">Compartir por WhatsApp</a>`:''}${nextStatus[o.status]?`<button class="button" data-weigh="${esc(o.id)}">Registrar peso real</button><button class="button primary" data-attend="${esc(o.id)}">✓ Atender</button><button class="button" data-cancel="${esc(o.id)}">Cancelar</button>`:''}</div>${o.status==='Atendido'?'<p class="muted" style="font-size:11px;margin-top:15px">Sustento interno: no reemplaza boleta ni factura electrónica. El PDF se descarga aquí; WhatsApp comparte el resumen del pedido.</p>':''}</div>`);
+  openModal(o.code,'DETALLE DEL PEDIDO',`<div class="modal-content"><div class="detail-list"><div><small>Cliente</small><strong>${esc(o.client_name)}</strong></div><div><small>Estado</small>${statusPill(o.status)}</div><div><small>Registrado</small><strong>${date(o.created_at)}</strong></div><div><small>Atendido</small><strong>${date(o.attended_at)}</strong></div><div><small>Producto</small><strong>${esc(o.product_name)}</strong></div><div><small>Registrado por</small><strong>${esc(o.created_by_name)}</strong></div></div><h3 style="font-size:14px">Peso de las jabas</h3><div class="detail-list">${o.weights.map((w,i)=>`<div><small>Jaba ${i+1}</small><strong>${w?esc(w)+' kg':'Pendiente'}</strong></div>`).join('')}</div><div class="detail-total"><div><small>${pending?'Peso pendiente':(o.weight_grams/1000).toFixed(3)+' kg'} × ${money(o.price_cents)}/kg</small><br><b>Total de la venta</b></div><strong>${pending?'Por calcular':money(o.total_cents)}</strong></div>${o.notes?`<p class="muted">${esc(o.notes)}</p>`:''}<div class="modal-footer" style="flex-wrap:wrap">${o.status==='Atendido'?`<button class="button" data-pdf="${esc(o.id)}">↓ Descargar nota de pedido</button><a class="button primary" href="${esc(whatsapp(o))}" target="_blank" rel="noopener">Compartir por WhatsApp</a>`:''}${nextStatus[o.status]?`<button class="button" data-weigh="${esc(o.id)}">Registrar peso real</button><button class="button primary" data-attend="${esc(o.id)}">✓ Atender</button><button class="button" data-cancel="${esc(o.id)}">Cancelar pedido</button>`:''}${o.status==='Atendido'?`<button class="button danger" data-cancel="${esc(o.id)}">Anular venta</button>`:''}</div>${o.anulado_motivo?`<div class="void-note"><strong>${o.status==='Anulado'?'Venta anulada':'Pedido cancelado'}</strong> el ${date(o.anulado_at)} por ${esc(o.anulado_por_nombre||'')}<br>Motivo: ${esc(o.anulado_motivo)}</div>`:''}${o.status==='Atendido'?'<p class="muted" style="font-size:11px;margin-top:15px">Sustento interno: no reemplaza boleta ni factura electrónica. El PDF se descarga aquí; WhatsApp comparte el resumen del pedido.</p>':''}</div>`);
 }
 function weighOrder(id){
   const o=state.orders.find(x=>x.id===id);if(!o)return;
@@ -394,12 +397,21 @@ async function advance(id){
   try{await db.ref('pedidos/'+id).update(status==='Atendido'?{status,attended_at:nowLima()}:{status});closeModal();notify('Pedido actualizado');}catch(err){notify(err.message);}
 }
 async function attendOrder(id){
-  const o=state.orders.find(x=>x.id===id);if(!o||['Atendido','Cancelado'].includes(o.status))return;
+  const o=state.orders.find(x=>x.id===id);if(!o||CLOSED.includes(o.status))return;
   if(pendingWeights(o)){notify('Registra el peso real de todas las jabas antes de atender');weighOrder(id);return;}
   if(o.weight_grams<=0||o.total_cents<=0){notify('Revisa el peso y el total antes de atender');return;}
   try{await db.ref('pedidos/'+id).update({status:'Atendido',attended_at:nowLima()});closeModal();notify('Venta atendida');}catch(err){notify(err.message);}
 }
-async function cancelOrder(id){if(!confirm('¿Cancelar este pedido?'))return;try{await db.ref('pedidos/'+id).update({status:'Cancelado'});closeModal();notify('Pedido cancelado');}catch(err){notify(err.message);}}
+function cancelOrder(id){
+  const o=state.orders.find(x=>x.id===id);if(!o||!['Pendiente','En preparación','Listo','Atendido'].includes(o.status))return;
+  const attended=o.status==='Atendido';
+  openModal(attended?'Anular venta':'Cancelar pedido',o.code,`<form id="void-form" class="modal-content"><p class="muted">${attended?`La venta de <strong>${money(o.total_cents)}</strong> a <strong>${esc(o.client_name)}</strong> dejará de sumar en las ventas. No se borra: queda registrada como anulada, con el motivo y quién la anuló.`:`El pedido de <strong>${esc(o.client_name)}</strong> saldrá de pendientes y quedará como cancelado.`}</p><div class="field-grid">${field('motivo','Motivo',{required:true,wide:true,max:200,placeholder:attended?'Ej.: el cliente devolvió la mercadería':'Ej.: el cliente ya no lo necesita'})}</div><div class="modal-footer"><button type="button" class="button" data-close>Volver</button><button class="button danger-solid" type="submit">${attended?'Anular venta':'Cancelar pedido'}</button></div></form>`);
+  submitWith($('#void-form'),async e=>{
+    const motivo=e.target.elements.motivo.value.trim();if(motivo.length<3)throw new Error('Escribe el motivo');
+    await db.ref('pedidos/'+id).update({status:attended?'Anulado':'Cancelado',anulado_motivo:motivo,anulado_at:nowLima(),anulado_por:state.user.uid,anulado_por_nombre:state.profile.nombre||state.user.email});
+    closeModal();notify(attended?'Venta anulada':'Pedido cancelado');
+  });
+}
 // Crea la cuenta en una instancia secundaria de Firebase para no cerrar la sesión del administrador.
 function openUser(){
   openModal('Crear cuenta','USUARIOS',`<form id="user-form" class="modal-content"><div class="field-grid">${field('nombre','Nombre',{required:true,wide:true,max:80})}${field('email','Correo',{type:'email',required:true,wide:true})}${field('password','Contraseña inicial (mínimo 10 caracteres)',{type:'text',required:true})}<label>Rol<select name="rol">${Object.entries(ROLES).reverse().map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select></label></div><p class="muted" style="font-size:12px;margin-top:16px">Entrégale el correo y la contraseña a la persona. Puede cambiarla luego con «¿Olvidaste tu contraseña?».</p>${footer('Crear cuenta')}</form>`);
