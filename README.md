@@ -30,7 +30,6 @@ Es una sola página (`public/index.html`) sobre **Firebase**: Hosting, Authentic
 | Media | Ingreso de mercadería semanal | Stock, costo y ganancia por semana |
 | Media | Exportar a Excel | Contador y respaldo |
 | Media | Modo letra grande | Lectura más cómoda |
-| Por definir | Tara de la jaba | Solo si el precio por kg no debe incluir el peso de la jaba |
 
 ## Usuarios y roles
 
@@ -84,4 +83,4 @@ El plan gratuito no tiene respaldos automáticos. Exporta la base periódicament
 - Fase 3: OCR de comprobantes de compra con revisión humana obligatoria antes de generar un ingreso.
 - Fase 4: reportes de margen, cuentas por cobrar y abarrotes.
 
-Antes de usar inventario en producción hay que definir si el peso registrado es neto de huevo o incluye la tara de la jaba, y cómo se contabilizan las jabas retornables. Los importes actuales usan el peso ingresado tal como se registra.
+El precio por kg se aplica al peso que marca la balanza, con la jaba incluida; las jabas se van con el cliente, así que no hay tara ni control de jabas retornables.
