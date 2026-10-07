@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Comercializadora Viviana</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <div id="auth" class="auth-shell" hidden>
+    <form id="auth-form" class="auth-card">
+      <div class="brand-icon">CV</div>
+      <p class="eyebrow">COMERCIALIZADORA VIVIANA</p>
+      <h1 id="auth-title">Ingresar</h1>
+      <p id="auth-subtitle" class="muted">Control diario de pedidos de huevo.</p>
+      <label>Usuario<input name="username" autocomplete="username" minlength="3" required></label>
+      <label>Contraseña<input name="password" type="password" autocomplete="current-password" minlength="10" required></label>
+      <button class="button primary full" type="submit">Continuar</button>
+      <p id="auth-error" class="error" role="alert"></p>
+    </form>
+  </div>
+  <div id="app" class="layout" hidden>
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-icon">CV</span><span><strong>Comercializadora<br>Viviana</strong><small>CONTROL COMERCIAL</small></span></div>
+      <div class="nav-label">ESPACIO DE TRABAJO</div>
+      <nav id="nav">
+        <button data-page="inicio" class="active"><span>▦</span> Inicio</button>
+        <button data-page="pedidos"><span>▤</span> Pedidos</button>
+        <button data-page="clientes"><span>♙</span> Clientes</button>
+        <button data-page="productos"><span>◫</span> Productos</button>
+      </nav>
+      <div class="sidebar-bottom"><div class="avatar">CV</div><div><strong id="username"></strong><small>Administrador</small></div><button id="logout" title="Cerrar sesión">↪</button></div>
+    </aside>
+    <main class="main">
+      <header class="topbar"><div><div class="eyebrow">GESTIÓN DE VENTAS</div><h1 id="page-title">Inicio</h1></div><div class="top-actions"><span id="today"></span><button class="button primary" id="new-order-top">+ Nuevo pedido</button></div></header>
+      <div class="content">
+        <section id="page-inicio" class="page">
+          <div class="welcome"><div><span class="eyebrow">RESUMEN DEL NEGOCIO</span><h2>Todo lo importante, de un vistazo.</h2><p>Controla tus pedidos de hoy y atiende cada venta con el peso real de las jabas.</p></div><button class="button light" data-open="order">+ Registrar pedido</button></div>
+          <div id="stats" class="stats"></div>
+          <div class="panel"><div class="panel-heading"><div><h2>Pedidos recientes</h2><p>Revisa lo pendiente y continúa la atención.</p></div><button class="text-button" data-page="pedidos">Ver todos →</button></div><div id="recent-orders"></div></div>
+        </section>
+        <section id="page-pedidos" class="page" hidden><div class="section-heading"><div><h2>Pedidos</h2><p>Del pedido a la atención, sin registrar dos veces la venta.</p></div><button class="button primary" data-open="order">+ Nuevo pedido</button></div><div class="panel"><div class="filters"><input id="order-search" placeholder="Buscar por cliente o código"><select id="status-filter"><option value="">Todos los estados</option><option>Pendiente</option><option>En preparación</option><option>Listo</option><option>Atendido</option><option>Cancelado</option></select></div><div id="orders-table"></div></div></section>
+        <section id="page-clientes" class="page" hidden><div class="section-heading"><div><h2>Clientes</h2><p>Información de contacto e historial de compras.</p></div><button class="button primary" data-open="client">+ Nuevo cliente</button></div><div class="panel" id="clients-table"></div></section>
+        <section id="page-productos" class="page" hidden><div class="section-heading"><div><h2>Productos</h2><p>El huevo es el centro de la operación; el catálogo puede crecer.</p></div><button class="button primary" data-open="product">+ Nuevo producto</button></div><div class="panel" id="products-table"></div></section>
+      </div>
+    </main>
+  </div>
+  <dialog id="modal"><div class="modal-head"><div><p class="eyebrow" id="modal-eyebrow"></p><h2 id="modal-title"></h2></div><button id="close-modal" class="icon-button" aria-label="Cerrar">×</button></div><div id="modal-body"></div></dialog>
+  <div id="toast" role="status"></div>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>
