@@ -18,7 +18,7 @@ Es una sola página (`public/index.html`) sobre **Firebase**: Hosting, Authentic
 1. **Usar y anotar.** Durante la semana, anota lo que molesta o falta (con captura si se puede).
 2. **Pedir el cambio.** Una cosa por pedido, contando el problema real («mi mamá no encuentra…»), no solo la solución.
 3. **Construir y probar.** Cada cambio se prueba en los emuladores (`firebase emulators:start --project demo-comercializadora`), sube `APP_VERSION` y agrega una entrada al `CHANGELOG`.
-4. **Publicar.** `git pull` y `firebase deploy --only database,hosting`; comprobar la versión en la barra lateral.
+4. **Revisión antes de publicar.** Todo cambio hecho con ChatGPT pasa primero por Claude: lo prueba en los emuladores, lo corrige y entrega la versión lista. Recién entonces se publica con `firebase deploy --only database,hosting` y se comprueba la versión en la barra lateral.
 5. **Revisar con ella.** Ver a tu mamá usarlo unos minutos; ahí aparecen los siguientes cambios.
 
 ### Próximas mejoras

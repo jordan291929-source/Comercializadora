@@ -53,6 +53,10 @@ firebase emulators:start --project demo-comercializadora   # http://127.0.0.1:50
 - Revisa la sintaxis del script con `node --check` después de extraerlo de index.html.
 - Siempre prueba: venta con «Atender ahora» → ¿Cómo pagó? (contado y fiado con a cuenta), pedido pendiente → registrar peso → atender, anular, registrar y anular un pago, enlace de la nota abierto sin sesión, y los intentos que las reglas deben denegar.
 
+## Flujo con ChatGPT (acordado con Jordan)
+
+ChatGPT construye los cambios con `docs/PROMPT_CHATGPT.md`. **Nada se publica sin pasar por Claude**: Jordan trae los bloques o archivos de ChatGPT («revisa las actualizaciones»), Claude los aplica o revisa, prueba en el emulador, corrige, sube a GitHub y envía el ZIP. Recién entonces Jordan publica. Sé breve y económico: Jordan cuida el gasto de tokens.
+
 ## Pendientes acordados
 
 - Repetir último pedido (clientes fijos).
