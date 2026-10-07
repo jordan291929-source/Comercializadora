@@ -114,6 +114,14 @@
         "active": {
           ".validate": "newData.isBoolean()"
         },
+        "price_updated_at": {
+          ".validate": "newData.isString()"
+        },
+        "historial": {
+          "$h": {
+            ".validate": "!data.exists() && newData.hasChildren(['price_cents', 'fecha', 'por']) && newData.child('price_cents').isNumber() && newData.child('price_cents').val() >= 0 && newData.child('fecha').isString() && newData.child('por').isString()"
+          }
+        },
         "$other": {
           ".validate": false
         }

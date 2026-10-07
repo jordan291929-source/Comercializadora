@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <title>Comercializadora Viviana</title>
   <style>
 @font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/inter-latin-400-normal.woff2') format('woff2')}@font-face{font-family:'Inter';font-style:normal;font-weight:500;font-display:swap;src:url('/fonts/inter-latin-500-normal.woff2') format('woff2')}@font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:swap;src:url('/fonts/inter-latin-600-normal.woff2') format('woff2')}@font-face{font-family:'Inter';font-style:normal;font-weight:700;font-display:swap;src:url('/fonts/inter-latin-700-normal.woff2') format('woff2')}
@@ -31,7 +31,7 @@
   #clients-table td:first-child,#products-table td:first-child,#users-table td:first-child{grid-column:span 2;font-size:15px;border-bottom:1px solid #e2e0d9;padding-bottom:10px}
   #clients-table td:not(:first-child)::before,#products-table td:not(:first-child)::before,#users-table td:not(:first-child)::before{display:block;color:#4f6867;font-size:10px;font-weight:700;margin-bottom:3px}
   #clients-table td:nth-child(2)::before{content:'Documento'}#clients-table td:nth-child(3)::before{content:'Teléfono'}#clients-table td:nth-child(4)::before{content:'Distrito'}#clients-table td:nth-child(5)::before{content:'Pedidos'}
-  #products-table td:nth-child(2)::before{content:'Categoría'}#products-table td:nth-child(3)::before{content:'Unidad'}#products-table td:nth-child(4)::before{content:'Precio sugerido'}#products-table td:nth-child(5)::before{content:'Estado'}
+  #products-table td:nth-child(2)::before{content:'Categoría'}#products-table td:nth-child(3)::before{content:'Unidad'}#products-table td:nth-child(4)::before{content:'Precio vigente'}#products-table td:nth-child(5)::before{content:'Estado'}
   #users-table td:nth-child(2)::before{content:'Correo'}#users-table td:nth-child(3)::before{content:'Registrado'}#users-table td:nth-child(4)::before{content:'Rol'}#users-table select{width:100%}
 }
   
@@ -43,6 +43,9 @@ h1,h2,h3{font-family:Inter,system-ui,sans-serif;letter-spacing:-.02em;font-weigh
 .stat,.order-card,.panel,.auth-card,.more-list button,.client-choice{border-radius:16px}
 .button,.mini-button{font-weight:600}
 input,select,textarea{font-size:16px}
+html,body,*,*::before,*::after{touch-action:manipulation}
+.price-since{display:block;color:#4f6867;font-size:11px;margin-top:3px}.price-history{margin-top:20px;border-top:1px solid #e2e0d9;padding-top:14px}.price-history h3{font-size:14px;margin:0 0 8px}.price-history li{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:7px 0;border-bottom:1px solid #f0eee8}.price-history ul{list-style:none;margin:0;padding:0}.price-history small{color:#4f6867}
+@media(max-width:760px){#products-table td:last-child{grid-column:span 2}#products-table td:last-child .mini-button{width:100%;min-height:44px}}
 .eyebrow,.nav-label{letter-spacing:.08em}
 </style>
 </head>
@@ -113,8 +116,9 @@ input,select,textarea{font-size:16px}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
 'use strict';
-const APP_VERSION='2.04';
+const APP_VERSION='2.05';
 const CHANGELOG=[
+  {v:'2.05',f:'2026-10-07',t:'Productos editables: precio de la semana con historial, nombre, categoría, unidad y activar/desactivar. La venta usa el precio nuevo apenas lo cambias. Se elimina el zoom por doble toque en el celular.'},
   {v:'2.04',f:'2026-10-07',t:'Nuevo diseño con tipografía Inter (estilo Finanzas JSG), el celular ya no hace zoom al escribir, nota de pedido en PDF con formato de boleta y datos del negocio editables.'},
   {v:'2.03',f:'2026-10-07',t:'Corrige las reglas de la base de datos: ya se pueden publicar y la venta «Atender ahora» se guarda correctamente.'},
   {v:'2.02',f:'2026-10-07',t:'Nueva experiencia móvil para vender: clientes rápidos, jabas, pesaje, total visible, atención inmediata y pedidos fáciles de revisar.'},
@@ -126,6 +130,7 @@ const ROLES={admin:'Administrador',ventas:'Ventas'};
 
 const $=(selector)=>document.querySelector(selector);
 const esc=(value)=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const shortDate=(iso)=>iso?`${iso.slice(8,10)}/${iso.slice(5,7)}/${iso.slice(0,4)}`:'';
 const money=(cents)=>'S/ '+(cents/100).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2});
 const date=(value)=>value?new Date(value).toLocaleString('es-PE',{dateStyle:'short',timeStyle:'short',timeZone:'America/Lima'}):'—';
 // Perú no tiene horario de verano: la hora del negocio es siempre UTC-5.
@@ -199,7 +204,7 @@ function listen(path,fn){const ref=db.ref(path);const cb=ref.on('value',snap=>{f
 function attachData(rol){
   dataRole=rol;
   listen('clientes',s=>state.clients=listOf(s).sort((a,b)=>a.name.localeCompare(b.name,'es')));
-  listen('productos',s=>state.products=listOf(s).filter(p=>p.active!==false).sort((a,b)=>(a.category+a.name).localeCompare(b.category+b.name,'es')));
+  listen('productos',s=>state.products=listOf(s).sort((a,b)=>(a.active===false)-(b.active===false)||(a.category+a.name).localeCompare(b.category+b.name,'es')));
   listen('pedidos',s=>state.orders=listOf(s).map(o=>({...o,weights:o.weights||[]})).sort((a,b)=>b.created_at.localeCompare(a.created_at)||b.code.localeCompare(a.code)));
   if(rol==='admin')listen('usuarios',s=>state.users=listOf(s));
   listen('config/negocio',s=>{state.negocio=s.val()||{};fillNegocio();});
@@ -245,7 +250,7 @@ function render(){
   const visible=state.orders.filter(o=>(!term||`${o.code} ${o.client_name}`.toLowerCase().includes(term))&&(state.orderTab==='all'||(state.orderTab==='attended'?o.status==='Atendido':!['Atendido','Cancelado'].includes(o.status))));
   $('#orders-table').innerHTML=orderCards(visible,'No hay pedidos en esta vista');
   $('#clients-table').innerHTML=table(['Cliente','Documento','Teléfono','Distrito','Pedidos'],state.clients.map(c=>`<tr><td><strong>${esc(c.name)}</strong><small>${esc(c.code||'')}</small></td><td>${esc(c.document)||'—'}</td><td>${esc(c.phone)||'—'}</td><td>${esc(c.district)||'—'}</td><td>${state.orders.filter(o=>o.client_id===c.id).length}</td></tr>`),'Todavía no hay clientes');
-  $('#products-table').innerHTML=table(['Producto','Categoría','Unidad','Precio sugerido','Estado'],state.products.map(p=>`<tr><td><strong>${esc(p.name)}</strong></td><td>${esc(p.category)}</td><td>${esc(p.unit)}${p.sold_by_weight?' · venta por peso':''}</td><td>${money(p.price_cents||0)}</td><td><span class="pill atendido">Activo</span></td></tr>`),'Todavía no hay productos');
+  $('#products-table').innerHTML=table(['Producto','Categoría','Unidad','Precio vigente','Estado',''],state.products.map(p=>`<tr><td><strong>${esc(p.name)}</strong></td><td>${esc(p.category)}</td><td>${esc(p.unit)}${p.sold_by_weight?' · venta por peso':''}</td><td><strong>${money(p.price_cents||0)}</strong>${p.price_updated_at?`<small class="price-since">desde ${shortDate(p.price_updated_at)}</small>`:''}</td><td>${p.active===false?'<span class="pill cancelado">Inactivo</span>':'<span class="pill atendido">Activo</span>'}</td><td><button class="mini-button" data-edit-product="${esc(p.id)}">Editar precio y datos</button></td></tr>`),'Todavía no hay productos');
   if(state.profile?.rol==='admin'){
     const users=[...state.users].sort((a,b)=>(a.rol?1:0)-(b.rol?1:0)||(a.creado||'').localeCompare(b.creado||''));
     $('#users-table').innerHTML=table(['Usuario','Correo','Registrado','Rol'],users.map(u=>`<tr><td><strong>${esc(u.nombre)}</strong>${u.rol?'':'<small>Pendiente de aprobación</small>'}</td><td>${esc(u.email)}</td><td>${date(u.creado)}</td><td><select data-role="${esc(u.id)}" ${u.id===state.user.uid?'disabled title="No puedes cambiar tu propio rol"':''}><option value="" ${u.rol?'':'selected'}>Sin acceso</option>${Object.entries(ROLES).map(([k,v])=>`<option value="${k}" ${u.rol===k?'selected':''}>${v}</option>`).join('')}</select></td></tr>`),'Todavía no hay usuarios');
@@ -264,18 +269,26 @@ function openClient(){
     closeModal();notify('Cliente registrado');
   });
 }
-function openProduct(){
-  openModal('Nuevo producto','CATÁLOGO',`<form id="product-form" class="modal-content"><div class="field-grid">${field('name','Nombre del producto',{required:true,wide:true,max:120})}${field('category','Categoría',{value:'Huevos',max:80})}${field('unit','Unidad',{value:'kg',max:30})}<label>Tipo de venta<select name="sold_by_weight"><option value="true">Por peso (kg)</option><option value="false">Por unidad (próxima fase)</option></select></label>${field('price','Precio sugerido S/',{type:'number',step:'.01',value:'0'})}</div><p class="muted" style="font-size:12px;margin-top:16px">Los pedidos por unidad se habilitarán en una fase posterior.</p>${footer('Guardar producto')}</form>`);
+function openProduct(id){
+  const p=id?state.products.find(x=>x.id===id):null;if(id&&!p)return;
+  const history=p?Object.values(p.historial||{}).sort((x,y)=>y.fecha.localeCompare(x.fecha)).slice(0,10):[];
+  openModal(p?p.name:'Nuevo producto',p?'EDITAR PRODUCTO':'CATÁLOGO',`<form id="product-form" class="modal-content"><div class="field-grid">${field('price',p?'Precio por kg de esta semana · S/':'Precio por kg · S/',{type:'text',required:true,wide:true,value:p?((p.price_cents||0)/100).toFixed(2):'',placeholder:'0.00'})}${field('name','Nombre del producto',{required:true,wide:true,max:120,value:p?.name})}${field('category','Categoría',{value:p?.category??'Huevos',max:80})}${field('unit','Unidad',{value:p?.unit??'kg',max:30})}<label>Tipo de venta<select name="sold_by_weight"><option value="true" ${p&&!p.sold_by_weight?'':'selected'}>Por peso (kg)</option><option value="false" ${p&&!p.sold_by_weight?'selected':''}>Por unidad (próxima fase)</option></select></label>${p?`<label>Estado<select name="active"><option value="true" ${p.active===false?'':'selected'}>Activo (se puede vender)</option><option value="false" ${p.active===false?'selected':''}>Inactivo (no aparece al vender)</option></select></label>`:''}</div>${p&&p.price_updated_at?`<p class="muted" style="font-size:12px;margin-top:12px">Precio vigente desde ${shortDate(p.price_updated_at)}.</p>`:''}${footer(p?'Guardar cambios':'Guardar producto')}${history.length?`<div class="price-history"><h3>Historial de precios</h3><ul>${history.map(h=>`<li><span>${shortDate(h.fecha)} <small>· ${esc(h.por||'')}</small></span><strong>${money(h.price_cents)}</strong></li>`).join('')}</ul></div>`:''}</form>`);
+  const priceInput=$('#product-form').elements.price;priceInput.inputMode='decimal';priceInput.autocomplete='off';
   submitWith($('#product-form'),async e=>{
     const f=e.target.elements,name=f.name.value.trim();
     if(!name)throw new Error('Escribe el nombre del producto');
-    if(state.products.some(p=>p.name.toLowerCase()===name.toLowerCase()))throw new Error('El producto ya existe');
-    await db.ref('productos').push({name,category:f.category.value.trim(),unit:f.unit.value.trim(),sold_by_weight:f.sold_by_weight.value==='true',price_cents:priceCents(f.price.value||'0',{allowZero:true}),active:true});
-    closeModal();notify('Producto registrado');
+    if(state.products.some(x=>x.id!==p?.id&&x.name.toLowerCase()===name.toLowerCase()))throw new Error('Ya existe otro producto con ese nombre');
+    const price=priceCents(f.price.value||'0',{allowZero:true}),now=nowLima();
+    const data={name,category:f.category.value.trim(),unit:f.unit.value.trim(),sold_by_weight:f.sold_by_weight.value==='true',price_cents:price,active:p?f.active.value==='true':true};
+    const ref=p?db.ref('productos/'+p.id):db.ref('productos').push();
+    const changed=!p||price!==(p.price_cents||0);
+    if(changed){data.price_updated_at=now;data['historial/'+ref.child('historial').push().key]={price_cents:price,fecha:now,por:state.profile.nombre||state.user.email};}
+    await ref.update(data);
+    closeModal();notify(p?(changed?`Precio actualizado a ${money(price)} por kg`:'Producto actualizado'):'Producto registrado');
   });
 }
 function openOrder(){
-  const weighted=state.products.filter(p=>p.sold_by_weight);
+  const weighted=state.products.filter(p=>p.sold_by_weight&&p.active!==false);
   if(!weighted.length){notify('Todavía no hay un producto de huevo disponible');return;}
   const draft={client:null,product:weighted.find(p=>p.id==='huevo-comercial')||weighted[0],count:1,weights:[''],price:'',sale_type:'Mayorista',notes:''};
   openModal('Nueva venta','PASO 1 DE 2','');$('#modal').classList.add('sale-modal');
@@ -284,7 +297,7 @@ function openOrder(){
   function chooseClient(client){
     if(!client)return;
     draft.client=client;
-    const previous=state.orders.find(o=>o.client_id===client.id&&o.product_id===draft.product.id&&o.price_cents>0);
+    const previous=state.orders.find(o=>o.client_id===client.id&&o.product_id===draft.product.id&&o.price_cents>0&&(!draft.product.price_updated_at||o.created_at>draft.product.price_updated_at));
     draft.price=String((previous?.price_cents||draft.product.price_cents||0)/100);
     showSale();
   }
@@ -328,7 +341,7 @@ function openOrder(){
   }
   function showSale(){
     $('#modal-title').textContent='Nueva venta';$('#modal-eyebrow').textContent='NUEVA VENTA · 2 DE 2';body.onclick=null;
-    body.innerHTML=`<div class="sale-body sale-step">${progress(2)}<button class="text-button" id="sale-back-client">‹ Cambiar cliente</button><h3>${esc(draft.client.name)}</h3><p class="muted">${esc(draft.client.phone||'Venta de huevo por peso')}</p>${weighted.length>1?`<label class="sale-label">Producto<select id="sale-product">${weighted.map(p=>`<option value="${esc(p.id)}" ${p.id===draft.product.id?'selected':''}>${esc(p.name)}</option>`).join('')}</select></label>`:`<div class="sale-product">${esc(draft.product.name)}</div>`}<div class="sale-stepper"><strong>Cantidad de jabas</strong><div class="controls"><button type="button" id="sale-less" aria-label="Quitar jaba">−</button><output>${draft.count}</output><button type="button" id="sale-more" aria-label="Agregar jaba">+</button></div></div><span class="sale-label">Peso por jaba · kg <small>(puedes dejarlo pendiente)</small></span><div class="sale-weights">${draft.weights.map((w,i)=>`<label>Jaba ${i+1}<input data-weight-index="${i}" type="text" inputmode="decimal" placeholder="0,000" value="${esc(w)}" autocomplete="off"></label>`).join('')}</div><div class="sale-price"><label><span class="sale-label">Precio por kg · S/</span><input id="sale-price" type="text" inputmode="decimal" value="${esc(draft.price)}" autocomplete="off"><small>Revisa el precio antes de atender.</small></label></div><details><summary>Más detalles</summary><div class="sale-inline-form" style="padding-top:12px"><label>Tipo de venta<select id="sale-type"><option ${draft.sale_type==='Mayorista'?'selected':''}>Mayorista</option><option ${draft.sale_type==='Minorista'?'selected':''}>Minorista</option></select></label><label>Observaciones<input id="sale-notes" maxlength="500" value="${esc(draft.notes)}"></label></div></details><div class="sale-totals"><span id="sale-kg">Peso pendiente</span><span>Subtotal: <strong id="sale-subtotal">Por calcular</strong></span></div></div><div class="sale-actions"><div class="summary-row"><span>Total</span><strong id="sale-grand-total">Por calcular</strong></div><button class="button primary" id="sale-attend">Guardar pedido pendiente</button><button class="button secondary" id="sale-save-pending">Guardar para después</button></div>`;
+    body.innerHTML=`<div class="sale-body sale-step">${progress(2)}<button class="text-button" id="sale-back-client">‹ Cambiar cliente</button><h3>${esc(draft.client.name)}</h3><p class="muted">${esc(draft.client.phone||'Venta de huevo por peso')}</p>${weighted.length>1?`<label class="sale-label">Producto<select id="sale-product">${weighted.map(p=>`<option value="${esc(p.id)}" ${p.id===draft.product.id?'selected':''}>${esc(p.name)}</option>`).join('')}</select></label>`:`<div class="sale-product">${esc(draft.product.name)}</div>`}<div class="sale-stepper"><strong>Cantidad de jabas</strong><div class="controls"><button type="button" id="sale-less" aria-label="Quitar jaba">−</button><output>${draft.count}</output><button type="button" id="sale-more" aria-label="Agregar jaba">+</button></div></div><span class="sale-label">Peso por jaba · kg <small>(puedes dejarlo pendiente)</small></span><div class="sale-weights">${draft.weights.map((w,i)=>`<label>Jaba ${i+1}<input data-weight-index="${i}" type="text" inputmode="decimal" placeholder="0,000" value="${esc(w)}" autocomplete="off"></label>`).join('')}</div><div class="sale-price"><label><span class="sale-label">Precio por kg · S/</span><input id="sale-price" type="text" inputmode="decimal" value="${esc(draft.price)}" autocomplete="off"><small>${draft.product.price_updated_at?`Precio de la semana: ${money(draft.product.price_cents||0)} desde ${shortDate(draft.product.price_updated_at)}. `:''}Revisa el precio antes de atender.</small></label></div><details><summary>Más detalles</summary><div class="sale-inline-form" style="padding-top:12px"><label>Tipo de venta<select id="sale-type"><option ${draft.sale_type==='Mayorista'?'selected':''}>Mayorista</option><option ${draft.sale_type==='Minorista'?'selected':''}>Minorista</option></select></label><label>Observaciones<input id="sale-notes" maxlength="500" value="${esc(draft.notes)}"></label></div></details><div class="sale-totals"><span id="sale-kg">Peso pendiente</span><span>Subtotal: <strong id="sale-subtotal">Por calcular</strong></span></div></div><div class="sale-actions"><div class="summary-row"><span>Total</span><strong id="sale-grand-total">Por calcular</strong></div><button class="button primary" id="sale-attend">Guardar pedido pendiente</button><button class="button secondary" id="sale-save-pending">Guardar para después</button></div>`;
     $('#sale-back-client').onclick=()=>{collectSale();showClients();};
     $('#sale-less').onclick=()=>{if(draft.count<=1)return;collectSale();draft.count--;draft.weights.pop();showSale();};
     $('#sale-more').onclick=()=>{if(draft.count>=100){notify('Máximo 100 jabas');return;}collectSale();draft.count++;draft.weights.push('');showSale();};
@@ -476,6 +489,7 @@ document.addEventListener('click',e=>{
   const t=e.target,get=(attr)=>t.closest(`[data-${attr}]`)?.dataset;
   if(t.closest('[data-logout]')){auth.signOut();return;}
   if(get('page')&&!t.closest('[data-role]'))nav(get('page').page);
+  if(get('edit-product'))openProduct(get('edit-product').editProduct);
   if(get('open'))({order:openOrder,client:openClient,product:openProduct,user:openUser}[get('open').open])();
   if(get('detail'))showOrder(get('detail').detail);
   if(get('weigh'))weighOrder(get('weigh').weigh);
