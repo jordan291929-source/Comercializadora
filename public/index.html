@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Comercializadora Viviana</title>
+  <style>
+[hidden]{display:none!important}
+:root{font-family:'DM Sans',Arial,sans-serif;color:#17233d;background:#f6f7fa;font-synthesis:none}*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}button{cursor:pointer}h1,h2,h3,p{margin-top:0}h1,h2,h3{font-family:Manrope,Arial,sans-serif}h1{font-size:29px;letter-spacing:-.9px;margin:3px 0 0}h2{letter-spacing:-.5px}p{line-height:1.5}.muted,.section-heading p,.panel-heading p{color:#788397}.eyebrow,.nav-label{font-size:11px;font-weight:800;letter-spacing:1.4px;color:#8993a5}.layout{min-height:100vh;display:flex}.sidebar{width:244px;background:#13213b;color:#d3d9e4;display:flex;flex-direction:column;flex:none}.brand{display:flex;align-items:center;gap:12px;padding:27px 22px 35px;color:white;line-height:1.25}.brand strong{font:800 15px Manrope}.brand small,.sidebar-bottom small{display:block;font-size:9px;letter-spacing:1.3px;color:#8d9bb3;margin-top:6px}.brand-icon{display:inline-grid;place-items:center;border-radius:11px;width:39px;height:39px;background:#eabf67;color:#1e2b40;font-weight:900;flex:none}.nav-label{padding:0 24px;margin-bottom:12px;color:#7f8da8}.sidebar nav{display:grid;gap:5px;padding:0 12px}.sidebar nav button{border:0;border-radius:8px;text-align:left;padding:13px 15px;background:none;color:#acb9cc;font-weight:600}.sidebar nav button span{font-size:18px;margin-right:13px;vertical-align:-1px}.sidebar nav button:hover,.sidebar nav button.active{color:#fff;background:#263855}.sidebar-bottom{margin:auto 14px 16px;padding:17px 7px 0;border-top:1px solid #33435e;display:flex;align-items:center;gap:10px;font-size:12px}.avatar{background:#384964;border-radius:50%;width:34px;height:34px;display:grid;place-items:center;font-size:11px;color:#fff}.sidebar-bottom button{margin-left:auto;color:#b1c0d6;background:none;border:0;font-size:20px}.main{flex:1;min-width:0}.topbar{height:100px;padding:22px 40px;background:#fff;border-bottom:1px solid #ebedf1;display:flex;justify-content:space-between;align-items:center}.top-actions{display:flex;align-items:center;gap:24px;color:#778294;font-size:13px}.content{max-width:1380px;margin:auto;padding:32px 40px}.button{border:1px solid #d8dde5;border-radius:8px;background:#fff;color:#25334a;padding:11px 17px;font-weight:700;white-space:nowrap}.button:hover{filter:brightness(.96)}.button.primary{background:#1e5d47;color:#fff;border-color:#1e5d47}.button.light{background:#fff;color:#1e5d47;border-color:#fff}.button.full{width:100%}.text-button{border:0;background:none;color:#22644d;font-weight:700}.welcome{background:#1e5d47;color:white;border-radius:13px;padding:27px 32px;display:flex;justify-content:space-between;align-items:center;gap:20px}.welcome .eyebrow{color:#a4d4be}.welcome h2{font-size:23px;margin:9px 0}.welcome p{color:#d4e9de;margin:0}.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin:22px 0}.stat{background:#fff;border:1px solid #e9ecf0;border-radius:10px;padding:21px;min-height:110px}.stat .label{color:#7d8797;font-size:12px;font-weight:700}.stat .number{display:block;font:800 26px Manrope;margin-top:13px;letter-spacing:-1px}.stat .hint{font-size:11px;color:#a0a9b6;margin-top:4px}.panel{background:#fff;border:1px solid #e9ecf0;border-radius:11px;overflow:hidden}.panel-heading{padding:23px 25px 12px;display:flex;justify-content:space-between;align-items:flex-start}.panel-heading h2,.section-heading h2{font-size:18px;margin:0 0 5px}.panel-heading p,.section-heading p{font-size:13px;margin:0}.section-heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}.filters{display:flex;gap:10px;padding:20px}.filters input{flex:1}.filters select{width:210px}input,select,textarea{border:1px solid #dce1e8;border-radius:7px;padding:10px 12px;background:white;color:#243147;outline:none;min-width:0}input:focus,select:focus,textarea:focus{border-color:#4e9476;box-shadow:0 0 0 3px #e3f2e9}table{width:100%;border-collapse:collapse;text-align:left}th{background:#fafbfc;color:#8490a0;text-transform:uppercase;font-size:10px;letter-spacing:1px;padding:14px 22px;font-weight:800}td{border-top:1px solid #eff1f4;padding:16px 22px;font-size:13px;vertical-align:middle}td strong{display:block}td small{display:block;color:#8b95a3;margin-top:4px}tr:hover td{background:#fcfdfd}.pill{display:inline-block;border-radius:20px;padding:5px 9px;font-size:11px;font-weight:800;background:#f7eecd;color:#987321;white-space:nowrap}.pill.preparacion{background:#e4efff;color:#3b6ba4}.pill.listo{background:#e8e8ff;color:#5f5db1}.pill.atendido{background:#e0f3e8;color:#207748}.pill.cancelado{background:#fce5e3;color:#a84946}.row-actions{display:flex;gap:6px;flex-wrap:wrap}.mini-button{border:1px solid #dce5df;background:#fff;color:#1d6249;padding:7px 10px;border-radius:6px;font-size:11px;font-weight:800}.mini-button:hover{background:#eaf4ee}.empty{padding:45px 20px;text-align:center;color:#8692a2}.empty strong{display:block;color:#27354b;margin-bottom:5px}.error{color:#bd3e36;font-size:12px;min-height:18px}dialog{width:min(650px,calc(100vw - 24px));max-height:calc(100vh - 36px);border:0;border-radius:12px;box-shadow:0 24px 70px #0d1b304d;padding:0;overflow:auto}dialog::backdrop{background:#10203899}.modal-head{display:flex;justify-content:space-between;align-items:start;padding:24px 26px 14px;border-bottom:1px solid #edf0f2}.modal-head h2{font-size:20px;margin:4px 0}.icon-button{border:0;background:#f1f3f5;border-radius:50%;width:30px;height:30px;font-size:21px;color:#59677a}.modal-content{padding:22px 26px 26px}.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field-grid label,.modal-content>label,.auth-card label{font-size:12px;color:#5e6a7c;font-weight:700;display:grid;gap:7px}.field-grid .wide{grid-column:span 2}.field-grid input,.field-grid select,.field-grid textarea,.auth-card input{width:100%}.modal-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:23px}.jaba-header{display:flex;justify-content:space-between;align-items:center;margin:22px 0 9px}.jaba-header h3{font-size:14px;margin:0}.jaba-row{display:flex;align-items:center;gap:10px;margin:8px 0}.jaba-row span{font-size:12px;color:#6e7a8a;width:48px}.jaba-row input{flex:1}.jaba-row button{border:0;background:#f7f2f0;color:#b2524c;border-radius:6px;font-size:18px;height:38px;width:38px}.calc{background:#f3f7f4;border-radius:8px;padding:16px 19px;margin-top:18px;display:flex;justify-content:space-between;gap:12px}.calc strong{font:800 22px Manrope;color:#18563f}.calc small{display:block;color:#718174;font-size:12px;margin-top:4px}.detail-list{display:grid;grid-template-columns:1fr 1fr;gap:17px;margin:8px 0 20px}.detail-list div{border-bottom:1px solid #edf0f2;padding-bottom:8px}.detail-list small{display:block;color:#8a95a3;margin-bottom:4px}.detail-list strong{font-size:13px}.detail-total{background:#f3f7f4;padding:16px;border-radius:8px;display:flex;justify-content:space-between;align-items:center;margin:16px 0}.detail-total strong{font:800 23px Manrope;color:#18563f}.auth-shell{min-height:100vh;display:grid;place-items:center;padding:20px;background:#f2f5f4}.auth-card{width:min(390px,100%);padding:32px;background:#fff;border-radius:13px;box-shadow:0 8px 35px #172a3810;display:grid;gap:17px}.auth-card h1{margin:-3px 0}.auth-card .eyebrow{margin:0}.auth-card .muted{margin:-12px 0 4px;font-size:13px}#toast{position:fixed;bottom:20px;right:20px;padding:12px 18px;background:#183d2e;color:white;border-radius:8px;box-shadow:0 8px 24px #0002;display:none;font-size:13px;z-index:10}#toast.visible{display:block}@media(max-width:1100px){.stats{grid-template-columns:repeat(3,1fr)}.topbar,.content{padding-left:25px;padding-right:25px}}@media(max-width:760px){.layout{display:block}.sidebar{width:100%;height:auto}.brand{padding:14px 18px}.sidebar .nav-label,.sidebar-bottom{display:none}.sidebar nav{display:flex;overflow:auto;padding:0 8px 9px}.sidebar nav button{white-space:nowrap;padding:10px}.sidebar nav button span{margin-right:5px}.topbar{height:auto;padding:18px;align-items:flex-start}.topbar h1{font-size:23px}.top-actions #today{display:none}.content{padding:18px}.welcome{padding:20px;align-items:flex-start;flex-direction:column}.stats{grid-template-columns:repeat(2,1fr)}.stat{padding:15px}.stat .number{font-size:21px}.section-heading{gap:10px}.panel{overflow:auto}table{min-width:750px}.filters{min-width:520px}.field-grid{grid-template-columns:1fr}.field-grid .wide{grid-column:auto}}@media(max-width:410px){.top-actions .button{font-size:11px;padding:10px}.stats{gap:8px}.stat{min-height:95px}}
+.ver-chip{display:inline-block;margin-top:7px;font-size:10px;font-weight:700;background:#263855;color:#eabf67;border:0;border-radius:6px;padding:2px 7px}.auth-links{display:flex;justify-content:space-between;gap:10px;margin-top:-6px}.auth-link{background:none;border:0;color:#2d5f8a;font-size:12px;padding:0}.mobile-only{display:none}@media(max-width:760px){.top-actions .mobile-only{display:inline-flex}}
+  </style>
+</head>
+<body>
+  <div id="loading" class="auth-shell"><p class="muted">Cargando…</p></div>
+  <div id="auth" class="auth-shell" hidden>
+    <form id="auth-form" class="auth-card">
+      <div class="brand-icon">CV</div>
+      <p class="eyebrow">COMERCIALIZADORA VIVIANA</p>
+      <h1 id="auth-title">Ingresar</h1>
+      <p id="auth-subtitle" class="muted">Control diario de pedidos de huevo.</p>
+      <label id="name-field" hidden>Nombre<input name="nombre" autocomplete="name" maxlength="80"></label>
+      <label>Correo<input name="email" type="email" autocomplete="email" required></label>
+      <label>Contraseña<input name="password" type="password" autocomplete="current-password" minlength="6" required></label>
+      <button class="button primary full" type="submit" id="auth-submit">Ingresar</button>
+      <div class="auth-links"><button type="button" class="auth-link" id="auth-toggle">Crear cuenta</button><button type="button" class="auth-link" id="auth-reset">¿Olvidaste tu contraseña?</button></div>
+      <p id="auth-error" class="error" role="alert"></p>
+    </form>
+  </div>
+  <div id="pending" class="auth-shell" hidden>
+    <div class="auth-card">
+      <div class="brand-icon">CV</div>
+      <p class="eyebrow">COMERCIALIZADORA VIVIANA</p>
+      <h1>Cuenta pendiente de aprobación</h1>
+      <p class="muted">Tu cuenta <strong id="pending-email"></strong> ya está creada. El administrador debe asignarte un rol para que puedas entrar. Esta pantalla se actualiza sola.</p>
+      <button class="button full" type="button" data-logout>Cerrar sesión</button>
+    </div>
+  </div>
+  <div id="app" class="layout" hidden>
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-icon">CV</span><span><strong>Comercializadora<br>Viviana</strong><small>CONTROL COMERCIAL</small><button type="button" class="ver-chip" id="ver-chip"></button></span></div>
+      <div class="nav-label">ESPACIO DE TRABAJO</div>
+      <nav id="nav">
+        <button data-page="inicio" class="active"><span>▦</span> Inicio</button>
+        <button data-page="pedidos"><span>▤</span> Pedidos</button>
+        <button data-page="clientes"><span>♙</span> Clientes</button>
+        <button data-page="productos"><span>◫</span> Productos</button>
+        <button data-page="usuarios" id="nav-usuarios" hidden><span>⚿</span> Usuarios</button>
+      </nav>
+      <div class="sidebar-bottom"><div class="avatar">CV</div><div><strong id="username"></strong><small id="user-role"></small></div><button data-logout title="Cerrar sesión">↪</button></div>
+    </aside>
+    <main class="main">
+      <header class="topbar"><div><div class="eyebrow">GESTIÓN DE VENTAS</div><h1 id="page-title">Inicio</h1></div><div class="top-actions"><span id="today"></span><button class="button primary" data-open="order">+ Nuevo pedido</button><button class="button mobile-only" data-logout>Salir</button></div></header>
+      <div class="content">
+        <section id="page-inicio" class="page">
+          <div class="welcome"><div><span class="eyebrow">RESUMEN DEL NEGOCIO</span><h2>Todo lo importante, de un vistazo.</h2><p>Controla tus pedidos de hoy y atiende cada venta con el peso real de las jabas.</p></div><button class="button light" data-open="order">+ Registrar pedido</button></div>
+          <div id="stats" class="stats"></div>
+          <div class="panel"><div class="panel-heading"><div><h2>Pedidos recientes</h2><p>Revisa lo pendiente y continúa la atención.</p></div><button class="text-button" data-page="pedidos">Ver todos →</button></div><div id="recent-orders"></div></div>
+        </section>
+        <section id="page-pedidos" class="page" hidden><div class="section-heading"><div><h2>Pedidos</h2><p>Del pedido a la atención, sin registrar dos veces la venta.</p></div><button class="button primary" data-open="order">+ Nuevo pedido</button></div><div class="panel"><div class="filters"><input id="order-search" placeholder="Buscar por cliente o código"><select id="status-filter"><option value="">Todos los estados</option><option>Pendiente</option><option>En preparación</option><option>Listo</option><option>Atendido</option><option>Cancelado</option></select></div><div id="orders-table"></div></div></section>
+        <section id="page-clientes" class="page" hidden><div class="section-heading"><div><h2>Clientes</h2><p>Información de contacto e historial de compras.</p></div><button class="button primary" data-open="client">+ Nuevo cliente</button></div><div class="panel" id="clients-table"></div></section>
+        <section id="page-productos" class="page" hidden><div class="section-heading"><div><h2>Productos</h2><p>El huevo es el centro de la operación; el catálogo puede crecer.</p></div><button class="button primary" data-open="product">+ Nuevo producto</button></div><div class="panel" id="products-table"></div></section>
+        <section id="page-usuarios" class="page" hidden><div class="section-heading"><div><h2>Usuarios</h2><p>Aprueba las cuentas nuevas y asigna su rol. Sin rol no pueden ver nada.</p></div></div><div class="panel" id="users-table"></div></section>
+      </div>
+    </main>
+  </div>
+  <dialog id="modal"><div class="modal-head"><div><p class="eyebrow" id="modal-eyebrow"></p><h2 id="modal-title"></h2></div><button id="close-modal" class="icon-button" aria-label="Cerrar">×</button></div><div id="modal-body"></div></dialog>
+  <div id="toast" role="status"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+'use strict';
+const APP_VERSION='2.00';
+const CHANGELOG=[
+  {v:'2.00',f:'2026-10-07',t:'Migración a Firebase (Hosting + Auth + Realtime Database). Registro con aprobación del administrador, roles admin/ventas, datos en tiempo real entre equipos y PDF generado en el navegador.'},
+  {v:'1.00',f:'2026-10-01',t:'Primera fase: clientes, productos por peso, pedidos por jabas, estados, PDF interno y WhatsApp (servidor Python).'}
+];
+const ROLES={admin:'Administrador',ventas:'Ventas'};
+
+const $=(selector)=>document.querySelector(selector);
+const esc=(value)=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=(cents)=>'S/ '+(cents/100).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2});
+const date=(value)=>value?new Date(value).toLocaleString('es-PE',{dateStyle:'short',timeStyle:'short'}):'—';
+// Perú no tiene horario de verano: la hora del negocio es siempre UTC-5.
+const nowLima=()=>new Date(Date.now()-5*3600e3).toISOString().slice(0,19)+'-05:00';
+const state={user:null,profile:null,orders:[],clients:[],products:[],users:[],page:'inicio',mode:'login'};
+let auth,db,profileOff=null,dataOffs=[],dataRole=null,pendingName='';
+
+function notify(message){const el=$('#toast');el.textContent=message;el.classList.add('visible');clearTimeout(notify.timer);notify.timer=setTimeout(()=>el.classList.remove('visible'),3500);}
+function openModal(title,eyebrow,html){$('#modal-title').textContent=title;$('#modal-eyebrow').textContent=eyebrow;$('#modal-body').innerHTML=html;if(!$('#modal').open)$('#modal').showModal();}
+function closeModal(){$('#modal').close();}
+const field=(name,label,opts={})=>`<label class="${opts.wide?'wide':''}">${label}<input name="${name}" ${opts.type?`type="${opts.type}"`:''} ${opts.required?'required':''} ${opts.step?`step="${opts.step}"`:''} ${opts.max?`maxlength="${opts.max}"`:''} ${opts.value!==undefined?`value="${esc(opts.value)}"`:''} ${opts.placeholder?`placeholder="${esc(opts.placeholder)}"`:''}></label>`;
+const footer=(label)=>`<div class="modal-footer"><button type="button" class="button" data-close>Cancelar</button><button class="button primary" type="submit">${label}</button></div>`;
+const listOf=(snap)=>{const out=[];snap.forEach(c=>{out.push({id:c.key,...c.val()})});return out;};
+
+// Números exactos: "10.5" → 10500 g, "6.50" → 650 céntimos. Sin errores de coma flotante.
+function units(value,decimals){const s=String(value??'').trim().replace(',','.');if(!/^\d+(\.\d+)?$/.test(s))return null;const [i,f='']=s.split('.');if(f.length>decimals)return null;return Number(i)*10**decimals+Number(f.padEnd(decimals,'0'));}
+function parseWeights(values,allowMissing){return values.map(v=>{const s=String(v??'').trim();if(!s){if(allowMissing)return'';throw new Error('Registra el peso real de todas las jabas');}const g=units(s,3);if(g===null)throw new Error('Peso inválido: usa números con máximo tres decimales');if(g<1)throw new Error('El peso de cada jaba debe ser mayor que cero');return String(g/1000);});}
+function priceCents(value,{allowZero=false}={}){const c=units(value,2);if(c===null)throw new Error('Precio inválido: usa como máximo dos decimales');if(!allowZero&&c===0)throw new Error('Ingresa un precio por kg mayor que cero');return c;}
+function calc(weights,price){if(weights.some(w=>!w))return{grams:0,total:0};const grams=weights.reduce((a,w)=>a+units(w,3),0);return{grams,total:Math.round(grams*price/1000)};}
+const pendingWeights=(o)=>o.weights.some(w=>!w);
+
+// ---------- Arranque y sesión ----------
+async function start(){
+  $('#ver-chip').textContent='v'+APP_VERSION;
+  const local=['localhost','127.0.0.1'].includes(location.hostname);
+  const response=await fetch('/__/firebase/init.json');
+  if(!response.ok)throw new Error('Abre la aplicación desde Firebase Hosting (firebase deploy o firebase emulators:start).');
+  const config=await response.json();
+  if(local)config.databaseURL=`http://127.0.0.1:9000?ns=${config.projectId}-default-rtdb`;
+  firebase.initializeApp(config);
+  auth=firebase.auth();db=firebase.database();
+  if(local){auth.useEmulator('http://127.0.0.1:9099');db.useEmulator('127.0.0.1',9000);}
+  auth.onAuthStateChanged(user=>onAuth(user).catch(err=>notify(err.message)));
+}
+function show(id){['loading','auth','pending','app'].forEach(x=>$('#'+x).hidden=x!==id);}
+async function onAuth(user){
+  if(profileOff){profileOff();profileOff=null;}
+  detachData();state.user=user;state.profile=null;
+  if(!user){showAuth();return;}
+  show('loading');
+  await ensureProfile(user);
+  const ref=db.ref('usuarios/'+user.uid);
+  const cb=ref.on('value',snap=>{state.profile=snap.val()||{};route();},err=>notify(err.message));
+  profileOff=()=>ref.off('value',cb);
+}
+async function ensureProfile(user){
+  const ref=db.ref('usuarios/'+user.uid);
+  const snap=await ref.once('value');
+  if(!snap.exists())await ref.set({email:user.email,nombre:(pendingName||user.displayName||user.email.split('@')[0]).slice(0,80),creado:nowLima()});
+  // La primera cuenta del proyecto queda como dueña y administradora.
+  const owner=await db.ref('config/owner').transaction(cur=>cur===null?user.uid:undefined);
+  if(owner.snapshot.val()===user.uid&&!(snap.val()||{}).rol)await ref.child('rol').set('admin');
+}
+function route(){
+  const rol=state.profile?.rol;
+  if(!ROLES[rol]){detachData();$('#pending-email').textContent=state.user.email;show('pending');return;}
+  if(dataRole!==rol){detachData();attachData(rol);}
+  $('#username').textContent=state.profile.nombre||state.user.email;
+  $('#user-role').textContent=ROLES[rol];
+  $('#nav-usuarios').hidden=rol!=='admin';
+  if(state.page==='usuarios'&&rol!=='admin')state.page='inicio';
+  $('#today').textContent=new Date().toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long'});
+  show('app');nav(state.page);
+}
+function listen(path,fn){const ref=db.ref(path);const cb=ref.on('value',snap=>{fn(snap);render();},err=>notify(err.message));dataOffs.push(()=>ref.off('value',cb));}
+function attachData(rol){
+  dataRole=rol;
+  listen('clientes',s=>state.clients=listOf(s).sort((a,b)=>a.name.localeCompare(b.name,'es')));
+  listen('productos',s=>state.products=listOf(s).filter(p=>p.active!==false).sort((a,b)=>(a.category+a.name).localeCompare(b.category+b.name,'es')));
+  listen('pedidos',s=>state.orders=listOf(s).map(o=>({...o,weights:o.weights||[]})).sort((a,b)=>b.created_at.localeCompare(a.created_at)||b.code.localeCompare(a.code)));
+  if(rol==='admin')listen('usuarios',s=>state.users=listOf(s));
+  db.ref('productos/huevo-comercial').transaction(cur=>cur===null?{name:'Huevo comercial',category:'Huevos',unit:'kg',sold_by_weight:true,price_cents:0,active:true}:undefined).catch(()=>{});
+}
+function detachData(){dataOffs.forEach(off=>off());dataOffs=[];dataRole=null;Object.assign(state,{orders:[],clients:[],products:[],users:[]});}
+
+const AUTH_ERRORS={'auth/invalid-credential':'Correo o contraseña incorrectos','auth/wrong-password':'Correo o contraseña incorrectos','auth/user-not-found':'Correo o contraseña incorrectos','auth/invalid-email':'Correo inválido','auth/email-already-in-use':'Ese correo ya tiene una cuenta','auth/weak-password':'La contraseña es muy débil','auth/too-many-requests':'Demasiados intentos. Espera unos minutos.','auth/missing-email':'Escribe tu correo'};
+const authMessage=(err)=>AUTH_ERRORS[err.code]||err.message;
+function showAuth(){
+  const register=state.mode==='register';
+  $('#auth-title').textContent=register?'Crear cuenta':'Ingresar';
+  $('#auth-subtitle').textContent=register?'El administrador aprobará tu cuenta antes de que puedas entrar.':'Control diario de pedidos de huevo.';
+  $('#auth-submit').textContent=register?'Crear cuenta':'Ingresar';
+  $('#auth-toggle').textContent=register?'Ya tengo cuenta':'Crear cuenta';
+  $('#name-field').hidden=!register;$('#auth-form').elements.nombre.required=register;
+  $('#auth-form').elements.password.minLength=register?10:6;
+  $('#auth-form').elements.password.autocomplete=register?'new-password':'current-password';
+  show('auth');
+}
+
+// ---------- Vistas ----------
+function nav(page){state.page=page;document.querySelectorAll('.page').forEach(el=>el.hidden=el.id!==`page-${page}`);document.querySelectorAll('[data-page]').forEach(el=>el.classList.toggle('active',el.dataset.page===page));$('#page-title').textContent={inicio:'Inicio',pedidos:'Pedidos',clientes:'Clientes',productos:'Productos',usuarios:'Usuarios'}[page];render();}
+function statusPill(s){const cls={'En preparación':'preparacion','Listo':'listo','Atendido':'atendido','Cancelado':'cancelado'}[s]||'';return `<span class="pill ${cls}">${esc(s)}</span>`;}
+const nextStatus={'Pendiente':'En preparación','En preparación':'Listo','Listo':'Atendido'};
+function table(headers,rows,empty){if(!rows.length)return `<div class="empty"><strong>${esc(empty)}</strong>Los registros aparecerán aquí.</div>`;return `<table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table>`;}
+function orderRows(orders){return orders.map(o=>`<tr><td><strong>${esc(o.code)}</strong><small>${date(o.created_at)}</small></td><td><strong>${esc(o.client_name)}</strong><small>${esc(o.client_phone)}</small></td><td>${esc(o.product_name)}<small>${o.weights.length} jaba${o.weights.length===1?'':'s'} · ${pendingWeights(o)?'Peso pendiente':(o.weight_grams/1000).toFixed(3)+' kg'}</small></td><td><strong>${pendingWeights(o)?'Por calcular':money(o.total_cents)}</strong></td><td>${statusPill(o.status)}</td><td><div class="row-actions"><button class="mini-button" data-detail="${esc(o.id)}">Ver</button>${nextStatus[o.status]?`<button class="mini-button" data-status="${esc(o.id)}">${o.status==='Listo'?'✓ Atender':'Avanzar'}</button>`:''}</div></td></tr>`);}
+function dashboard(){
+  const today=nowLima().slice(0,10),orders=state.orders;
+  const attended=orders.filter(o=>o.status==='Atendido'&&(o.attended_at||'').startsWith(today));
+  return{orders_today:orders.filter(o=>o.created_at.startsWith(today)).length,pending:orders.filter(o=>!['Atendido','Cancelado'].includes(o.status)).length,attended_today:attended.length,jabas_today:attended.reduce((a,o)=>a+o.weights.length,0),kg_today:attended.reduce((a,o)=>a+o.weight_grams,0)/1000,sales_today_cents:attended.reduce((a,o)=>a+o.total_cents,0)};
+}
+function render(){
+  if($('#app').hidden)return;
+  const d=dashboard();
+  $('#stats').innerHTML=[['Pedidos hoy',d.orders_today,'Registrados'],['Pendientes',d.pending,'Por atender'],['Atendidos hoy',d.attended_today,'Ventas cerradas'],['Jabas vendidas',d.jabas_today,'Hoy'],['Venta del día',money(d.sales_today_cents),`${d.kg_today.toFixed(3)} kg vendidos`]].map(([label,num,hint])=>`<div class="stat"><span class="label">${label}</span><span class="number">${num}</span><span class="hint">${hint}</span></div>`).join('');
+  $('#recent-orders').innerHTML=table(['Pedido','Cliente','Producto','Total','Estado','Acción'],orderRows(state.orders.slice(0,6)),'Todavía no hay pedidos');
+  const term=$('#order-search').value.trim().toLowerCase(),status=$('#status-filter').value;
+  const visible=state.orders.filter(o=>(!term||`${o.code} ${o.client_name}`.toLowerCase().includes(term))&&(!status||o.status===status));
+  $('#orders-table').innerHTML=table(['Pedido','Cliente','Producto','Total','Estado','Acción'],orderRows(visible),'No se encontraron pedidos');
+  $('#clients-table').innerHTML=table(['Cliente','Documento','Teléfono','Distrito','Pedidos'],state.clients.map(c=>`<tr><td><strong>${esc(c.name)}</strong><small>${esc(c.code||'')}</small></td><td>${esc(c.document)||'—'}</td><td>${esc(c.phone)||'—'}</td><td>${esc(c.district)||'—'}</td><td>${state.orders.filter(o=>o.client_id===c.id).length}</td></tr>`),'Todavía no hay clientes');
+  $('#products-table').innerHTML=table(['Producto','Categoría','Unidad','Precio sugerido','Estado'],state.products.map(p=>`<tr><td><strong>${esc(p.name)}</strong></td><td>${esc(p.category)}</td><td>${esc(p.unit)}${p.sold_by_weight?' · venta por peso':''}</td><td>${money(p.price_cents||0)}</td><td><span class="pill atendido">Activo</span></td></tr>`),'Todavía no hay productos');
+  if(state.profile?.rol==='admin'){
+    const users=[...state.users].sort((a,b)=>(a.rol?1:0)-(b.rol?1:0)||(a.creado||'').localeCompare(b.creado||''));
+    $('#users-table').innerHTML=table(['Usuario','Correo','Registrado','Rol'],users.map(u=>`<tr><td><strong>${esc(u.nombre)}</strong>${u.rol?'':'<small>Pendiente de aprobación</small>'}</td><td>${esc(u.email)}</td><td>${date(u.creado)}</td><td><select data-role="${esc(u.id)}" ${u.id===state.user.uid?'disabled title="No puedes cambiar tu propio rol"':''}><option value="" ${u.rol?'':'selected'}>Sin acceso</option>${Object.entries(ROLES).map(([k,v])=>`<option value="${k}" ${u.rol===k?'selected':''}>${v}</option>`).join('')}</select></td></tr>`),'Todavía no hay usuarios');
+  }
+}
+
+// ---------- Formularios ----------
+function submitWith(form,fn){form.onsubmit=async e=>{e.preventDefault();const btn=form.querySelector('[type=submit]');btn.disabled=true;try{await fn(e);}catch(err){notify(err.message);}finally{btn.disabled=false;}};}
+function openClient(){
+  openModal('Nuevo cliente','CLIENTES',`<form id="client-form" class="modal-content"><div class="field-grid">${field('name','Nombre o razón social',{required:true,wide:true,max:150})}${field('document','DNI / RUC',{max:20})}${field('phone','Teléfono',{type:'tel',max:25})}${field('address','Dirección',{wide:true,max:200})}${field('district','Distrito',{max:100})}${field('notes','Observaciones',{wide:true,max:500})}</div>${footer('Guardar cliente')}</form>`);
+  submitWith($('#client-form'),async e=>{
+    const data=Object.fromEntries([...new FormData(e.target)].map(([k,v])=>[k,String(v).trim()]));
+    if(!data.name)throw new Error('Escribe el nombre del cliente');
+    const seq=await db.ref('seq/clientes').transaction(n=>(n||0)+1);
+    await db.ref('clientes').push({...data,code:`CL-${String(seq.snapshot.val()).padStart(4,'0')}`,created_at:nowLima()});
+    closeModal();notify('Cliente registrado');
+  });
+}
+function openProduct(){
+  openModal('Nuevo producto','CATÁLOGO',`<form id="product-form" class="modal-content"><div class="field-grid">${field('name','Nombre del producto',{required:true,wide:true,max:120})}${field('category','Categoría',{value:'Huevos',max:80})}${field('unit','Unidad',{value:'kg',max:30})}<label>Tipo de venta<select name="sold_by_weight"><option value="true">Por peso (kg)</option><option value="false">Por unidad (próxima fase)</option></select></label>${field('price','Precio sugerido S/',{type:'number',step:'.01',value:'0'})}</div><p class="muted" style="font-size:12px;margin-top:16px">Los pedidos por unidad se habilitarán en una fase posterior.</p>${footer('Guardar producto')}</form>`);
+  submitWith($('#product-form'),async e=>{
+    const f=e.target.elements,name=f.name.value.trim();
+    if(!name)throw new Error('Escribe el nombre del producto');
+    if(state.products.some(p=>p.name.toLowerCase()===name.toLowerCase()))throw new Error('El producto ya existe');
+    await db.ref('productos').push({name,category:f.category.value.trim(),unit:f.unit.value.trim(),sold_by_weight:f.sold_by_weight.value==='true',price_cents:priceCents(f.price.value||'0',{allowZero:true}),active:true});
+    closeModal();notify('Producto registrado');
+  });
+}
+function openOrder(){
+  if(!state.clients.length){nav('clientes');openClient();notify('Registra un cliente antes de crear su pedido');return;}
+  const weighted=state.products.filter(p=>p.sold_by_weight);
+  openModal('Nuevo pedido','VENTA DE HUEVO',`<form id="order-form" class="modal-content"><div class="field-grid"><label>Cliente<select name="client_id" required>${state.clients.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}</select></label><label>Producto<select name="product_id" required>${weighted.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')}</select></label><label>Tipo de venta<select name="sale_type"><option>Mayorista</option><option>Minorista</option></select></label>${field('price','Precio por kg (S/)',{type:'number',step:'.01',required:true,value:(weighted[0]?.price_cents||0)/100})}${field('notes','Observaciones',{wide:true,max:500})}</div><div class="jaba-header"><h3>Peso real por jaba</h3><button class="mini-button" type="button" id="add-jaba">+ Agregar jaba</button></div><div id="jabas"></div><div id="calculation" class="calc"></div>${footer('Crear pedido')}</form>`);
+  const form=$('#order-form'),jabas=$('#jabas');
+  function addJaba(value=''){if(jabas.children.length>=100){notify('Máximo 100 jabas por pedido');return;}const row=document.createElement('div');row.className='jaba-row';row.innerHTML=`<span>Jaba</span><input type="number" min="0.001" step="0.001" placeholder="Peso en kg (puede quedar pendiente)" value="${esc(value)}"><button type="button" aria-label="Eliminar jaba">×</button>`;row.querySelector('button').onclick=()=>{row.remove();renumber();calculate();};row.querySelector('input').oninput=calculate;jabas.append(row);renumber();calculate();row.querySelector('input').focus();}
+  function renumber(){jabas.querySelectorAll('.jaba-row span').forEach((el,i)=>el.textContent=`Jaba ${i+1}`);}
+  function calculate(){const inputs=[...jabas.querySelectorAll('input')],values=inputs.map(el=>Number(el.value)||0);const kg=values.reduce((a,b)=>a+b,0),price=Number(form.elements.price.value)||0,pending=inputs.some(el=>!el.value);$('#calculation').innerHTML=`<div><b>${values.length} jaba${values.length===1?'':'s'} · ${pending?'Peso pendiente':kg.toFixed(3)+' kg'}</b><small>Peso promedio: ${pending||!values.length?'Pendiente':(kg/values.length).toFixed(3)+' kg/jaba'}</small></div><div style="text-align:right"><strong>${pending?'Por calcular':money(Math.round(kg*price*100))}</strong><small>Precio: ${money(Math.round(price*100))}/kg</small></div>`;}
+  $('#add-jaba').onclick=()=>addJaba();form.elements.price.oninput=calculate;form.elements.product_id.onchange=()=>{form.elements.price.value=(weighted.find(p=>p.id===form.elements.product_id.value)?.price_cents||0)/100;calculate();};addJaba();
+  submitWith(form,async()=>{
+    const raw=[...jabas.querySelectorAll('input')].map(el=>el.value);
+    if(!raw.length)throw new Error('Agrega al menos una jaba');
+    const client=state.clients.find(c=>c.id===form.elements.client_id.value);
+    const product=weighted.find(p=>p.id===form.elements.product_id.value);
+    if(!client)throw new Error('Cliente no encontrado');
+    if(!product)throw new Error('Producto no encontrado');
+    const weights=parseWeights(raw,true),price=priceCents(form.elements.price.value),{grams,total}=calc(weights,price);
+    const seq=await db.ref('seq/pedidos').transaction(n=>(n||0)+1);
+    const created=nowLima(),ref=db.ref('pedidos').push();
+    await ref.set({code:`PED-${created.slice(0,4)}-${String(seq.snapshot.val()).padStart(5,'0')}`,client_id:client.id,client_name:client.name,client_phone:client.phone||'',product_id:product.id,product_name:product.name,created_by:state.user.uid,created_by_name:state.profile.nombre||state.user.email,created_at:created,status:'Pendiente',sale_type:form.elements.sale_type.value,notes:form.elements.notes.value.trim(),weights,price_cents:price,weight_grams:grams,total_cents:total});
+    closeModal();nav('pedidos');showOrder(ref.key);notify('Pedido registrado');
+  });
+}
+function whatsapp(o){const name=o.client_name.split(' ')[0];const detail=`Hola ${name}, te compartimos el detalle de tu pedido:\n\nOrden: OS-${o.code.slice(4)}\nProducto: ${o.product_name}\nJabas: ${o.weights.length}\nPeso total: ${(o.weight_grams/1000).toFixed(3)} kg\nPrecio: ${money(o.price_cents)}/kg\nTotal: ${money(o.total_cents)}\n\nGracias por tu compra.`;const digits=(o.client_phone||'').replace(/\D/g,'');return `https://wa.me/${digits.startsWith('51')?digits:digits?'51'+digits:''}?text=${encodeURIComponent(detail)}`;}
+function showOrder(id){
+  const o=state.orders.find(x=>x.id===id);if(!o)return;
+  const pending=pendingWeights(o);
+  openModal(o.code,'DETALLE DEL PEDIDO',`<div class="modal-content"><div class="detail-list"><div><small>Cliente</small><strong>${esc(o.client_name)}</strong></div><div><small>Estado</small>${statusPill(o.status)}</div><div><small>Registrado</small><strong>${date(o.created_at)}</strong></div><div><small>Atendido</small><strong>${date(o.attended_at)}</strong></div><div><small>Producto</small><strong>${esc(o.product_name)}</strong></div><div><small>Registrado por</small><strong>${esc(o.created_by_name)}</strong></div></div><h3 style="font-size:14px">Peso de las jabas</h3><div class="detail-list">${o.weights.map((w,i)=>`<div><small>Jaba ${i+1}</small><strong>${w?esc(w)+' kg':'Pendiente'}</strong></div>`).join('')}</div><div class="detail-total"><div><small>${pending?'Peso pendiente':(o.weight_grams/1000).toFixed(3)+' kg'} × ${money(o.price_cents)}/kg</small><br><b>Total de la venta</b></div><strong>${pending?'Por calcular':money(o.total_cents)}</strong></div>${o.notes?`<p class="muted">${esc(o.notes)}</p>`:''}<div class="modal-footer" style="flex-wrap:wrap">${o.status==='Atendido'?`<button class="button" data-pdf="${esc(o.id)}">↓ Descargar PDF</button><a class="button primary" href="${esc(whatsapp(o))}" target="_blank" rel="noopener">Compartir por WhatsApp</a>`:''}${nextStatus[o.status]?`<button class="button" data-weigh="${esc(o.id)}">Registrar peso real</button><button class="button primary" data-status="${esc(o.id)}">${o.status==='Listo'?'✓ Marcar como atendido':'Pasar a '+nextStatus[o.status]}</button><button class="button" data-cancel="${esc(o.id)}">Cancelar</button>`:''}</div>${o.status==='Atendido'?'<p class="muted" style="font-size:11px;margin-top:15px">Sustento interno: no reemplaza boleta ni factura electrónica. El PDF se descarga aquí; WhatsApp comparte el resumen del pedido.</p>':''}</div>`);
+}
+function weighOrder(id){
+  const o=state.orders.find(x=>x.id===id);if(!o)return;
+  openModal('Registrar peso real','PESAJE DE JABAS',`<form id="weigh-form" class="modal-content"><p class="muted">Ingresa el peso medido de cada jaba antes de cerrar la venta.</p><div class="field-grid">${o.weights.map((w,i)=>field(`weight${i}`,`Jaba ${i+1} · kg`,{type:'number',step:'.001',required:true,value:w||''})).join('')}</div>${footer('Guardar pesaje')}</form>`);
+  submitWith($('#weigh-form'),async e=>{
+    const weights=parseWeights(o.weights.map((_,i)=>e.target.elements[`weight${i}`].value),false),{grams,total}=calc(weights,o.price_cents);
+    await db.ref('pedidos/'+id).update({weights,weight_grams:grams,total_cents:total});
+    showOrder(id);notify('Peso real registrado');
+  });
+}
+async function advance(id){
+  const o=state.orders.find(x=>x.id===id);if(!o||!nextStatus[o.status])return;
+  const status=nextStatus[o.status];
+  if(status==='Atendido'&&pendingWeights(o)){notify('Registra el peso real de todas las jabas antes de atender');return;}
+  try{await db.ref('pedidos/'+id).update(status==='Atendido'?{status,attended_at:nowLima()}:{status});closeModal();notify('Pedido actualizado');}catch(err){notify(err.message);}
+}
+async function cancelOrder(id){if(!confirm('¿Cancelar este pedido?'))return;try{await db.ref('pedidos/'+id).update({status:'Cancelado'});closeModal();notify('Pedido cancelado');}catch(err){notify(err.message);}}
+async function setRole(uid,rol){try{await db.ref(`usuarios/${uid}/rol`).set(rol||null);notify(rol?'Rol asignado':'Acceso retirado');}catch(err){notify(err.message);render();}}
+function downloadPdf(id){
+  const o=state.orders.find(x=>x.id===id);if(!o||o.status!=='Atendido')return;
+  const doc=new window.jspdf.jsPDF({unit:'pt',format:'a4'});
+  let y=60;
+  const line=(text,size=11,gap=25)=>{doc.setFont('helvetica','normal');doc.setFontSize(size);doc.text(text,50,y);y+=gap;if(y>770){doc.addPage();y=60;}};
+  doc.setProperties({title:`Orden de servicio ${o.code}`});
+  line('COMERCIALIZADORA VIVIANA',17,38);
+  line('ORDEN DE SERVICIO / SUSTENTO INTERNO',12,34);
+  line(`N. OS-${o.code.slice(4)}`);
+  line(`Pedido: ${o.code}`);
+  line(`Cliente: ${o.client_name}`);
+  line(`Fecha de atención: ${o.attended_at.slice(0,19).replace('T',' ')}`);
+  line(`Producto: ${o.product_name}`);
+  line(`Jabas: ${o.weights.length}`);
+  o.weights.forEach((w,i)=>line(`  Jaba ${i+1}: ${w} kg`,10,18));
+  line(`Peso total: ${(o.weight_grams/1000).toFixed(3)} kg`);
+  line(`Precio: S/ ${(o.price_cents/100).toFixed(2)} por kg`);
+  line(`TOTAL: S/ ${(o.total_cents/100).toFixed(2)}`,15,32);
+  line('Estado: ATENDIDO');
+  line('Documento interno. No reemplaza boleta ni factura electrónica.',9);
+  doc.save(`OS-${o.code.slice(4)}.pdf`);
+}
+function showChangelog(){openModal('Versión '+APP_VERSION,'NOVEDADES',`<div class="modal-content">${CHANGELOG.map(c=>`<div class="detail-list" style="grid-template-columns:1fr"><div><small>v${esc(c.v)} · ${esc(c.f)}</small><strong>${esc(c.t)}</strong></div></div>`).join('')}</div>`);}
+
+// ---------- Eventos ----------
+$('#auth-form').onsubmit=async e=>{
+  e.preventDefault();const f=e.target.elements;$('#auth-error').textContent='';
+  try{
+    if(state.mode==='register'){if(!f.nombre.value.trim())throw new Error('Escribe tu nombre');pendingName=f.nombre.value.trim();await auth.createUserWithEmailAndPassword(f.email.value.trim(),f.password.value);}
+    else await auth.signInWithEmailAndPassword(f.email.value.trim(),f.password.value);
+    f.password.value='';
+  }catch(err){$('#auth-error').textContent=authMessage(err);}
+};
+$('#auth-toggle').onclick=()=>{state.mode=state.mode==='login'?'register':'login';$('#auth-error').textContent='';showAuth();};
+$('#auth-reset').onclick=async()=>{const email=$('#auth-form').elements.email.value.trim();if(!email){$('#auth-error').textContent='Escribe tu correo y vuelve a pulsar «¿Olvidaste tu contraseña?»';return;}try{await auth.sendPasswordResetEmail(email);$('#auth-error').textContent='';notify('Te enviamos un correo para cambiar la contraseña');}catch(err){$('#auth-error').textContent=authMessage(err);}};
+$('#close-modal').onclick=closeModal;$('#order-search').oninput=render;$('#status-filter').onchange=render;$('#ver-chip').onclick=showChangelog;
+document.addEventListener('change',e=>{const role=e.target.closest('[data-role]');if(role)setRole(role.dataset.role,role.value);});
+document.addEventListener('click',e=>{
+  const t=e.target,get=(attr)=>t.closest(`[data-${attr}]`)?.dataset;
+  if(t.closest('[data-logout]')){auth.signOut();return;}
+  if(get('page')&&!t.closest('[data-role]'))nav(get('page').page);
+  if(get('open'))({order:openOrder,client:openClient,product:openProduct}[get('open').open])();
+  if(get('detail'))showOrder(get('detail').detail);
+  if(get('weigh'))weighOrder(get('weigh').weigh);
+  if(get('status'))advance(get('status').status);
+  if(get('cancel'))cancelOrder(get('cancel').cancel);
+  if(get('pdf'))downloadPdf(get('pdf').pdf);
+  if(t.closest('[data-close]'))closeModal();
+});
+start().catch(err=>{$('#loading').innerHTML=`<p class="error">${esc(err.message)}</p>`;});
+  </script>
+</body>
+</html>
