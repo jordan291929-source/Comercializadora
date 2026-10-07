@@ -204,6 +204,24 @@
           ".validate": false
         }
       }
+    },
+    "notas": {
+      "$token": {
+        ".read": true,
+        ".write": "auth != null && root.child('usuarios/' + auth.uid + '/rol').exists() && !data.exists()",
+        ".validate": "$token.length >= 20 && newData.hasChildren(['pedido', 'code', 'total_cents', 'weights', 'creado']) && newData.child('pedido').isString() && (newData.parent().parent().child('pedidos/' + newData.child('pedido').val()).child('status').val() === 'Atendido' || newData.parent().parent().child('pedidos/' + newData.child('pedido').val()).child('status').val() === 'Anulado') && newData.child('total_cents').val() === newData.parent().parent().child('pedidos/' + newData.child('pedido').val()).child('total_cents').val() && newData.child('code').val() === newData.parent().parent().child('pedidos/' + newData.child('pedido').val()).child('code').val()",
+        "anulada": {
+          ".write": "auth != null && root.child('usuarios/' + auth.uid + '/rol').exists()",
+          ".validate": "newData.val() === true"
+        }
+      }
+    },
+    "nota_link": {
+      ".read": "auth != null && root.child('usuarios/' + auth.uid + '/rol').exists()",
+      "$pedido": {
+        ".write": "auth != null && root.child('usuarios/' + auth.uid + '/rol').exists() && !data.exists()",
+        ".validate": "newData.isString() && newData.val().length >= 20 && newData.parent().parent().child('notas/' + newData.val() + '/pedido').val() === $pedido"
+      }
     }
   }
 }
