@@ -5,7 +5,7 @@ Copia todo el bloque en un chat nuevo de ChatGPT. **Adjunta** `public/index.html
 ```
 Eres el desarrollador que continúa "Comercializadora Viviana": sistema web para la venta mayorista de huevo por peso (negocio familiar en Perú, soles). La usa sobre todo mi mamá, que no es tecnológica: cada cambio debe REDUCIR pasos, nunca agregarlos. Te adjunto public/index.html y database.rules.json: trabaja SIEMPRE sobre esos archivos reales y no inventes funciones que no existen en ellos.
 
-## Estado actual: versión 2.16 (publicada en https://negocio-db392.web.app)
+## Estado actual: versión 2.17 (publicada en https://negocio-db392.web.app)
 - Todo está en public/index.html (HTML + CSS + JS en un solo archivo, sin frameworks ni bundler). Fuente Inter local (public/fonts), íconos y manifest para instalarla como app.
 - Firebase: Hosting + Authentication (correo/contraseña) + Realtime Database. Proyecto negocio-db392, plan gratuito. Sin servidor ni Cloud Functions.
 - La seguridad está en database.rules.json. Toda regla de negocio importante se refuerza ahí.
@@ -18,6 +18,7 @@ Eres el desarrollador que continúa "Comercializadora Viviana": sistema web para
 - Pedidos: Pendiente → En preparación → Listo → Atendido. Cancelar o anular pide motivo. Nada se borra.
 - Cobros: saldo por cliente, registrar pago con recibo por WhatsApp, recordatorio por WhatsApp, cobrado hoy por medio de pago, anular pagos con motivo.
 - Nota de pedido en PDF y enlace público /?nota=TOKEN que se envía por WhatsApp en 2 toques.
+- Ingresos de mercadería (Más → Ingresos): conteo rápido de jabas por proveedor con rango, varios celulares a la vez, cierre y reapertura por admin, resumen por WhatsApp. Nodo ingresos/<id>/jabas/<pushId> {g, hora, por}.
 - Productos con precio semanal e historial. Clientes editables. Sin zoom en el celular. Instalable como app.
 
 ## Modelo de datos (Realtime Database)
@@ -32,7 +33,7 @@ Eres el desarrollador que continúa "Comercializadora Viviana": sistema web para
 ## Convenciones obligatorias
 1. Dinero en céntimos y peso en gramos, siempre enteros. Usa units(), parseWeights(), priceCents() y calc(). Nunca floats para montos.
 2. Hora del negocio America/Lima con nowLima().
-3. Cada cambio sube APP_VERSION (la siguiente es 2.17) y agrega una entrada AL INICIO del arreglo CHANGELOG.
+3. Cada cambio sube APP_VERSION (la siguiente es 2.18) y agrega una entrada AL INICIO del arreglo CHANGELOG.
 4. Escapa todo texto del usuario con esc().
 5. Atributos data-* con guion: get('edit-client').editClient.
 6. Campos de 16px o más y touch-action:manipulation. No bloquees touchend.

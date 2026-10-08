@@ -18,6 +18,7 @@ Sistema de ventas mayoristas de huevo por peso (negocio familiar en Perú, soles
 - `abonos/<id>`: pagos de clientes (client_id, monto_cents, metodo, fecha, por, pedido opcional = a cuenta). Solo se escriben una vez; se pueden anular con motivo.
 - `notas/<token>` (lectura pública por token, una sola escritura) y `nota_link/<pedidoId>`: nota de pedido que se manda por WhatsApp como enlace `/?nota=TOKEN`.
 - `seq/pedidos`, `seq/clientes`: contadores que suben de 1 en 1.
+- `ingresos/<id>`: conteo de jabas que llegan del proveedor {fecha, proveedor, min_g, max_g, nota, creado, por, por_nombre, cerrado}; `jabas/<pushId>` {g, hora, por}. Cada jaba con push() (varios celulares a la vez); anotar NO espera al servidor. Cerrado = solo lectura; solo admin reabre. No se conecta con ventas.
 - Nada se borra. Un pedido atendido solo cambia cobro/metodo_pago, se pesa una vez si tenía peso_pendiente, o pasa a Anulado.
 - Venta: los botones de pago CIERRAN la venta (un toque). WhatsApp se abre en ese mismo toque si el interruptor está activo; la venta se guarda detrás (`finishSale`). El peso es opcional.
 - Saldo del cliente = ventas fiadas atendidas − abonos no anulados. Lo dejado a cuenta va a su propia nota; el resto, a las notas más antiguas (`ledger()`).
@@ -61,7 +62,7 @@ ChatGPT construye los cambios con `docs/PROMPT_CHATGPT.md`. **Nada se publica si
 ## Pendientes acordados
 
 - Cierre del día por WhatsApp.
-- Ingreso de mercadería semanal con costo y ganancia.
+- Ingreso de mercadería: ya existe el conteo de jabas (v2.17); falta costo y ganancia si se pide.
 - Exportar a Excel.
 - Modo letra grande.
 - **Descartado:** tara de la jaba y control de jabas retornables (las jabas se van con el cliente y se cobra el peso de la balanza). No volver a proponerlo.
