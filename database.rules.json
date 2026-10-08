@@ -95,7 +95,7 @@
       ".read": "auth != null && root.child('usuarios/' + auth.uid + '/rol').exists()",
       "$id": {
         ".write": "auth != null && root.child('usuarios/' + auth.uid + '/rol').exists() && newData.exists()",
-        ".validate": "newData.hasChildren(['name', 'category', 'unit', 'sold_by_weight', 'price_cents', 'active'])",
+        ".validate": "newData.hasChildren(['name', 'category', 'unit', 'sold_by_weight', 'price_cents', 'active']) && (newData.child('sold_by_weight').val() !== false || newData.child('unit').val() === 'saco' || newData.child('unit').val() === 'bolsa' || newData.child('unit').val() === 'caja' || newData.child('unit').val() === 'paquete' || newData.child('unit').val() === 'unidad')",
         "name": {
           ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 120"
         },
@@ -109,7 +109,7 @@
           ".validate": "newData.isBoolean()"
         },
         "price_cents": {
-          ".validate": "newData.isNumber() && newData.val() >= 0"
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() % 1 === 0"
         },
         "active": {
           ".validate": "newData.isBoolean()"
@@ -134,7 +134,7 @@
       ],
       "$id": {
         ".write": "auth != null && root.child('usuarios/' + auth.uid + '/rol').exists() && newData.exists() && (!data.exists() || (data.child('status').val() !== 'Atendido' && data.child('status').val() !== 'Cancelado' && data.child('status').val() !== 'Anulado') || (data.child('status').val() === 'Atendido' && newData.child('status').val() === 'Anulado') || (data.child('status').val() === 'Atendido' && newData.child('status').val() === 'Atendido'))",
-        ".validate": "newData.hasChildren(['code', 'client_id', 'client_name', 'product_id', 'product_name', 'created_by', 'created_at', 'status', 'weights', 'price_cents', 'weight_grams', 'total_cents']) && ((!data.exists() && (newData.child('status').val() === 'Pendiente' || newData.child('status').val() === 'Atendido') && newData.child('created_by').val() === auth.uid) || (data.exists() && (newData.child('status').val() === data.child('status').val() || (data.child('status').val() === 'Pendiente' && (newData.child('status').val() === 'En preparación' || newData.child('status').val() === 'Atendido' || newData.child('status').val() === 'Cancelado')) || (data.child('status').val() === 'En preparación' && (newData.child('status').val() === 'Listo' || newData.child('status').val() === 'Atendido' || newData.child('status').val() === 'Cancelado')) || (data.child('status').val() === 'Listo' && (newData.child('status').val() === 'Atendido' || newData.child('status').val() === 'Cancelado')) || (data.child('status').val() === 'Atendido' && newData.child('status').val() === 'Anulado')))) && (newData.child('status').val() !== 'Atendido' || (newData.child('attended_at').isString() && newData.child('weights').hasChildren() && (newData.child('peso_pendiente').val() === true || (newData.child('weight_grams').val() > 0 && newData.child('total_cents').val() > 0)))) && (data.child('status').val() !== 'Atendido' || (newData.child('attended_at').val() === data.child('attended_at').val() && (data.child('peso_pendiente').val() === true || (newData.child('total_cents').val() === data.child('total_cents').val() && newData.child('weight_grams').val() === data.child('weight_grams').val() && newData.child('jabas').val() === data.child('jabas').val())))) && (newData.child('status').val() !== 'Anulado' || data.child('status').val() === 'Anulado' || (newData.child('anulado_motivo').isString() && newData.child('anulado_motivo').val().length >= 3 && newData.child('anulado_por').val() === auth.uid && newData.child('anulado_at').isString())) && (newData.child('status').val() !== 'Atendido' || data.child('status').val() === 'Atendido' || newData.child('cobro').exists())",
+        ".validate": "newData.hasChildren(['code', 'client_id', 'client_name', 'product_id', 'product_name', 'created_by', 'created_at', 'status', 'price_cents', 'weight_grams', 'total_cents']) && ((!data.exists() && (newData.child('status').val() === 'Pendiente' || newData.child('status').val() === 'Atendido') && newData.child('created_by').val() === auth.uid) || (data.exists() && (newData.child('status').val() === data.child('status').val() || (data.child('status').val() === 'Pendiente' && (newData.child('status').val() === 'En preparación' || newData.child('status').val() === 'Atendido' || newData.child('status').val() === 'Cancelado')) || (data.child('status').val() === 'En preparación' && (newData.child('status').val() === 'Listo' || newData.child('status').val() === 'Atendido' || newData.child('status').val() === 'Cancelado')) || (data.child('status').val() === 'Listo' && (newData.child('status').val() === 'Atendido' || newData.child('status').val() === 'Cancelado')) || (data.child('status').val() === 'Atendido' && newData.child('status').val() === 'Anulado')))) && (newData.child('por_unidad').val() === true ? (newData.hasChildren(['unidad', 'cantidad']) && !newData.child('weights').exists() && !newData.child('jabas').exists() && !newData.child('peso_pendiente').exists() && newData.child('weight_grams').val() === 0 && newData.child('total_cents').val() === newData.child('cantidad').val() * newData.child('price_cents').val() && newData.child('total_cents').val() > 0 && (data.exists() || root.child('productos/' + newData.child('product_id').val() + '/sold_by_weight').val() === false)) : (newData.child('weights').hasChildren() && !newData.child('unidad').exists() && !newData.child('cantidad').exists())) && (!data.exists() || newData.child('por_unidad').val() === data.child('por_unidad').val()) && (newData.child('status').val() !== 'Atendido' || (newData.child('attended_at').isString() && (newData.child('por_unidad').val() === true || newData.child('peso_pendiente').val() === true || (newData.child('weight_grams').val() > 0 && newData.child('total_cents').val() > 0)))) && (data.child('status').val() !== 'Atendido' || (newData.child('attended_at').val() === data.child('attended_at').val() && (data.child('peso_pendiente').val() === true || (newData.child('total_cents').val() === data.child('total_cents').val() && newData.child('weight_grams').val() === data.child('weight_grams').val() && newData.child('jabas').val() === data.child('jabas').val() && (data.child('por_unidad').val() !== true || (newData.child('cantidad').val() === data.child('cantidad').val() && newData.child('unidad').val() === data.child('unidad').val())))))) && (newData.child('status').val() !== 'Anulado' || data.child('status').val() === 'Anulado' || (newData.child('anulado_motivo').isString() && newData.child('anulado_motivo').val().length >= 3 && newData.child('anulado_por').val() === auth.uid && newData.child('anulado_at').isString())) && (newData.child('status').val() !== 'Atendido' || data.child('status').val() === 'Atendido' || newData.child('cobro').exists())",
         "code": {
           ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())"
         },
@@ -180,7 +180,7 @@
           }
         },
         "price_cents": {
-          ".validate": "newData.isNumber() && newData.val() > 0 && (!data.exists() || newData.val() === data.val())"
+          ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() % 1 === 0 && (!data.exists() || newData.val() === data.val())"
         },
         "weight_grams": {
           ".validate": "newData.isNumber() && newData.val() >= 0"
@@ -212,6 +212,15 @@
         "peso_pendiente": {
           ".validate": "newData.val() === true && (data.val() === true || data.parent().child('status').val() !== 'Atendido')"
         },
+        "por_unidad": {
+          ".validate": "newData.val() === true"
+        },
+        "unidad": {
+          ".validate": "newData.val() === 'saco' || newData.val() === 'bolsa' || newData.val() === 'caja' || newData.val() === 'paquete' || newData.val() === 'unidad'"
+        },
+        "cantidad": {
+          ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 1000 && newData.val() % 1 === 0"
+        },
         "$other": {
           ".validate": false
         }
@@ -221,7 +230,7 @@
       "$token": {
         ".read": true,
         ".write": "auth != null && root.child('usuarios/' + auth.uid + '/rol').exists() && !data.exists()",
-        ".validate": "$token.length >= 20 && newData.hasChildren(['pedido', 'code', 'total_cents', 'weights', 'creado']) && newData.child('pedido').isString() && (newData.parent().parent().child('pedidos/' + newData.child('pedido').val()).child('status').val() === 'Atendido' || newData.parent().parent().child('pedidos/' + newData.child('pedido').val()).child('status').val() === 'Anulado') && newData.child('total_cents').val() === newData.parent().parent().child('pedidos/' + newData.child('pedido').val()).child('total_cents').val() && newData.child('code').val() === newData.parent().parent().child('pedidos/' + newData.child('pedido').val()).child('code').val()",
+        ".validate": "$token.length >= 20 && newData.hasChildren(['pedido', 'code', 'total_cents', 'creado']) && newData.child('pedido').isString() && (newData.parent().parent().child('pedidos/' + newData.child('pedido').val()).child('status').val() === 'Atendido' || newData.parent().parent().child('pedidos/' + newData.child('pedido').val()).child('status').val() === 'Anulado') && newData.child('total_cents').val() === newData.parent().parent().child('pedidos/' + newData.child('pedido').val()).child('total_cents').val() && newData.child('code').val() === newData.parent().parent().child('pedidos/' + newData.child('pedido').val()).child('code').val() && (newData.child('por_unidad').val() === true ? (newData.parent().parent().child('pedidos/' + newData.child('pedido').val() + '/por_unidad').val() === true && newData.hasChildren(['cantidad', 'unidad']) && !newData.child('weights').exists() && newData.child('cantidad').val() === newData.parent().parent().child('pedidos/' + newData.child('pedido').val() + '/cantidad').val() && newData.child('unidad').val() === newData.parent().parent().child('pedidos/' + newData.child('pedido').val() + '/unidad').val()) : (newData.parent().parent().child('pedidos/' + newData.child('pedido').val() + '/por_unidad').val() !== true && newData.child('weights').hasChildren()))",
         "anulada": {
           ".write": "auth != null && root.child('usuarios/' + auth.uid + '/rol').exists()",
           ".validate": "newData.val() === true"

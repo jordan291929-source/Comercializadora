@@ -64,7 +64,7 @@ ChatGPT construye los cambios con `docs/PROMPT_CHATGPT.md`. **Nada se publica si
 Meta de Jordan: que su mamá aprenda de a poco y registre todo, para que el negocio quede automatizado. Cada paso nuevo debe ser simple y sin romper lo anterior.
 
 1. ✅ Ingresos de OTROS productos (v2.21): ingresos/<id>.tipo 'huevo'|'otros' (sin tipo = huevo); items/<pushId> {producto, cantidad, unidad saco|bolsa|caja|paquete|unidad, costo_cents?, hora, por}.
-2. Vender productos por unidad (abarrotes), sin cambiar el flujo del huevo — tarea 2 para ChatGPT.
+2. ✅ Venta por unidad (v2.22): productos sold_by_weight:false con unit saco|bolsa|caja|paquete|unidad; pedidos por_unidad:true, unidad, cantidad, price_cents unitario, total = cantidad × precio, weight_grams 0, sin weights/jabas. Chips de producto en la venta solo si hay más de uno activo; el huevo siempre primero y preseleccionado.
 3. **Lector de documentos (no olvidar):** foto de la factura o guía del proveedor → la app lee proveedor, productos, cantidades y costos → la mamá revisa y confirma → se crea el ingreso. Revisión humana obligatoria antes de guardar. Necesita un servicio de IA con clave secreta (no puede ir en el navegador): requiere Cloud Functions (plan Blaze, pago por uso) o un servicio externo; costo por documento de céntimos. Decidir con Jordan antes de construir.
 4. Stock: que ingresos y ventas muevan el inventario (después de 1 y 2).
 5. Cierre del día por WhatsApp. Exportar a Excel. Modo letra grande.
