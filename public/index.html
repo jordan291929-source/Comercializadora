@@ -63,6 +63,7 @@ input,select,textarea{font-size:16px}
 @media(max-width:760px){.mobile-brand{display:flex}.desktop-title{display:none}.topbar{justify-content:space-between;gap:10px}}
 .home-hello{margin:2px 0 16px}.home-hello h2{font-size:24px;margin:2px 0 0}.home-hello .eyebrow{margin:0}
 .dt-hero{margin-bottom:14px}.dt-tags{margin-top:8px}.dt-tags .pt{font-size:12px}.dt-actions{display:grid;gap:8px;margin-bottom:16px}.dt-actions .button{min-height:52px;font-size:16px}.dt-cobrar{background:#fdf3e2;border-color:#f3dfb8;color:#7a4a00;font-weight:700}.dt-list{border:1px solid #f0eee8}.dt-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid #f0eee8;font-size:14px}.dt-row:last-child{border-bottom:0}.dt-row small{color:#4f5f55;font-size:12.5px;flex:none}.dt-row>span{text-align:right;font-weight:600;color:#10201f;overflow-wrap:anywhere}.dt-row.col{display:grid;gap:8px}.dt-chips{display:flex;flex-wrap:wrap;gap:6px}.dt-chips span{background:#f5f4f0;border-radius:8px;padding:5px 8px;font-size:13px;font-variant-numeric:tabular-nums}.dt-link{font-size:14px;padding:0 0 0 6px;min-height:0;color:#8a6a1f;text-decoration:underline}.dt-void{display:block;margin:18px auto 0;color:#b3263b;font-weight:600}.dt-legal{font-size:11px;text-align:center;margin-top:10px}
+#page-caja{max-width:760px}.cj-day{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0 14px}.cj-day strong{font-size:15px;text-align:center}.cj-day button{width:44px;height:44px;border-radius:12px;border:1px solid #e2e0d9;background:#fff;font-size:22px;color:#1f3b2d}.cj-day button:disabled{opacity:.35}.cj-send{margin:16px 0 20px;min-height:52px;font-size:16px;text-decoration:none}.dt-row.zero span{color:#9aa69e;font-weight:500}.cj-note{font-size:12.5px;color:#4f5f55;margin:8px 4px 0}.cj-w{display:grid;grid-template-columns:62px 1fr 92px;align-items:center;gap:10px;width:100%;border:0;border-bottom:1px solid #f0eee8;background:#fff;padding:11px 14px;text-align:left;font-size:13.5px}.cj-w.on{background:#f7f3e8}.cj-w span{color:#4f5f55;text-transform:capitalize}.cj-w i{height:10px;background:#f0eee8;border-radius:6px;overflow:hidden}.cj-w em{display:block;height:100%;background:#1f3b2d;border-radius:6px}.cj-w.on em{background:#c8a04a}.cj-w b{text-align:right;font-variant-numeric:tabular-nums}.cj-btn{width:100%;border:0;border-bottom:1px solid #f0eee8;background:#fff;text-align:left}.hero-link{justify-self:start;border:0;background:none;color:#d9c48f;font-weight:600;font-size:13px;padding:6px 0 0}
 .home-hero{background:#1f3b2d;color:#fff;border-radius:20px;padding:20px 20px 16px;display:grid;gap:4px;box-shadow:0 10px 24px -14px #1f3b2d}
 .hero-label{font-size:13px;font-weight:600;color:#d9c48f;letter-spacing:.02em}.hero-total{font-size:34px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}.hero-sub{font-size:13px;color:#c9d6cd}
 .hero-split{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.hero-split button{border:0;background:#ffffff14;border-radius:12px;padding:10px 12px;text-align:left;color:#fff}.hero-split small{display:block;font-size:11.5px;color:#c9d6cd}.hero-split b{font-size:16px;font-variant-numeric:tabular-nums}
@@ -133,6 +134,7 @@ html,body,*,*::before,*::after{touch-action:manipulation}
         <button data-page="inicio" class="active"><span>▦</span> Inicio</button>
         <button data-page="pedidos"><span>▤</span> Pedidos</button>
         <button data-page="cobros"><span>◎</span> Cobros</button>
+        <button data-page="caja"><span>▣</span> Caja del día</button>
         <button data-page="clientes"><span>♙</span> Clientes</button>
         <button data-page="productos"><span>◫</span> Productos</button>
         <button data-page="ingresos"><span>▥</span> Ingresos de mercadería</button>
@@ -159,7 +161,8 @@ html,body,*,*::before,*::after{touch-action:manipulation}
         <section id="page-usuarios" class="page" hidden><div class="section-heading"><div><h2>Usuarios</h2><p>Crea cuentas para tu equipo o aprueba las que se registraron solas. Sin rol no pueden ver nada.</p></div><button class="button primary" data-open="user">+ Crear cuenta</button></div><div class="panel" id="users-table"></div></section>
         <section id="page-negocio" class="page" hidden><div class="section-heading"><div><h2>Datos del negocio</h2><p>Aparecen en la cabecera de la nota de pedido en PDF.</p></div></div><form id="negocio-form" class="panel modal-content"><div class="field-grid"><label class="wide">Nombre comercial<input name="nombre" maxlength="80" placeholder="Comercializadora Viviana"></label><label>RUC<input name="ruc" inputmode="numeric" maxlength="11"></label><label>Teléfono / WhatsApp<input name="telefono" type="tel" maxlength="25"></label><label class="wide">Dirección<input name="direccion" maxlength="150"></label></div><div class="modal-footer"><button class="button primary" type="submit">Guardar datos</button></div></form></section>
         <section id="page-cobros" class="page" hidden><div id="cobros-hero" class="home-hero"></div><div class="home-section"><div class="home-row-head"><h3 class="home-h">Quién debe <span id="debtors-count" class="tab-count"></span></h3></div><div id="cobros-lista" class="sale-rows"></div></div><div class="home-section"><div class="home-row-head"><h3 class="home-h">Pagos recibidos</h3></div><div id="abonos-lista" class="sale-rows"></div></div></section>
-        <section id="page-mas" class="page" hidden><div class="section-heading"><div><h2>Más opciones</h2><p>Lo que usas con menos frecuencia.</p></div></div><div class="more-list"><button id="install-app" hidden>Instalar en el celular <span>›</span></button><button data-page="ingresos">Ingresos de mercadería <span>›</span></button><button data-page="clientes">Clientes <span>›</span></button><button data-page="productos">Productos <span>›</span></button><button data-page="usuarios" id="more-usuarios" hidden>Usuarios <span>›</span></button><button data-page="negocio" id="more-negocio" hidden>Datos del negocio <span>›</span></button><button data-logout>Cerrar sesión <span>›</span></button></div></section>
+        <section id="page-caja" class="page" hidden><div class="cj-day"><button id="caja-prev" aria-label="Día anterior">‹</button><strong id="caja-fecha"></strong><button id="caja-next" aria-label="Día siguiente">›</button></div><div id="caja-hero" class="home-hero"></div><div id="caja-body"></div></section>
+        <section id="page-mas" class="page" hidden><div class="section-heading"><div><h2>Más opciones</h2><p>Lo que usas con menos frecuencia.</p></div></div><div class="more-list"><button id="install-app" hidden>Instalar en el celular <span>›</span></button><button data-page="caja">Caja del día <span>›</span></button><button data-page="ingresos">Ingresos de mercadería <span>›</span></button><button data-page="clientes">Clientes <span>›</span></button><button data-page="productos">Productos <span>›</span></button><button data-page="usuarios" id="more-usuarios" hidden>Usuarios <span>›</span></button><button data-page="negocio" id="more-negocio" hidden>Datos del negocio <span>›</span></button><button data-logout>Cerrar sesión <span>›</span></button></div></section>
       </div>
     </main>
   </div>
@@ -173,8 +176,9 @@ html,body,*,*::before,*::after{touch-action:manipulation}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
 'use strict';
-const APP_VERSION='2.28';
+const APP_VERSION='2.29';
 const CHANGELOG=[
+  {v:'2.29',f:'2026-10-08',t:'Nueva «Caja del día» (Más → Caja del día, o «Ver caja del día» en Inicio): vendido, cobrado por medio de pago, fiado por cliente, últimos 7 días y total por cobrar. Se puede ver cualquier día anterior y enviar el cierre por WhatsApp en un toque.'},
   {v:'2.28',f:'2026-10-08',t:'Detalle del pedido renovado: total grande con cliente y estado, el botón principal según el caso (Atender, Pesar ahora o Enviar nota por WhatsApp), «Cobrar» si el fiado tiene deuda, y los datos en una lista simple. Anular queda abajo, aparte.'},
   {v:'2.27',f:'2026-10-08',t:'Clientes renovado: buscador, los que compraron hace poco arriba, cuántas compras y cuándo fue la última, lo que debe, y botones «Escribir» por WhatsApp y «Vender» que abre la venta con el cliente ya elegido.'},
   {v:'2.26',f:'2026-10-08',t:'Cobros renovado: total por cobrar destacado con lo cobrado hoy por medio de pago, lista «Quién debe» con días de atraso y botones de WhatsApp y Cobrar en la fila, y pagos recibidos en filas compactas.'},
@@ -215,7 +219,7 @@ const money=(cents)=>'S/ '+(cents/100).toLocaleString('es-PE',{minimumFractionDi
 const date=(value)=>value?new Date(value).toLocaleString('es-PE',{dateStyle:'short',timeStyle:'short',timeZone:'America/Lima'}):'—';
 // Perú no tiene horario de verano: la hora del negocio es siempre UTC-5.
 const nowLima=()=>new Date(Date.now()-5*3600e3).toISOString().slice(0,19)+'-05:00';
-const state={noteLinks:{},abonos:[],ingresos:[],ingresoId:null,user:null,profile:null,orders:[],clients:[],products:[],users:[],page:'inicio',orderTab:'pending',mode:'login'};
+const state={noteLinks:{},abonos:[],ingresos:[],ingresoId:null,user:null,profile:null,orders:[],clients:[],products:[],users:[],page:'inicio',cajaDay:null,orderTab:'pending',mode:'login'};
 let auth,db,appConfig,local=false,profileOff=null,dataOffs=[],dataRole=null,pendingName='';
 
 function notify(message){const el=$('#toast');el.textContent=message;el.classList.add('visible');clearTimeout(notify.timer);notify.timer=setTimeout(()=>el.classList.remove('visible'),3500);}
@@ -320,7 +324,7 @@ function showAuth(){
 }
 
 // ---------- Vistas ----------
-function nav(page){state.page=page;document.querySelectorAll('.page').forEach(el=>el.hidden=el.id!==`page-${page}`);document.querySelectorAll('[data-page]').forEach(el=>el.classList.toggle('active',el.dataset.page===page||(el.dataset.page==='mas'&&['clientes','productos','usuarios','negocio','ingresos','conteo'].includes(page))));$('#page-title').textContent=page==='conteo'&&state.ingresos.find(i=>i.id===state.ingresoId)?.tipo==='otros'?'Ingreso de productos':{inicio:'Inicio',pedidos:'Pedidos',cobros:'Cobros',clientes:'Clientes',productos:'Productos',ingresos:'Ingresos',conteo:'Conteo de jabas',usuarios:'Usuarios',negocio:'Negocio',mas:'Más'}[page];$('#brand-sub').textContent=page==='inicio'?'Mayorista de huevo y abarrotes':$('#page-title').textContent;$('#user-menu').hidden=true;render();window.scrollTo(0,0);}
+function nav(page){state.page=page;document.querySelectorAll('.page').forEach(el=>el.hidden=el.id!==`page-${page}`);document.querySelectorAll('[data-page]').forEach(el=>el.classList.toggle('active',el.dataset.page===page||(el.dataset.page==='mas'&&['clientes','productos','usuarios','negocio','ingresos','conteo','caja'].includes(page))));$('#page-title').textContent=page==='conteo'&&state.ingresos.find(i=>i.id===state.ingresoId)?.tipo==='otros'?'Ingreso de productos':{inicio:'Inicio',pedidos:'Pedidos',cobros:'Cobros',caja:'Caja del día',clientes:'Clientes',productos:'Productos',ingresos:'Ingresos',conteo:'Conteo de jabas',usuarios:'Usuarios',negocio:'Negocio',mas:'Más'}[page];$('#brand-sub').textContent=page==='inicio'?'Mayorista de huevo y abarrotes':$('#page-title').textContent;$('#user-menu').hidden=true;render();window.scrollTo(0,0);}
 function statusPill(s){const cls={'En preparación':'preparacion','Listo':'listo','Atendido':'atendido','Cancelado':'cancelado','Anulado':'cancelado'}[s]||'';return `<span class="pill ${cls}">${esc(s)}</span>`;}
 const CLOSED=['Atendido','Cancelado','Anulado'];
 const NEGOCIO_DEFAULT={nombre:'Comercializadora Viviana',ruc:'',telefono:'903 228 069 / 960 656 381',direccion:'Av. Grau D4 Lt. 21, Casma'};
@@ -444,7 +448,7 @@ function todayCollections(){
 }
 function renderHome(d,debtors,porCobrar){
   const c=todayCollections();
-  $('#home-hero').innerHTML=`<span class="hero-label">Vendido hoy</span><strong class="hero-total">${money(d.sales_today_cents)}</strong><span class="hero-sub">${d.attended_today} ${d.attended_today===1?'venta':'ventas'} · ${jabasText(d.jabas_today)} · ${d.kg_today.toFixed(3)} kg</span><div class="hero-split"><button data-page="cobros"><small>Cobrado hoy</small><b>${money(c.cobrado)}</b></button><button data-page="cobros"><small>Fiado hoy</small><b>${money(c.fiado)}</b></button></div>`;
+  $('#home-hero').innerHTML=`<span class="hero-label">Vendido hoy</span><strong class="hero-total">${money(d.sales_today_cents)}</strong><span class="hero-sub">${d.attended_today} ${d.attended_today===1?'venta':'ventas'} · ${jabasText(d.jabas_today)} · ${d.kg_today.toFixed(3)} kg</span><button class="hero-link" data-page="caja">Ver caja del día ›</button><div class="hero-split"><button data-page="cobros"><small>Cobrado hoy</small><b>${money(c.cobrado)}</b></button><button data-page="cobros"><small>Fiado hoy</small><b>${money(c.fiado)}</b></button></div>`;
   $('#quick-actions').innerHTML=[['vender','Vender','data-open="order"','main'],['cobrar','Cobrar','data-page="cobros"',''],['ingreso','Ingreso','data-page="ingresos"',''],['clientes','Clientes','data-page="clientes"','']].map(([i,t,attr,cls])=>`<button class="qa ${cls}" ${attr}><span class="qa-ico">${HOME_ICON[i]}</span>${t}</button>`).join('');
   const porAtender=state.orders.filter(o=>!CLOSED.includes(o.status)).length,abierto=state.ingresos.find(i=>!i.cerrado);
   const alerts=[];
@@ -470,6 +474,48 @@ function renderCobros(L,debtors,porCobrar){
   $('#cobros-lista').innerHTML=debtors.length?debtors.map(([id,l])=>{const c=byId[id]||{name:'Cliente',phone:''},old=l.pendientes[0],dias=old?daysAgo(old.o.attended_at):0,hasPhone=!!(c.phone||'').replace(/\D/g,'');
     return `<div class="ord-row debtor"><button class="ord-main" data-pay-client="${esc(id)}"><span class="db-ini">${esc((c.name||'?').trim().charAt(0).toUpperCase())}</span><span class="sr-main"><b>${esc(c.name)}</b><small>${l.pendientes.length} ${l.pendientes.length===1?'nota':'notas'} · <span class="${dias>7?'late':''}">${dias===0?'desde hoy':`hace ${dias} ${dias===1?'día':'días'}`}</span>${l.abonado?` · abonó ${money(l.abonado)}`:''}</small></span><span class="sr-side"><b class="debt">${money(l.saldo)}</b></span></button><div class="db-acts">${hasPhone?`<a class="ord-wa" href="${esc(waTo(c.phone,reminderMessage(c,l)))}" target="_blank" rel="noopener">${WA_ICON}Recordar</a>`:''}<button class="ord-act" data-pay-client="${esc(id)}">Cobrar</button></div></div>`;}).join(''):'<div class="empty"><strong>Nadie te debe por ahora</strong>Las ventas al fiado aparecerán aquí.</div>';
   $('#abonos-lista').innerHTML=state.abonos.length?state.abonos.slice(0,20).map(a=>`<div class="ord-row${a.anulado?' void':''}"><button class="ord-main" ${a.anulado?'disabled':`data-void-abono="${esc(a.id)}"`}><span class="sr-main"><b>${esc(byId[a.client_id]?.name||'Cliente')}</b><small>${esc(date(a.fecha))} · ${esc(a.por_nombre||'')}${a.nota?' · '+esc(a.nota):''}${a.anulado?' · anulado: '+esc(a.anulado_motivo||''):''}</small></span><span class="sr-side"><b>${money(a.monto_cents)}</b><span class="pt${a.anulado?' void':''}">${a.anulado?'Anulado':esc(a.metodo)}</span></span></button></div>`).join(''):'<div class="empty"><strong>Todavía no hay pagos registrados</strong></div>';
+}
+// ---------- Caja del día: resumen financiero de un día y envío del cierre por WhatsApp ----------
+const shiftDay=(d,n)=>{const t=new Date(d+'T12:00:00Z');t.setUTCDate(t.getUTCDate()+n);return t.toISOString().slice(0,10);};
+const longDay=d=>new Date(d+'T12:00:00Z').toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long',timeZone:'UTC'});
+function dayFinance(day){
+  const att=state.orders.filter(o=>(o.attended_at||'').startsWith(day)),ok=att.filter(o=>o.status==='Atendido');
+  const byM={Efectivo:0,'Yape/Plin':0,Transferencia:0},abM={Efectivo:0,'Yape/Plin':0,Transferencia:0},fiados={},units={};let contado=0,fiado=0,abonos=0,acuenta=0,jabas=0,grams=0;
+  ok.forEach(o=>{if(unitOrder(o)){const u=o.unidad||'unidad';units[u]=(units[u]||0)+(Number(o.cantidad)||0);}else{jabas+=jabasOf(o);grams+=o.weight_grams||0;}
+    if(o.cobro==='fiado'){fiado+=o.total_cents;fiados[o.client_id]=fiados[o.client_id]||{name:o.client_name,c:0};fiados[o.client_id].c+=o.total_cents;}
+    else if(o.cobro==='contado'){contado+=o.total_cents;if(byM[o.metodo_pago]!==undefined)byM[o.metodo_pago]+=o.total_cents;}});
+  state.abonos.filter(a=>!a.anulado&&(a.fecha||'').startsWith(day)).forEach(a=>{abonos+=a.monto_cents;if(a.pedido)acuenta+=a.monto_cents;if(abM[a.metodo]!==undefined)abM[a.metodo]+=a.monto_cents;});
+  const metodos=Object.keys(byM).map(k=>[k,byM[k]+abM[k]]);
+  return{ventas:ok.length,vendido:ok.reduce((n,o)=>n+o.total_cents,0),jabas,grams,units,contado,fiado,abonos,acuenta,deudas:abonos-acuenta,cobrado:contado+abonos,metodos,fiados:Object.values(fiados).sort((a,b)=>b.c-a.c),sinPesar:ok.filter(o=>pendingWeights(o)),anuladas:att.filter(o=>o.status==='Anulado')};
+}
+function cierreMessage(day,f,debtors,porCobrar){
+  const n=negocio(),L=[`*CIERRE DEL DÍA – ${n.nombre||'Comercializadora Viviana'}*`,longDay(day).replace(/^./,c=>c.toUpperCase()),'',`*VENDIDO: ${money(f.vendido)}*`,`${f.ventas} ${f.ventas===1?'venta':'ventas'} · ${jabasText(f.jabas)} · ${(f.grams/1000).toFixed(3)} kg`];
+  Object.entries(f.units).forEach(([u,q])=>L.push(`+ ${q} ${saleUnit(u,q)}`));
+  L.push('',`*COBRADO: ${money(f.cobrado)}*`,...f.metodos.filter(([,v])=>v).map(([k,v])=>`• ${k}: ${money(v)}`));
+  if(f.deudas>0)L.push(`(incluye ${money(f.deudas)} de deudas anteriores)`);
+  L.push('',`*FIADO: ${money(f.fiado)}*`,...f.fiados.map(x=>`• ${x.name}: ${money(x.c)}`));
+  if(f.acuenta>0)L.push(`(dejaron ${money(f.acuenta)} a cuenta)`);
+  const byId=Object.fromEntries(state.clients.map(c=>[c.id,c])),old=debtors.map(([id,l])=>({name:byId[id]?.name||'Cliente',at:l.pendientes[0]?.o.attended_at||''})).filter(x=>x.at).sort((a,b)=>a.at.localeCompare(b.at))[0];
+  L.push('',`*TOTAL POR COBRAR: ${money(porCobrar)}*`,`${debtors.length} ${debtors.length===1?'cliente':'clientes'}${old?` · el más antiguo: ${old.name}, desde el ${shortDate(old.at)}`:''}`);
+  if(f.sinPesar.length)L.push('',`⚠ Falta pesar: ${f.sinPesar.length} (${[...new Set(f.sinPesar.map(o=>o.client_name))].join(', ')})`);
+  if(f.anuladas.length)L.push(`✖ Anuladas: ${f.anuladas.length} (${f.anuladas.map(o=>o.code).join(', ')})`);
+  return L.join('\n');
+}
+function renderCaja(L,debtors,porCobrar){
+  const today=nowLima().slice(0,10),day=state.cajaDay&&state.cajaDay<=today?state.cajaDay:today,f=dayFinance(day);
+  $('#caja-fecha').textContent=day===today?'Hoy, '+longDay(day):day===shiftDay(today,-1)?'Ayer, '+longDay(day):longDay(day).replace(/^./,c=>c.toUpperCase());
+  $('#caja-next').disabled=day>=today;
+  $('#caja-prev').onclick=()=>{state.cajaDay=shiftDay(day,-1);render();};$('#caja-next').onclick=()=>{state.cajaDay=shiftDay(day,1);render();};
+  const uTxt=Object.entries(f.units).map(([u,q])=>` · ${q} ${saleUnit(u,q)}`).join('');
+  $('#caja-hero').innerHTML=`<span class="hero-label">Vendido</span><strong class="hero-total">${money(f.vendido)}</strong><span class="hero-sub">${f.ventas} ${f.ventas===1?'venta':'ventas'} · ${jabasText(f.jabas)} · ${(f.grams/1000).toFixed(3)} kg${esc(uTxt)}</span><div class="hero-split"><div class="hs"><small>Cobrado</small><b>${money(f.cobrado)}</b></div><div class="hs"><small>Fiado</small><b>${money(f.fiado)}</b></div></div>`;
+  const row=(k,v,cls='')=>`<div class="dt-row ${cls}"><small>${k}</small><span>${v}</span></div>`;
+  const week=Array.from({length:7},(_,i)=>shiftDay(day,i-6)).map(d=>({d,...dayFinance(d)})),max=Math.max(1,...week.map(w=>w.vendido));
+  const msg=cierreMessage(day,f,debtors,porCobrar);
+  $('#caja-body').innerHTML=`<a class="button primary wa-button full cj-send" href="${esc(waTo('',msg))}" target="_blank" rel="noopener">${WA_ICON}Enviar cierre por WhatsApp</a>
+  <div class="home-section"><h3 class="home-h">Cobrado por medio de pago</h3><div class="sale-rows dt-list">${f.metodos.map(([k,v])=>row(esc(k),money(v),v?'':'zero')).join('')}${row('<b>Total cobrado</b>',`<b>${money(f.cobrado)}</b>`)}</div>${f.cobrado?`<p class="cj-note">Ventas al contado ${money(f.contado)}${f.acuenta?` · a cuenta de fiados ${money(f.acuenta)}`:''}${f.deudas>0?` · pagos de deudas ${money(f.deudas)}`:''}</p>`:''}</div>
+  <div class="home-section"><h3 class="home-h">Fiado del día</h3><div class="sale-rows dt-list">${f.fiados.length?f.fiados.map(x=>row(esc(x.name),`<b class="debt">${money(x.c)}</b>`)).join(''):row('Nadie quedó debiendo','—')}</div></div>
+  <div class="home-section"><h3 class="home-h">Últimos 7 días</h3><div class="sale-rows cj-week">${week.map(w=>`<button class="cj-w${w.d===day?' on':''}" data-caja-day="${w.d}"><span>${new Date(w.d+'T12:00:00Z').toLocaleDateString('es-PE',{weekday:'short',day:'numeric',timeZone:'UTC'})}</span><i><em style="width:${Math.round(w.vendido/max*100)}%"></em></i><b>${money(w.vendido)}</b></button>`).join('')}<div class="dt-row"><small>Vendido en la semana</small><span><b>${money(week.reduce((n,w)=>n+w.vendido,0))}</b></span></div><div class="dt-row"><small>Cobrado en la semana</small><span>${money(week.reduce((n,w)=>n+w.cobrado,0))}</span></div></div></div>
+  <div class="home-section"><h3 class="home-h">Para revisar</h3><div class="sale-rows dt-list"><button class="dt-row cj-btn" data-page="cobros"><small>Total por cobrar · ${debtors.length} ${debtors.length===1?'cliente':'clientes'}</small><span class="debt">${money(porCobrar)} ›</span></button>${f.sinPesar.length?`<button class="dt-row cj-btn" data-page="pedidos"><small>Falta pesar</small><span>${f.sinPesar.length} ${f.sinPesar.length===1?'venta':'ventas'} ›</span></button>`:''}${f.anuladas.length?row('Anuladas',esc(f.anuladas.map(o=>o.code).join(', '))):''}</div></div>`;
 }
 // ---------- Ingresos de mercadería: cada jaba se guarda con su propia clave push() ----------
 function ingresoJabas(i){return Object.entries(i.jabas||{}).map(([id,j])=>({id,...j})).sort((a,b)=>a.hora.localeCompare(b.hora)||a.id.localeCompare(b.id));}
@@ -587,6 +633,7 @@ function render(){
   const L=ledger();state.due=L.due;const debtors=Object.entries(L.by).filter(([,l])=>l.saldo>0).sort((a,b)=>b[1].saldo-a[1].saldo),porCobrar=debtors.reduce((a,[,l])=>a+l.saldo,0);
   renderCobros(L,debtors,porCobrar);
   renderHome(d,debtors,porCobrar);
+  if(state.page==='caja')renderCaja(L,debtors,porCobrar);
   const term=$('#order-search').value.trim().toLowerCase();
   const visible=state.orders.filter(o=>(!term||`${o.code} ${o.client_name}`.toLowerCase().includes(term))&&(state.orderTab==='all'||(state.orderTab==='attended'?o.status==='Atendido':needsAction(o))));
   renderOrderList(visible);
@@ -941,6 +988,7 @@ document.addEventListener('click',e=>{
   if(get('chpay'))openChangePay(get('chpay').chpay);
   if(get('edit-client'))openClient(get('edit-client').editClient);
   if(get('sell-client'))openOrder(get('sell-client').sellClient);
+  if(get('caja-day')){state.cajaDay=get('caja-day').cajaDay;render();}
   if(get('edit-product'))openProduct(get('edit-product').editProduct);
   if(get('open'))({order:openOrder,client:openClient,product:openProduct,user:openUser}[get('open').open])();
   if(get('detail'))showOrder(get('detail').detail);
