@@ -1,0 +1,30 @@
+name: Publicar en Firebase
+
+# Cada cambio subido a la rama de trabajo (o a main) se publica solo en https://negocio-db392.web.app
+on:
+  push:
+    branches: [claude/nice-brahmagupta-at5kbl, main]
+  workflow_dispatch:
+
+concurrency:
+  group: firebase-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Revisar la sintaxis de la app y las reglas
+        run: |
+          node -e "const s=require('fs').readFileSync('public/index.html','utf8');const i=s.lastIndexOf('<script>'),j=s.lastIndexOf('</script>');require('fs').writeFileSync('/tmp/app.js',s.slice(i+8,j))"
+          node --check /tmp/app.js
+          node -e "JSON.parse(require('fs').readFileSync('database.rules.json','utf8'))"
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+      - name: Publicar reglas y app
+        run: npx --yes firebase-tools@13 deploy --only database,hosting --project negocio-db392 --non-interactive
