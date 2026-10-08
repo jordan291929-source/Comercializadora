@@ -8,7 +8,7 @@ Sistema de ventas mayoristas de huevo por peso (negocio familiar en Perú, soles
 - Firebase: Hosting + Authentication (correo/contraseña) + Realtime Database. Proyecto `negocio-db392` (plan Spark), URL https://negocio-db392.web.app. Sin servidor ni Cloud Functions.
 - Seguridad en `database.rules.json`. Toda regla de negocio importante se refuerza ahí.
 - La configuración de Firebase se lee de `/__/firebase/init.json`. En localhost la app usa los emuladores.
-- Publicar: `firebase deploy --only database,hosting`. Lo hace Jordan desde su PC.
+- **Publicación automática** (autorizada por Jordan): cada push a `claude/nice-brahmagupta-at5kbl` o `main` publica en negocio-db392 vía `.github/workflows/deploy.yml` (secreto `FIREBASE_SERVICE_ACCOUNT`). Subir = publicar en vivo: prueba en el emulador ANTES de cada push y revisa que el run termine en «Deploy complete!».
 
 ## Modelo de datos
 
@@ -56,7 +56,7 @@ firebase emulators:start --project demo-comercializadora   # http://127.0.0.1:50
 
 ## Flujo con ChatGPT (acordado con Jordan)
 
-ChatGPT construye los cambios con `docs/PROMPT_CHATGPT.md`. **Nada se publica sin pasar por Claude**: Jordan trae los bloques o archivos de ChatGPT («revisa las actualizaciones»), Claude los aplica o revisa, prueba en el emulador, corrige, sube a GitHub y envía el ZIP. Recién entonces Jordan publica. Sé breve y económico: Jordan cuida el gasto de tokens.
+ChatGPT construye los cambios con `docs/PROMPT_CHATGPT.md`. **Nada se publica sin pasar por Claude**: Jordan trae los bloques o archivos de ChatGPT («revisa las actualizaciones»), Claude los aplica o revisa, prueba en el emulador, corrige y sube a GitHub, lo que publica automáticamente. Sé breve y económico: Jordan cuida el gasto de tokens.
 
 ## Pendientes acordados
 
