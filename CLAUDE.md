@@ -59,10 +59,14 @@ firebase emulators:start --project demo-comercializadora   # http://127.0.0.1:50
 
 ChatGPT construye los cambios con `docs/PROMPT_CHATGPT.md`. **Nada se publica sin pasar por Claude**: Jordan trae los bloques o archivos de ChatGPT («revisa las actualizaciones»), Claude los aplica o revisa, prueba en el emulador, corrige y sube a GitHub, lo que publica automáticamente. Sé breve y económico: Jordan cuida el gasto de tokens.
 
-## Pendientes acordados
+## Pendientes acordados (en orden)
 
-- Cierre del día por WhatsApp.
-- Ingreso de mercadería: ya existe el conteo de jabas (v2.17); falta costo y ganancia si se pide.
-- Exportar a Excel.
-- Modo letra grande.
+Meta de Jordan: que su mamá aprenda de a poco y registre todo, para que el negocio quede automatizado. Cada paso nuevo debe ser simple y sin romper lo anterior.
+
+1. Ingresos de OTROS productos (abarrotes) dentro de «Ingresos de mercadería» — tarea 1 para ChatGPT.
+2. Vender productos por unidad (abarrotes), sin cambiar el flujo del huevo — tarea 2 para ChatGPT.
+3. **Lector de documentos (no olvidar):** foto de la factura o guía del proveedor → la app lee proveedor, productos, cantidades y costos → la mamá revisa y confirma → se crea el ingreso. Revisión humana obligatoria antes de guardar. Necesita un servicio de IA con clave secreta (no puede ir en el navegador): requiere Cloud Functions (plan Blaze, pago por uso) o un servicio externo; costo por documento de céntimos. Decidir con Jordan antes de construir.
+4. Stock: que ingresos y ventas muevan el inventario (después de 1 y 2).
+5. Cierre del día por WhatsApp. Exportar a Excel. Modo letra grande.
+6. Diseño: mejorar pantalla por pantalla (empezar por Inicio y Pedidos).
 - **Descartado:** tara de la jaba y control de jabas retornables (las jabas se van con el cliente y se cobra el peso de la balanza). No volver a proponerlo.
