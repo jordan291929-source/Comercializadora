@@ -14,11 +14,12 @@ Sistema de ventas mayoristas de huevo por peso (negocio familiar en Perú, soles
 
 - `usuarios/<uid>`: {email, nombre, creado, rol: admin|ventas}. `config/owner`: la primera cuenta, que es admin. `config/negocio`: datos para la nota de pedido.
 - `clientes/<id>` (code CL-0001 inmutable), `productos/<id>` (price_cents semanal, price_updated_at, historial inmutable, active).
-- `pedidos/<id>`: code PED-AAAA-00001, client_id, weights ["10.5", ""], price_cents, weight_grams, total_cents, status Pendiente→En preparación→Listo→Atendido (se puede atender directo), Cancelado / Anulado (con anulado_motivo/at/por), cobro contado|fiado, metodo_pago Efectivo|Yape/Plin|Transferencia.
+- `pedidos/<id>`: code PED-AAAA-00001, client_id, weights ["10.5", ""], price_cents, weight_grams, total_cents, status Pendiente→En preparación→Listo→Atendido (se puede atender directo), Cancelado / Anulado (con anulado_motivo/at/por), cobro contado|fiado, metodo_pago Efectivo|Yape/Plin|Transferencia, jabas (cantidad; con «peso total» weights tiene un solo valor), peso_pendiente:true (atendido sin pesar; se pesa después y recién ahí se crea la nota).
 - `abonos/<id>`: pagos de clientes (client_id, monto_cents, metodo, fecha, por, pedido opcional = a cuenta). Solo se escriben una vez; se pueden anular con motivo.
 - `notas/<token>` (lectura pública por token, una sola escritura) y `nota_link/<pedidoId>`: nota de pedido que se manda por WhatsApp como enlace `/?nota=TOKEN`.
 - `seq/pedidos`, `seq/clientes`: contadores que suben de 1 en 1.
-- Nada se borra. Un pedido atendido solo cambia cobro/metodo_pago o pasa a Anulado; los montos y pesos nunca cambian.
+- Nada se borra. Un pedido atendido solo cambia cobro/metodo_pago, se pesa una vez si tenía peso_pendiente, o pasa a Anulado.
+- Venta: los botones de pago CIERRAN la venta (un toque). WhatsApp se abre en ese mismo toque si el interruptor está activo; la venta se guarda detrás (`finishSale`). El peso es opcional.
 - Saldo del cliente = ventas fiadas atendidas − abonos no anulados. Lo dejado a cuenta va a su propia nota; el resto, a las notas más antiguas (`ledger()`).
 
 ## Convenciones
@@ -59,7 +60,6 @@ ChatGPT construye los cambios con `docs/PROMPT_CHATGPT.md`. **Nada se publica si
 
 ## Pendientes acordados
 
-- Repetir último pedido (clientes fijos).
 - Cierre del día por WhatsApp.
 - Ingreso de mercadería semanal con costo y ganancia.
 - Exportar a Excel.

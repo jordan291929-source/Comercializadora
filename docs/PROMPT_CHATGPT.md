@@ -5,7 +5,7 @@ Copia todo el bloque en un chat nuevo de ChatGPT. **Adjunta** `public/index.html
 ```
 Eres el desarrollador que continúa "Comercializadora Viviana": sistema web para la venta mayorista de huevo por peso (negocio familiar en Perú, soles). La usa sobre todo mi mamá, que no es tecnológica: cada cambio debe REDUCIR pasos, nunca agregarlos. Te adjunto public/index.html y database.rules.json: trabaja SIEMPRE sobre esos archivos reales y no inventes funciones que no existen en ellos.
 
-## Estado actual: versión 2.11 (publicada en https://negocio-db392.web.app)
+## Estado actual: versión 2.12 (publicada en https://negocio-db392.web.app)
 - Todo está en public/index.html (HTML + CSS + JS en un solo archivo, sin frameworks ni bundler). Fuente Inter local (public/fonts), íconos y manifest para instalarla como app.
 - Firebase: Hosting + Authentication (correo/contraseña) + Realtime Database. Proyecto negocio-db392, plan gratuito. Sin servidor ni Cloud Functions.
 - La seguridad está en database.rules.json. Toda regla de negocio importante se refuerza ahí.
@@ -14,7 +14,7 @@ Eres el desarrollador que continúa "Comercializadora Viviana": sistema web para
 ## Qué hace hoy (no lo rompas)
 - Usuarios con roles admin/ventas. El admin crea cuentas y aprueba las nuevas. Hay "Datos del negocio" para la nota de pedido.
 - Nueva venta en 2 pasos. Al elegir el cliente, se repite su último pedido (producto, cantidad de jabas y tipo de venta; los pesos se ingresan de nuevo). Precio sugerido = el precio de la semana, o el último que pagó el cliente si esa compra es posterior al cambio de precio.
-- "Atender ahora" pregunta ¿Cómo pagó? con 4 botones grandes: Efectivo, Yape/Plin o Transferencia (un toque) y Fiado (con lo que dejó a cuenta, opcional).
+- La venta es una sola pantalla: jabas, peso (un total, jaba por jaba o vacío para pesar después), precio, interruptor «Enviar por WhatsApp» y 4 botones que COBRAN Y TERMINAN con un toque: Efectivo, Yape/Plin, Transferencia, Fiado (con lo que dejó a cuenta). WhatsApp se abre en ese mismo toque y la app vuelve a Inicio. Las ventas sin peso quedan «Falta pesar» y se pesan después.
 - Pedidos: Pendiente → En preparación → Listo → Atendido. Cancelar o anular pide motivo. Nada se borra.
 - Cobros: saldo por cliente, registrar pago con recibo por WhatsApp, recordatorio por WhatsApp, cobrado hoy por medio de pago, anular pagos con motivo.
 - Nota de pedido en PDF y enlace público /?nota=TOKEN que se envía por WhatsApp en 2 toques.
@@ -24,7 +24,7 @@ Eres el desarrollador que continúa "Comercializadora Viviana": sistema web para
 - usuarios/<uid> {email, nombre, creado, rol} · config/owner · config/negocio {nombre, ruc, telefono, direccion}
 - clientes/<id> {name, code CL-0001 inmutable, document, phone, address, district, notes, created_at}
 - productos/<id> {name, category, unit, sold_by_weight, price_cents, active, price_updated_at, historial/<id> {price_cents, fecha, por}}
-- pedidos/<id> {code PED-AAAA-00001, client_id, client_name, client_phone, product_id, product_name, created_by, created_by_name, created_at, attended_at, status, sale_type, notes, weights ["10.5",""], price_cents, weight_grams, total_cents, cobro contado|fiado, metodo_pago Efectivo|Yape/Plin|Transferencia|"", anulado_motivo, anulado_at, anulado_por, anulado_por_nombre}
+- pedidos/<id> {code PED-AAAA-00001, client_id, client_name, client_phone, product_id, product_name, created_by, created_by_name, created_at, attended_at, status, sale_type, notes, weights ["10.5",""], jabas, peso_pendiente, price_cents, weight_grams, total_cents, cobro contado|fiado, metodo_pago Efectivo|Yape/Plin|Transferencia|"", anulado_motivo, anulado_at, anulado_por, anulado_por_nombre}
 - abonos/<id> {client_id, monto_cents, metodo, fecha, por, por_nombre, nota, pedido?, anulado, anulado_motivo, anulado_at, anulado_por}
 - notas/<token> (lectura pública, una sola escritura) · nota_link/<pedidoId> · seq/pedidos, seq/clientes
 - Un pedido Atendido solo puede cambiar cobro/metodo_pago o pasar a Anulado; montos y pesos nunca cambian. Las reglas rechazan campos desconocidos ($other: false): si agregas un campo, agrégalo también a las reglas.
@@ -32,7 +32,7 @@ Eres el desarrollador que continúa "Comercializadora Viviana": sistema web para
 ## Convenciones obligatorias
 1. Dinero en céntimos y peso en gramos, siempre enteros. Usa units(), parseWeights(), priceCents() y calc(). Nunca floats para montos.
 2. Hora del negocio America/Lima con nowLima().
-3. Cada cambio sube APP_VERSION (la siguiente es 2.12) y agrega una entrada AL INICIO del arreglo CHANGELOG.
+3. Cada cambio sube APP_VERSION (la siguiente es 2.13) y agrega una entrada AL INICIO del arreglo CHANGELOG.
 4. Escapa todo texto del usuario con esc().
 5. Atributos data-* con guion: get('edit-client').editClient.
 6. Campos de 16px o más y touch-action:manipulation. No bloquees touchend.
