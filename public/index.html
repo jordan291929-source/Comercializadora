@@ -29,7 +29,7 @@
 @media(max-width:760px){
   #page-clientes .section-heading,#page-productos .section-heading,#page-usuarios .section-heading{align-items:stretch;flex-direction:column}
   #page-clientes .section-heading .button,#page-productos .section-heading .button,#page-usuarios .section-heading .button{width:100%;min-height:48px}
-  #clients-table,#products-table,#users-table{background:transparent;border:0;overflow:visible}
+  #products-table,#users-table{background:transparent;border:0;overflow:visible}
   #clients-table table,#products-table table,#users-table table{min-width:0;display:block}
   #clients-table thead,#products-table thead,#users-table thead{display:none}
   #clients-table tbody,#products-table tbody,#users-table tbody{display:grid;gap:10px}
@@ -51,7 +51,7 @@ h1,h2,h3{font-family:Inter,system-ui,sans-serif;letter-spacing:-.02em;font-weigh
 .button,.mini-button{font-weight:600}
 input,select,textarea{font-size:16px}
 #page-cobros{max-width:760px}#page-cobros .home-hero{margin:4px 0 22px}.hero-split .hs{background:#ffffff14;border-radius:12px;padding:10px 12px;display:grid;gap:1px}.hs small{font-size:11.5px;color:#c9d6cd}.hs b{font-size:16px;font-variant-numeric:tabular-nums}.hs em{font-style:normal;font-size:11px;color:#b7c6bc;line-height:1.35;margin-top:3px}
-.db-ini{width:36px;height:36px;border-radius:50%;background:#fdf3e2;color:#7a4a00;font-weight:700;display:grid;place-items:center;flex:none}.debtor .ord-main{justify-content:flex-start}.debtor .sr-side{margin-left:auto}.late{color:#b3263b;font-weight:700}.ord-row.debtor{flex-wrap:wrap}.debtor .ord-main{flex:1 0 100%;padding-bottom:6px}.db-acts{display:flex;justify-content:flex-end;gap:8px;width:100%;padding:0 12px 12px 60px}.db-acts .ord-act{margin:0}.ord-wa{display:flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border-radius:10px;background:#e3f3e8;color:#1f8f4e;font-weight:700;font-size:13px;text-decoration:none}.ord-wa .wa-ico{width:20px;height:20px}
+.db-ini{width:36px;height:36px;border-radius:50%;background:#fdf3e2;color:#7a4a00;font-weight:700;display:grid;place-items:center;flex:none}.debtor .ord-main{justify-content:flex-start}.debtor .sr-side{margin-left:auto}.late{color:#b3263b;font-weight:700}.ord-row.debtor{flex-wrap:wrap}.db-ini.ok{background:#e6efe9;color:#1f3b2d}.cl-top{display:flex;gap:8px;margin:4px 0 16px}.cl-top input{flex:1;min-width:0;font-size:16px;min-height:48px;border:1px solid #e2e0d9;border-radius:12px;padding:0 14px;background:#fff}.cl-top .button{flex:none;min-height:48px}#page-clientes{max-width:760px}.debtor .ord-main{flex:1 0 100%;padding-bottom:6px}.db-acts{display:flex;justify-content:flex-end;gap:8px;width:100%;padding:0 12px 12px 60px}.db-acts .ord-act{margin:0}.ord-wa{display:flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border-radius:10px;background:#e3f3e8;color:#1f8f4e;font-weight:700;font-size:13px;text-decoration:none}.ord-wa .wa-ico{width:20px;height:20px}
 .order-tabs{margin:2px 0 12px!important}.order-tabs button{white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:2px;padding:10px 4px!important}.sr-side{flex:none;white-space:nowrap}.pt{white-space:nowrap}.ord-main .sr-main{flex:1}
 .tab-count{display:inline-grid;place-items:center;min-width:22px;height:20px;padding:0 6px;border-radius:99px;background:#ecf1ea;color:#1f3b2d;font-size:11.5px;margin-left:4px}.order-tabs button.active .tab-count{background:#1f3b2d;color:#fff}
 .day-group{margin:0 0 18px}.day-head{display:flex;justify-content:space-between;align-items:baseline;margin:0 4px 8px}.day-head b{font-size:14px;color:#10201f}.day-head span{font-size:12.5px;color:#4f5f55;font-variant-numeric:tabular-nums}
@@ -151,7 +151,7 @@ html,body,*,*::before,*::after{touch-action:manipulation}
           <div class="home-section"><div class="home-row-head"><h3 class="home-h">Últimas ventas</h3><button class="text-button" data-page="pedidos">Ver todas</button></div><div id="recent-orders" class="sale-rows"></div></div>
         </section>
         <section id="page-pedidos" class="page" hidden><div class="order-tabs" role="tablist" aria-label="Filtrar pedidos"><button data-order-tab="pending" class="active" role="tab">Pendientes</button><button data-order-tab="attended" role="tab">Atendidos</button><button data-order-tab="all" role="tab">Todos</button></div><input id="order-search" class="order-search" placeholder="Buscar cliente o número de pedido" aria-label="Buscar pedido"><div id="orders-table"></div></section>
-        <section id="page-clientes" class="page" hidden><div class="section-heading"><div><h2>Clientes</h2><p>Información de contacto e historial de compras.</p></div><button class="button primary" data-open="client">+ Nuevo cliente</button></div><div class="panel" id="clients-table"></div></section>
+        <section id="page-clientes" class="page" hidden><div class="cl-top"><input id="client-filter" type="search" placeholder="Buscar cliente o teléfono" autocomplete="off"><button class="button primary" data-open="client">+ Nuevo</button></div><div class="home-section"><div class="home-row-head"><h3 class="home-h">Clientes <span id="clients-count" class="tab-count"></span></h3></div><div id="clients-table" class="sale-rows"></div></div></section>
         <section id="page-productos" class="page" hidden><div class="section-heading"><div><h2>Productos</h2><p>El huevo es el centro de la operación; el catálogo puede crecer.</p></div><button class="button primary" data-open="product">+ Nuevo producto</button></div><div class="panel" id="products-table"></div></section>
         <section id="page-ingresos" class="page" hidden><div class="section-heading"><div><h2>Ingresos de mercadería</h2><p>Pesaje de las jabas que llegan del proveedor.</p></div><button class="button primary income-create" id="income-new">+ Nuevo ingreso</button></div><div id="income-list"></div></section>
         <section id="page-conteo" class="page" hidden><button class="text-button income-back" data-page="ingresos">‹ Volver a ingresos</button><div id="income-detail"></div></section>
@@ -172,8 +172,9 @@ html,body,*,*::before,*::after{touch-action:manipulation}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
 'use strict';
-const APP_VERSION='2.26';
+const APP_VERSION='2.27';
 const CHANGELOG=[
+  {v:'2.27',f:'2026-10-08',t:'Clientes renovado: buscador, los que compraron hace poco arriba, cuántas compras y cuándo fue la última, lo que debe, y botones «Escribir» por WhatsApp y «Vender» que abre la venta con el cliente ya elegido.'},
   {v:'2.26',f:'2026-10-08',t:'Cobros renovado: total por cobrar destacado con lo cobrado hoy por medio de pago, lista «Quién debe» con días de atraso y botones de WhatsApp y Cobrar en la fila, y pagos recibidos en filas compactas.'},
   {v:'2.25',f:'2026-10-08',t:'Pedidos más ordenados: pestañas con contador, agrupados por día con el total vendido, filas compactas con forma de pago y botones «Atender» o «Pesar» en la misma fila.'},
   {v:'2.24',f:'2026-10-08',t:'Cabecera con el logo y el nombre del negocio en el celular, y panel de usuario (inicial) con nombre, rol y «Cerrar sesión».'},
@@ -587,7 +588,7 @@ function render(){
   const term=$('#order-search').value.trim().toLowerCase();
   const visible=state.orders.filter(o=>(!term||`${o.code} ${o.client_name}`.toLowerCase().includes(term))&&(state.orderTab==='all'||(state.orderTab==='attended'?o.status==='Atendido':needsAction(o))));
   renderOrderList(visible);
-  const LB=ledger().by;$('#clients-table').innerHTML=table(['Cliente','Documento','Teléfono','Distrito','Pedidos','Saldo',''],state.clients.map(c=>`<tr><td><strong>${esc(c.name)}</strong><small>${esc(c.code||'')}</small></td><td>${esc(c.document)||'—'}</td><td>${esc(c.phone)||'—'}</td><td>${esc(c.district)||'—'}</td><td>${state.orders.filter(o=>o.client_id===c.id).length}</td><td>${(LB[c.id]?.saldo||0)>0?`<strong class="debt">${money(LB[c.id].saldo)}</strong>`:'—'}</td><td><button class="mini-button" data-edit-client="${esc(c.id)}">Editar</button></td></tr>`),'Todavía no hay clientes');
+  renderClients(ledger().by);
   $('#products-table').innerHTML=table(['Producto','Categoría','Unidad','Precio vigente','Estado',''],state.products.map(p=>`<tr><td><strong>${esc(p.name)}</strong></td><td>${esc(p.category)}</td><td>${esc(p.unit)}${p.sold_by_weight?' · venta por peso':''}</td><td><strong>${money(p.price_cents||0)}</strong>${p.price_updated_at?`<small class="price-since">desde ${shortDate(p.price_updated_at)}</small>`:''}</td><td>${p.active===false?'<span class="pill cancelado">Inactivo</span>':'<span class="pill atendido">Activo</span>'}</td><td><button class="mini-button" data-edit-product="${esc(p.id)}">Editar precio y datos</button></td></tr>`),'Todavía no hay productos');
   if(state.profile?.rol==='admin'){
     const users=[...state.users].sort((a,b)=>(a.rol?1:0)-(b.rol?1:0)||(a.creado||'').localeCompare(b.creado||''));
@@ -597,6 +598,15 @@ function render(){
 
 // ---------- Formularios ----------
 function submitWith(form,fn){form.onsubmit=async e=>{e.preventDefault();const btn=form.querySelector('[type=submit]');btn.disabled=true;try{await fn(e);}catch(err){notify(err.message);}finally{btn.disabled=false;}};}
+// Clientes: los que compraron hace poco arriba; tocar la fila edita, «Vender» abre la venta con el cliente ya elegido.
+function renderClients(LB){
+  const today=nowLima().slice(0,10),term=($('#client-filter').value||'').trim().toLowerCase(),info={};
+  state.orders.forEach(o=>{if(['Cancelado','Anulado'].includes(o.status))return;const i=info[o.client_id]||(info[o.client_id]={n:0,last:''});i.n++;if((o.created_at||'')>i.last)i.last=o.created_at||'';});
+  const list=state.clients.filter(c=>!term||`${c.name} ${c.phone||''} ${c.code||''} ${c.district||''}`.toLowerCase().includes(term)).sort((a,b)=>(info[b.id]?.last||'').localeCompare(info[a.id]?.last||'')||a.name.localeCompare(b.name));
+  $('#clients-count').textContent=state.clients.length||'';
+  $('#clients-table').innerHTML=list.length?list.map(c=>{const i=info[c.id],saldo=LB[c.id]?.saldo||0,hasPhone=!!(c.phone||'').replace(/\D/g,''),d0=i?.last?Math.round((Date.parse(today)-Date.parse(i.last.slice(0,10)))/864e5):NaN,d=Number.isFinite(d0)?Math.max(0,d0):null;
+    return `<div class="ord-row debtor"><button class="ord-main" data-edit-client="${esc(c.id)}"><span class="db-ini${saldo>0?'':' ok'}">${esc((c.name||'?').trim().charAt(0).toUpperCase())}</span><span class="sr-main"><b>${esc(c.name)}</b><small>${i?`${i.n} ${i.n===1?'compra':'compras'}${d===null?'':` · última ${d===0?'hoy':d===1?'ayer':`hace ${d} días`}`}`:'Sin compras todavía'}${c.district?' · '+esc(c.district):''}</small></span><span class="sr-side">${saldo>0?`<b class="debt">${money(saldo)}</b><span class="pt fiado">Debe</span>`:'<span class="pt">Al día</span>'}</span></button><div class="db-acts">${hasPhone?`<a class="ord-wa" href="${esc(waTo(c.phone,''))}" target="_blank" rel="noopener">${WA_ICON}Escribir</a>`:''}<button class="ord-act" data-sell-client="${esc(c.id)}">Vender</button></div></div>`;}).join(''):`<div class="empty"><strong>${term?'No encontré ese cliente':'Todavía no hay clientes'}</strong>${term?'Revisa el nombre o créalo con «+ Nuevo».':''}</div>`;
+}
 function openClient(id){
   const c=id?state.clients.find(x=>x.id===id):null;if(id&&!c)return;
   const v=(k)=>c?(c[k]||''):undefined;
@@ -631,7 +641,7 @@ function openProduct(id){
     closeModal();notify(p?(changed?`Precio actualizado a ${money(price)} por ${unit}`:'Producto actualizado'):'Producto registrado');
   });
 }
-function openOrder(){
+function openOrder(clientId){
   const active=state.products.filter(p=>p.active!==false);
   if(!active.length){notify('Todavía no hay productos disponibles');return;}
   const draft={client:null,product:active.find(p=>p.id==='huevo-comercial')||active.find(p=>p.sold_by_weight)||active[0],count:1,weights:[''],price:'',sale_type:'Mayorista',notes:''};
@@ -730,7 +740,7 @@ function openOrder(){
       closeModal();nav('pedidos');notify('Pedido guardado como pendiente');
     }catch(err){notify(err.message);}
   }
-  showClients();
+  const pre=typeof clientId==='string'&&state.clients.find(c=>c.id===clientId);if(pre)chooseClient(pre);else showClients();
 }
 function whatsapp(o,message){const name=o.client_name.split(' ')[0];const detail=message||`Hola ${name}, te compartimos el detalle de tu pedido:\n\nNota: ${o.code}\nProducto: ${o.product_name}\n${unitOrder(o)?`Cantidad: ${orderAmount(o)}\nPrecio por ${o.unidad}: ${money(o.price_cents)}`:`Jabas: ${jabasOf(o)}\nPeso total: ${(o.weight_grams/1000).toFixed(3)} kg\nPrecio: ${money(o.price_cents)}/kg`}\nTotal: ${money(o.total_cents)}\n\nGracias por tu compra.`;const digits=(o.client_phone||'').replace(/\D/g,'');return `https://wa.me/${digits.startsWith('51')?digits:digits?'51'+digits:''}?text=${encodeURIComponent(detail)}`;}
 function showOrder(id){
@@ -907,7 +917,7 @@ $('#auth-form').onsubmit=async e=>{
 };
 $('#auth-toggle').onclick=()=>{state.mode=state.mode==='login'?'register':'login';$('#auth-error').textContent='';showAuth();};
 $('#auth-reset').onclick=async()=>{const email=$('#auth-form').elements.email.value.trim();if(!email){$('#auth-error').textContent='Escribe tu correo y vuelve a pulsar «¿Olvidaste tu contraseña?»';return;}try{await auth.sendPasswordResetEmail(email);$('#auth-error').textContent='';notify('Te enviamos un correo para cambiar la contraseña');}catch(err){$('#auth-error').textContent=authMessage(err);}};
-$('#close-modal').onclick=closeModal;$('#modal').addEventListener('close',()=>{if(!$('#modal').open){$('#modal').classList.remove('sale-modal');$('#modal-body').onclick=null;}});$('#order-search').oninput=render;$('#ver-chip').onclick=showChangelog;
+$('#close-modal').onclick=closeModal;$('#modal').addEventListener('close',()=>{if(!$('#modal').open){$('#modal').classList.remove('sale-modal');$('#modal-body').onclick=null;}});$('#order-search').oninput=render;$('#client-filter').oninput=()=>renderClients(ledger().by);$('#ver-chip').onclick=showChangelog;
 $('#income-new').onclick=nuevoIngreso;
 document.querySelectorAll('[data-order-tab]').forEach(button=>button.onclick=()=>{state.orderTab=button.dataset.orderTab;document.querySelectorAll('[data-order-tab]').forEach(el=>el.classList.toggle('active',el===button));render();});
 document.addEventListener('change',e=>{const role=e.target.closest('[data-role]');if(role)setRole(role.dataset.role,role.value);});
@@ -922,6 +932,7 @@ document.addEventListener('click',e=>{
   if(get('void-abono'))voidAbono(get('void-abono').voidAbono);
   if(get('chpay'))openChangePay(get('chpay').chpay);
   if(get('edit-client'))openClient(get('edit-client').editClient);
+  if(get('sell-client'))openOrder(get('sell-client').sellClient);
   if(get('edit-product'))openProduct(get('edit-product').editProduct);
   if(get('open'))({order:openOrder,client:openClient,product:openProduct,user:openUser}[get('open').open])();
   if(get('detail'))showOrder(get('detail').detail);
