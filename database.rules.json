@@ -239,7 +239,10 @@
       ".read": "auth != null && root.child('usuarios/' + auth.uid + '/rol').exists()",
       "$id": {
         ".write": "(auth != null && root.child('usuarios/' + auth.uid + '/rol').exists() && newData.exists() && (!data.exists() ? (newData.child('cerrado').val() === false && newData.child('por').val() === auth.uid) : data.child('cerrado').val() === false)) || (auth != null && root.child('usuarios/' + auth.uid + '/rol').val() === 'admin' && !newData.exists())",
-        ".validate": "newData.hasChildren(['fecha', 'proveedor', 'min_g', 'max_g', 'nota', 'creado', 'por', 'por_nombre', 'cerrado']) && newData.child('min_g').val() < newData.child('max_g').val()",
+        ".validate": "newData.hasChildren(['fecha', 'proveedor', 'nota', 'creado', 'por', 'por_nombre', 'cerrado']) && (!data.exists() || (data.child('tipo').exists() ? newData.child('tipo').val() === data.child('tipo').val() : (!newData.child('tipo').exists() || newData.child('tipo').val() === 'huevo'))) && ((!newData.child('tipo').exists() || newData.child('tipo').val() === 'huevo') ? (newData.hasChildren(['min_g', 'max_g']) && newData.child('min_g').val() < newData.child('max_g').val() && !newData.child('items').exists()) : (newData.child('tipo').val() === 'otros' && !newData.child('min_g').exists() && !newData.child('max_g').exists() && !newData.child('jabas').exists()))",
+        "tipo": {
+          ".validate": "newData.val() === 'huevo' || newData.val() === 'otros'"
+        },
         "fecha": {
           ".validate": "newData.isString() && newData.val().matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/) && (!data.exists() || newData.val() === data.val())"
         },
@@ -273,6 +276,32 @@
             ".validate": "newData.hasChildren(['g', 'hora', 'por']) && (data.exists() || newData.child('por').val() === auth.uid)",
             "g": {
               ".validate": "newData.isNumber() && newData.val() >= 1000 && newData.val() <= 30000 && newData.val() % 1 === 0"
+            },
+            "hora": {
+              ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())"
+            },
+            "por": {
+              ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        },
+        "items": {
+          "$item": {
+            ".validate": "newData.hasChildren(['producto', 'cantidad', 'unidad', 'hora', 'por']) && (data.exists() || newData.child('por').val() === auth.uid)",
+            "producto": {
+              ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 80"
+            },
+            "cantidad": {
+              ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 10000 && newData.val() % 1 === 0"
+            },
+            "unidad": {
+              ".validate": "newData.val() === 'saco' || newData.val() === 'bolsa' || newData.val() === 'caja' || newData.val() === 'paquete' || newData.val() === 'unidad'"
+            },
+            "costo_cents": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() % 1 === 0"
             },
             "hora": {
               ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())"
