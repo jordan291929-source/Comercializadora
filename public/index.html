@@ -148,8 +148,9 @@ html,body,*,*::before,*::after{touch-action:manipulation}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
 'use strict';
-const APP_VERSION='2.19';
+const APP_VERSION='2.20';
 const CHANGELOG=[
+  {v:'2.20',f:'2026-10-08',t:'El administrador puede eliminar un conteo de mercadería completo (con confirmación).'},
   {v:'2.19',f:'2026-10-08',t:'Colores de la marca (verde oscuro y dorado de la tarjeta) en toda la app y el PDF. Datos del negocio de la tarjeta por defecto en la nota de pedido.'},
   {v:'2.18',f:'2026-10-08',t:'Logo de Comercializadora Viviana en el ícono de la app, el inicio de sesión, la barra lateral, la nota de pedido y el PDF.'},
   {v:'2.17',f:'2026-10-08',t:'Ingresos de mercadería: conteo rápido de jabas por proveedor, control de rango, resumen por WhatsApp y cierre con reapertura por administrador.'},
@@ -394,8 +395,9 @@ function renderIngresos(){
 function renderConteo(){
   const i=state.ingresos.find(x=>x.id===state.ingresoId),box=$('#income-detail');if(!i){box.innerHTML='';box.dataset.key='';return;}
   const s=ingresoStats(i),key=i.id+':'+i.cerrado;
-  if(box.dataset.key!==key){box.dataset.key=key;box.innerHTML=`<div class="income-card"><strong>${esc(ingresoFecha(i.fecha))} · ${esc(i.proveedor||'Sin proveedor')}</strong><small>Rango esperado: ${kg(i.min_g)} a ${kg(i.max_g)} kg</small></div><h2 id="income-next"></h2><div class="income-summary" id="income-quick"></div>${i.cerrado?'<div class="income-readonly">Conteo cerrado · solo lectura</div>':`<form id="income-weight-form" class="income-form"><label>Peso de la jaba (kg)<input id="income-weight" name="peso" type="text" inputmode="decimal" autocomplete="off" placeholder="10,600" aria-label="Peso de la jaba en kilogramos"></label><button class="button primary" type="submit">+ Anotar</button><p class="income-confirm" id="income-confirm" role="status"></p></form>`}<div class="income-detail-actions"><a id="income-whatsapp" class="button wa-button" target="_blank" rel="noopener">${WA_ICON} Compartir resumen por WhatsApp</a>${i.cerrado?(state.profile?.rol==='admin'?'<button class="button" id="income-reopen">Reabrir</button>':''):'<button class="button primary" id="income-close">Terminar conteo</button>'}</div><div class="income-summary" id="income-summary"></div><h3>Jabas anotadas</h3><div class="panel" id="income-rows"></div>`;
+  if(box.dataset.key!==key){box.dataset.key=key;box.innerHTML=`<div class="income-card"><strong>${esc(ingresoFecha(i.fecha))} · ${esc(i.proveedor||'Sin proveedor')}</strong><small>Rango esperado: ${kg(i.min_g)} a ${kg(i.max_g)} kg</small></div><h2 id="income-next"></h2><div class="income-summary" id="income-quick"></div>${i.cerrado?'<div class="income-readonly">Conteo cerrado · solo lectura</div>':`<form id="income-weight-form" class="income-form"><label>Peso de la jaba (kg)<input id="income-weight" name="peso" type="text" inputmode="decimal" autocomplete="off" placeholder="10,600" aria-label="Peso de la jaba en kilogramos"></label><button class="button primary" type="submit">+ Anotar</button><p class="income-confirm" id="income-confirm" role="status"></p></form>`}<div class="income-detail-actions"><a id="income-whatsapp" class="button wa-button" target="_blank" rel="noopener">${WA_ICON} Compartir resumen por WhatsApp</a>${i.cerrado?(state.profile?.rol==='admin'?'<button class="button" id="income-reopen">Reabrir</button>':''):'<button class="button primary" id="income-close">Terminar conteo</button>'}${state.profile?.rol==='admin'?'<button class="button danger" id="income-delete-all">Eliminar conteo</button>':''}</div><div class="income-summary" id="income-summary"></div><h3>Jabas anotadas</h3><div class="panel" id="income-rows"></div>`;
     if(!i.cerrado){submitWith($('#income-weight-form'),anotarJaba);$('#income-close').onclick=terminarConteo;}else if(state.profile?.rol==='admin')$('#income-reopen').onclick=reabrirConteo;
+    if($('#income-delete-all'))$('#income-delete-all').onclick=eliminarConteo;
   }
   $('#income-next').textContent=i.cerrado?'Resumen del ingreso':`Jaba N° ${s.j.length+1}`;
   $('#income-quick').innerHTML=[['Jabas',s.j.length],['Kg totales',kg(s.total)+' kg'],['Promedio',s.j.length?kg(s.promedio)+' kg':'—']].map(([label,value])=>`<div><small>${label}</small><strong>${value}</strong></div>`).join('');
@@ -431,6 +433,8 @@ function editarJaba(id){
   $('#income-delete').onclick=async()=>{if(!confirm('¿Borrar esta jaba del conteo?'))return;try{await db.ref('ingresos/'+i.id+'/jabas/'+id).remove();closeModal();notify('Jaba borrada');}catch(err){notify(err.message);}};
 }
 async function terminarConteo(){const i=state.ingresos.find(x=>x.id===state.ingresoId);if(!i||i.cerrado)return;if(!confirm('¿Terminar el conteo? Quedará solo para consultar.'))return;try{await db.ref('ingresos/'+i.id+'/cerrado').set(true);notify('Conteo terminado');}catch(err){notify(err.message);}}
+// Solo admin: borra el conteo completo (no afecta ventas ni cobros).
+async function eliminarConteo(){const i=state.ingresos.find(x=>x.id===state.ingresoId);if(!i||state.profile?.rol!=='admin')return;const n=ingresoJabas(i).length;if(!confirm(`¿Eliminar el conteo del ${shortDate(i.fecha)}${i.proveedor?' ('+i.proveedor+')':''} con ${n} ${n===1?'jaba':'jabas'}?\n\nNo se puede deshacer.`))return;try{await db.ref('ingresos/'+i.id).remove();state.ingresoId=null;nav('ingresos');notify('Conteo eliminado');}catch(err){notify(err.message);}}
 async function reabrirConteo(){const i=state.ingresos.find(x=>x.id===state.ingresoId);if(!i||!i.cerrado||state.profile?.rol!=='admin')return;if(!confirm('¿Reabrir este conteo para corregirlo?'))return;try{await db.ref('ingresos/'+i.id+'/cerrado').set(false);notify('Conteo reabierto');}catch(err){notify(err.message);}}
 function render(){
   if($('#app').hidden)return;

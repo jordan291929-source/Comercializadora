@@ -238,16 +238,32 @@
     "ingresos": {
       ".read": "auth != null && root.child('usuarios/' + auth.uid + '/rol').exists()",
       "$id": {
-        ".write": "auth != null && root.child('usuarios/' + auth.uid + '/rol').exists() && newData.exists() && (!data.exists() ? (newData.child('cerrado').val() === false && newData.child('por').val() === auth.uid) : data.child('cerrado').val() === false)",
+        ".write": "(auth != null && root.child('usuarios/' + auth.uid + '/rol').exists() && newData.exists() && (!data.exists() ? (newData.child('cerrado').val() === false && newData.child('por').val() === auth.uid) : data.child('cerrado').val() === false)) || (auth != null && root.child('usuarios/' + auth.uid + '/rol').val() === 'admin' && !newData.exists())",
         ".validate": "newData.hasChildren(['fecha', 'proveedor', 'min_g', 'max_g', 'nota', 'creado', 'por', 'por_nombre', 'cerrado']) && newData.child('min_g').val() < newData.child('max_g').val()",
-        "fecha": { ".validate": "newData.isString() && newData.val().matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/) && (!data.exists() || newData.val() === data.val())" },
-        "proveedor": { ".validate": "newData.isString() && newData.val().length <= 100" },
-        "min_g": { ".validate": "newData.isNumber() && newData.val() >= 1000 && newData.val() <= 30000 && newData.val() % 1 === 0" },
-        "max_g": { ".validate": "newData.isNumber() && newData.val() >= 1000 && newData.val() <= 30000 && newData.val() % 1 === 0" },
-        "nota": { ".validate": "newData.isString() && newData.val().length <= 500" },
-        "creado": { ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())" },
-        "por": { ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())" },
-        "por_nombre": { ".validate": "newData.isString() && newData.val().length <= 80 && (!data.exists() || newData.val() === data.val())" },
+        "fecha": {
+          ".validate": "newData.isString() && newData.val().matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/) && (!data.exists() || newData.val() === data.val())"
+        },
+        "proveedor": {
+          ".validate": "newData.isString() && newData.val().length <= 100"
+        },
+        "min_g": {
+          ".validate": "newData.isNumber() && newData.val() >= 1000 && newData.val() <= 30000 && newData.val() % 1 === 0"
+        },
+        "max_g": {
+          ".validate": "newData.isNumber() && newData.val() >= 1000 && newData.val() <= 30000 && newData.val() % 1 === 0"
+        },
+        "nota": {
+          ".validate": "newData.isString() && newData.val().length <= 500"
+        },
+        "creado": {
+          ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())"
+        },
+        "por": {
+          ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())"
+        },
+        "por_nombre": {
+          ".validate": "newData.isString() && newData.val().length <= 80 && (!data.exists() || newData.val() === data.val())"
+        },
         "cerrado": {
           ".write": "auth != null && root.child('usuarios/' + auth.uid + '/rol').val() === 'admin' && data.val() === true && newData.val() === false",
           ".validate": "newData.isBoolean()"
@@ -255,13 +271,23 @@
         "jabas": {
           "$j": {
             ".validate": "newData.hasChildren(['g', 'hora', 'por']) && (data.exists() || newData.child('por').val() === auth.uid)",
-            "g": { ".validate": "newData.isNumber() && newData.val() >= 1000 && newData.val() <= 30000 && newData.val() % 1 === 0" },
-            "hora": { ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())" },
-            "por": { ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())" },
-            "$other": { ".validate": false }
+            "g": {
+              ".validate": "newData.isNumber() && newData.val() >= 1000 && newData.val() <= 30000 && newData.val() % 1 === 0"
+            },
+            "hora": {
+              ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())"
+            },
+            "por": {
+              ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())"
+            },
+            "$other": {
+              ".validate": false
+            }
           }
         },
-        "$other": { ".validate": false }
+        "$other": {
+          ".validate": false
+        }
       }
     },
     "abonos": {
