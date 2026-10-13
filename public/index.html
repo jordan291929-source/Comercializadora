@@ -67,6 +67,7 @@ input,select,textarea{font-size:16px}
 .sale-weights{margin-bottom:14px}.wseg{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:#ecebe5;border-radius:12px;padding:4px;margin:4px 0 14px}.wseg button{border:0;border-radius:9px;background:transparent;min-height:44px;font-size:15px;font-weight:600;color:#4f5f55;touch-action:manipulation}.wseg button.on{background:#fff;color:#1f3b2d;box-shadow:0 1px 3px #10201f26}
 .xls-opts{display:grid;gap:10px}.xls-opts .button{display:flex;justify-content:space-between;align-items:center;min-height:56px;font-size:16px}.xls-opts small{color:#4f5f55;font-weight:500}.xls-dl{min-height:52px;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:15px}.cj-xls{margin-top:16px;min-height:48px}.cj-xls+.cj-send{margin-top:10px}
 .net-pill{margin-left:auto;margin-right:8px;font-size:12px;font-weight:600;color:#1f3b2d;background:#e6efe9;border-radius:20px;padding:5px 10px;white-space:nowrap}.net-pill.off{color:#4f5f55;background:#ecebe5}.net-sub{color:#4f5f55!important;font-weight:600}@media(max-width:760px){.net-pill{display:none!important}}
+.cl-import{margin:-6px 0 16px;min-height:46px;font-size:15px}.imp-list{max-height:46vh;overflow:auto;margin-bottom:14px;border:1px solid #f0eee8}.imp-row{display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid #f0eee8}.imp-row input{width:22px;height:22px;flex:none;accent-color:#1f3b2d}.imp-row span{display:grid;min-width:0}.imp-row b{font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.imp-row small{color:#4f5f55;font-size:12.5px}.imp-row.off{opacity:.5}.imp-go{min-height:52px;font-size:16px;position:sticky;bottom:0;box-shadow:0 -8px 16px #fff}.imp-q{width:100%;font-size:16px;min-height:46px;border:1px solid #e2e0d9;border-radius:12px;padding:0 14px;margin-bottom:8px}.imp-bulk{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}.imp-bulk .button{min-height:44px}.imp-row[hidden]{display:none}
 .home-hero{background:#1f3b2d;color:#fff;border-radius:20px;padding:20px 20px 16px;display:grid;gap:4px;box-shadow:0 10px 24px -14px #1f3b2d}
 .hero-label{font-size:13px;font-weight:600;color:#d9c48f;letter-spacing:.02em}.hero-total{font-size:34px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}.hero-sub{font-size:13px;color:#c9d6cd}
 .hero-split{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.hero-split button{border:0;background:#ffffff14;border-radius:12px;padding:10px 12px;text-align:left;color:#fff}.hero-split small{display:block;font-size:11.5px;color:#c9d6cd}.hero-split b{font-size:16px;font-variant-numeric:tabular-nums}
@@ -157,7 +158,7 @@ html,body,*,*::before,*::after{touch-action:manipulation}
           <div class="home-section"><div class="home-row-head"><h3 class="home-h">Últimas ventas</h3><button class="text-button" data-page="pedidos">Ver todas</button></div><div id="recent-orders" class="sale-rows"></div></div>
         </section>
         <section id="page-pedidos" class="page" hidden><div class="order-tabs" role="tablist" aria-label="Filtrar pedidos"><button data-order-tab="pending" class="active" role="tab">Pendientes</button><button data-order-tab="attended" role="tab">Atendidos</button><button data-order-tab="all" role="tab">Todos</button></div><input id="order-search" class="order-search" placeholder="Buscar cliente o número de pedido" aria-label="Buscar pedido"><div id="orders-table"></div></section>
-        <section id="page-clientes" class="page" hidden><div class="cl-top"><input id="client-filter" type="search" placeholder="Buscar cliente o teléfono" autocomplete="off"><button class="button primary" data-open="client">+ Nuevo</button></div><div class="home-section"><div class="home-row-head"><h3 class="home-h">Clientes <span id="clients-count" class="tab-count"></span></h3></div><div id="clients-table" class="sale-rows"></div></div></section>
+        <section id="page-clientes" class="page" hidden><div class="cl-top"><input id="client-filter" type="search" placeholder="Buscar cliente o teléfono" autocomplete="off"><button class="button primary" data-open="client">+ Nuevo</button></div><button class="button full cl-import" data-import-contacts>📇 Importar desde mis contactos</button><input type="file" id="vcf-input" accept=".vcf,text/vcard,text/x-vcard" hidden><div class="home-section"><div class="home-row-head"><h3 class="home-h">Clientes <span id="clients-count" class="tab-count"></span></h3></div><div id="clients-table" class="sale-rows"></div></div></section>
         <section id="page-productos" class="page" hidden><div class="section-heading"><div><h2>Productos</h2><p>El huevo es el centro de la operación; el catálogo puede crecer.</p></div><button class="button primary" data-open="product">+ Nuevo producto</button></div><div class="panel" id="products-table"></div></section>
         <section id="page-ingresos" class="page" hidden><div class="section-heading"><div><h2>Ingresos de mercadería</h2><p>Pesaje de las jabas que llegan del proveedor.</p></div><button class="button primary income-create" id="income-new">+ Nuevo ingreso</button></div><div id="income-list"></div></section>
         <section id="page-conteo" class="page" hidden><button class="text-button income-back" data-page="ingresos">‹ Volver a ingresos</button><div id="income-detail"></div></section>
@@ -179,8 +180,9 @@ html,body,*,*::before,*::after{touch-action:manipulation}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
 'use strict';
-const APP_VERSION='2.32';
+const APP_VERSION='2.33';
 const CHANGELOG=[
+  {v:'2.33',f:'2026-10-13',t:'Importar clientes desde los contactos del celular (Clientes → «Importar desde mis contactos»): se marcan varios de una vez, la app avisa los que ya están registrados y crea el resto con su código.'},
   {v:'2.32',f:'2026-10-08',t:'Funciona sin señal: la app abre sin internet con los últimos datos, y las ventas y pagos se guardan en el celular hasta que vuelva la señal (aunque se cierre la app). Un aviso pequeño arriba dice «Sin señal» o cuántos faltan subir.'},
   {v:'2.31',f:'2026-10-08',t:'Reporte en Excel con el logo y los colores del negocio (Más → Exportar a Excel, o desde Caja del día): resumen financiero con vendido, cobrado, fiado y por cobrar; detalle por día; ventas; pagos recibidos y quién debe. Este mes, mes anterior o todo. Sirve también como copia de seguridad.'},
   {v:'2.30',f:'2026-10-08',t:'Venta: el peso se anota jaba por jaba desde el inicio. Para usar un solo peso total hay dos botones claros arriba de los pesos («Jaba por jaba» / «Un solo peso total»), en vez del enlace que se encimaba con las casillas.'},
@@ -792,6 +794,50 @@ function renderClients(LB){
   $('#clients-table').innerHTML=list.length?list.map(c=>{const i=info[c.id],saldo=LB[c.id]?.saldo||0,hasPhone=!!(c.phone||'').replace(/\D/g,''),d0=i?.last?Math.round((Date.parse(today)-Date.parse(i.last.slice(0,10)))/864e5):NaN,d=Number.isFinite(d0)?Math.max(0,d0):null;
     return `<div class="ord-row debtor"><button class="ord-main" data-edit-client="${esc(c.id)}"><span class="db-ini${saldo>0?'':' ok'}">${esc((c.name||'?').trim().charAt(0).toUpperCase())}</span><span class="sr-main"><b>${esc(c.name)}</b><small>${i?`${i.n} ${i.n===1?'compra':'compras'}${d===null?'':` · última ${d===0?'hoy':d===1?'ayer':`hace ${d} días`}`}`:'Sin compras todavía'}${c.district?' · '+esc(c.district):''}</small></span><span class="sr-side">${saldo>0?`<b class="debt">${money(saldo)}</b><span class="pt fiado">Debe</span>`:'<span class="pt">Al día</span>'}</span></button><div class="db-acts">${hasPhone?`<a class="ord-wa" href="${esc(waTo(c.phone,''))}" target="_blank" rel="noopener">${WA_ICON}Escribir</a>`:''}<button class="ord-act" data-sell-client="${esc(c.id)}">Vender</button></div></div>`;}).join(''):`<div class="empty"><strong>${term?'No encontré ese cliente':'Todavía no hay clientes'}</strong>${term?'Revisa el nombre o créalo con «+ Nuevo».':''}</div>`;
 }
+// ---------- Importar clientes desde los contactos del celular (Android: selector de contactos; otros: archivo .vcf) ----------
+const normPhone=p=>{let d=String(p||'').replace(/\D/g,'');if(d.length>9&&d.startsWith('51'))d=d.slice(2);return d;};
+function importContacts(){
+  if(!state.online){notify('Necesitas señal para registrar clientes');return;}
+  if('contacts' in navigator&&navigator.contacts.select){
+    navigator.contacts.select(['name','tel'],{multiple:true}).then(list=>{const rows=(list||[]).map(c=>({name:(c.name||[])[0]||'',phone:(c.tel||[])[0]||''}));if(rows.length)reviewContacts(rows);}).catch(err=>notify('No se pudo abrir tus contactos: '+err.message));
+    return;
+  }
+  $('#vcf-input').value='';$('#vcf-input').click();
+}
+// vCard 2.1/3.0/4.0: líneas plegadas, FN o N, primer TEL, y nombres en QUOTED-PRINTABLE (exportación de Android).
+function parseVcf(text){
+  const qp=v=>{try{return new TextDecoder().decode(new Uint8Array((v.replace(/=\r?\n/g,'').match(/=[0-9A-F]{2}|[\s\S]/gi)||[]).map(t=>t.length===3&&t[0]==='='?parseInt(t.slice(1),16):t.charCodeAt(0))));}catch(e){return v;}};
+  const out=[];text.replace(/\r\n/g,'\n').replace(/=\n/g,'=\r\n').replace(/\n[ \t]/g,'').split(/BEGIN:VCARD/i).slice(1).forEach(card=>{let fn='',n='',tel='';
+    card.split('\n').forEach(line=>{const i=line.indexOf(':');if(i<0)return;const key=line.slice(0,i).toUpperCase(),raw=line.slice(i+1).trim(),val=/QUOTED-PRINTABLE/.test(key)?qp(raw):raw;
+      if(key.startsWith('FN')&&!fn)fn=val;else if(/^N[;:]/.test(key+':')&&!n)n=val.split(';').slice(0,2).reverse().join(' ').trim();else if(key.startsWith('TEL')&&!tel)tel=val;});
+    const name=(fn||n).replace(/\\,/g,',').trim();if(name||tel)out.push({name,phone:tel});});
+  return out;
+}
+function reviewContacts(rows){
+  const byPhone=new Set(state.clients.map(c=>normPhone(c.phone)).filter(Boolean)),byName=new Set(state.clients.map(c=>c.name.trim().toLowerCase())),seen=new Set();
+  const items=rows.map(r=>({name:r.name.trim().slice(0,150),phone:r.phone.trim().slice(0,25)})).filter(r=>r.name||r.phone).map(r=>{const ph=normPhone(r.phone),key=ph||r.name.toLowerCase();
+    const dup=(ph&&byPhone.has(ph))||byName.has(r.name.toLowerCase())?'ya está registrado':seen.has(key)?'repetido':!r.name?'sin nombre':'';seen.add(key);return{...r,dup};});
+  if(!items.length){notify('No encontré contactos con nombre o celular');return;}
+  const skip=new Set(lsGet('cv-imp-skip')||[]),skipKey=x=>normPhone(x.phone)||x.name.toLowerCase();items.forEach(x=>x.skip=!x.dup&&skip.has(skipKey(x)));items.sort((a,b)=>(!!a.dup)-(!!b.dup)||(a.name||'~').localeCompare(b.name||'~','es'));
+  const nuevos=items.filter(x=>!x.dup).length;
+  openModal('Importar clientes','DESDE TUS CONTACTOS',`<div class="modal-content"><p class="muted" style="margin-top:0">${nuevos} ${nuevos===1?'contacto nuevo':'contactos nuevos'}${items.length>nuevos?` · ${items.length-nuevos} ya registrados o sin nombre`:''}. Quita la marca a los que no son clientes.</p><input id="imp-q" type="search" class="imp-q" placeholder="Buscar en la lista" autocomplete="off"><div class="imp-bulk"><button type="button" class="button" id="imp-all">✓ Marcar todos</button><button type="button" class="button" id="imp-none">Quitar todos</button></div><div class="sale-rows imp-list">${items.map((x,i)=>`<label class="imp-row${x.dup?' off':''}" data-q="${esc((x.name+' '+x.phone).toLowerCase())}"><input type="checkbox" data-imp="${i}" ${x.dup?'disabled':x.skip?'':'checked'}><span><b>${esc(x.name||'(sin nombre)')}</b><small>${esc(x.phone||'Sin celular')}${x.dup?' · '+x.dup:x.skip?' · lo dejaste fuera antes':''}</small></span></label>`).join('')}</div><button class="button primary full imp-go" id="imp-go"></button></div>`);
+  const count=()=>$('#modal-body').querySelectorAll('[data-imp]:checked').length,upd=()=>{const n=count();$('#imp-go').textContent=n?`Registrar ${n} ${n===1?'cliente':'clientes'}`:'Marca al menos uno';$('#imp-go').disabled=!n;};
+  const boxes=[...$('#modal-body').querySelectorAll('[data-imp]:not([disabled])')];boxes.forEach(c=>c.onchange=upd);upd();
+  // Marcar/quitar actúa sobre lo que se ve (con o sin búsqueda).
+  const visible=()=>boxes.filter(c=>!c.closest('.imp-row').hidden);
+  $('#imp-all').onclick=()=>{visible().forEach(c=>c.checked=true);upd();};$('#imp-none').onclick=()=>{visible().forEach(c=>c.checked=false);upd();};
+  $('#imp-q').oninput=e=>{const q=e.target.value.trim().toLowerCase();$('#modal-body').querySelectorAll('.imp-row').forEach(r=>r.hidden=!!q&&!r.dataset.q.includes(q));};
+  $('#imp-go').onclick=async()=>{
+    const pick=[...$('#modal-body').querySelectorAll('[data-imp]:checked')].map(c=>items[Number(c.dataset.imp)]),btn=$('#imp-go');btn.disabled=true;let done=0;
+    // Los que dejó sin marcar no son clientes: la próxima vez vienen desmarcados.
+    lsSet('cv-imp-skip',[...new Set([...skip,...boxes.filter(c=>!c.checked).map(c=>skipKey(items[Number(c.dataset.imp)]))])].slice(-2000));
+    try{for(const x of pick){btn.textContent=`Registrando ${done+1} de ${pick.length}…`;
+        const seq=await db.ref('seq/clientes').transaction(n=>(n||0)+1);
+        await db.ref('clientes').push({name:x.name,phone:x.phone,code:`CL-${String(seq.snapshot.val()).padStart(4,'0')}`,created_at:nowLima()});done++;}
+      closeModal();notify(`${done} ${done===1?'cliente registrado':'clientes registrados'}`);
+    }catch(err){closeModal();notify(`Se registraron ${done}. Error: ${err.message}`);}
+  };
+}
 function openClient(id){
   const c=id?state.clients.find(x=>x.id===id):null;if(id&&!c)return;
   const v=(k)=>c?(c[k]||''):undefined;
@@ -1104,7 +1150,7 @@ $('#auth-form').onsubmit=async e=>{
 };
 $('#auth-toggle').onclick=()=>{state.mode=state.mode==='login'?'register':'login';$('#auth-error').textContent='';showAuth();};
 $('#auth-reset').onclick=async()=>{const email=$('#auth-form').elements.email.value.trim();if(!email){$('#auth-error').textContent='Escribe tu correo y vuelve a pulsar «¿Olvidaste tu contraseña?»';return;}try{await auth.sendPasswordResetEmail(email);$('#auth-error').textContent='';notify('Te enviamos un correo para cambiar la contraseña');}catch(err){$('#auth-error').textContent=authMessage(err);}};
-$('#close-modal').onclick=closeModal;$('#modal').addEventListener('close',()=>{if(!$('#modal').open){$('#modal').classList.remove('sale-modal');$('#modal-body').onclick=null;}});$('#order-search').oninput=render;$('#client-filter').oninput=()=>renderClients(ledger().by);$('#ver-chip').onclick=showChangelog;
+$('#close-modal').onclick=closeModal;$('#modal').addEventListener('close',()=>{if(!$('#modal').open){$('#modal').classList.remove('sale-modal');$('#modal-body').onclick=null;}});$('#order-search').oninput=render;$('#client-filter').oninput=()=>renderClients(ledger().by);$('#vcf-input').onchange=async e=>{const f=e.target.files[0];if(!f)return;const rows=parseVcf(await f.text());if(rows.length)reviewContacts(rows);else notify('Ese archivo no tiene contactos');};$('#ver-chip').onclick=showChangelog;
 $('#income-new').onclick=nuevoIngreso;
 document.querySelectorAll('[data-order-tab]').forEach(button=>button.onclick=()=>{state.orderTab=button.dataset.orderTab;document.querySelectorAll('[data-order-tab]').forEach(el=>el.classList.toggle('active',el===button));render();});
 document.addEventListener('change',e=>{const role=e.target.closest('[data-role]');if(role)setRole(role.dataset.role,role.value);});
@@ -1123,6 +1169,7 @@ document.addEventListener('click',e=>{
   if(get('edit-client'))openClient(get('edit-client').editClient);
   if(get('sell-client'))openOrder(get('sell-client').sellClient);
   if(get('export'))openExport();
+  if(get('import-contacts'))importContacts();
   if(get('xls'))exportExcel(get('xls').xls);
   if(get('caja-day')){state.cajaDay=get('caja-day').cajaDay;render();}
   if(get('edit-product'))openProduct(get('edit-product').editProduct);

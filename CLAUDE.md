@@ -22,6 +22,7 @@ Sistema de ventas mayoristas de huevo por peso (negocio familiar en Perú, soles
 - Nada se borra. Un pedido atendido solo cambia cobro/metodo_pago, se pesa una vez si tenía peso_pendiente, o pasa a Anulado.
 - Venta: los botones de pago CIERRAN la venta (un toque). WhatsApp se abre en ese mismo toque si el interruptor está activo; la venta se guarda detrás (`finishSale`). El peso es opcional.
 - **Sin señal (v2.32):** `public/sw.js` guarda la app (red primero, copia si no hay señal). Los datos se copian en localStorage (`cv-cache-<uid>`) para abrir sin internet. Ventas (`finishSale`) y pagos (`openPayment`) NO escriben directo: van a la cola `cv-outbox` (`addOutbox`) y `flushOutbox()` los sube al volver la señal (revisa si ya existen antes, para no duplicar). Mientras tanto se muestran con `_local:true` («Por subir») y no se pueden pesar, anular ni compartir. Aviso discreto `#net-sub` bajo el nombre.
+- **Importar contactos (v2.33):** Clientes → «Importar desde mis contactos». Android usa `navigator.contacts.select` (varios a la vez); sin esa API, archivo `.vcf` (`parseVcf`). `reviewContacts()` marca duplicados por celular (`normPhone`) o nombre y crea cada cliente con su transacción de `seq/clientes` (las reglas exigen +1).
 - Saldo del cliente = ventas fiadas atendidas − abonos no anulados. Lo dejado a cuenta va a su propia nota; el resto, a las notas más antiguas (`ledger()`).
 
 ## Convenciones
