@@ -72,6 +72,7 @@ input,select,textarea{font-size:16px}
 .dt-wd{border-bottom:1px solid #f0eee8}.dt-wd summary{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;list-style:none;cursor:pointer;font-size:14px}.dt-wd summary::-webkit-details-marker{display:none}.dt-wd summary small{color:#4f5f55;font-size:12.5px}.dt-wd summary span{font-weight:600;color:#10201f}.dt-wd summary span::after{content:' ›';display:inline-block;color:#8a6a1f;transition:transform .15s}.dt-wd[open] summary span::after{content:" ⌄"}.dt-rec{display:grid;grid-template-columns:1fr 1fr;gap:0 18px;padding:2px 14px 4px}.dt-rec p{display:flex;align-items:baseline;gap:6px;margin:0;padding:5px 0;font-size:14px;border-bottom:1px dashed #ecebe5}.dt-rec span{color:#4f5f55;font-size:13px;white-space:nowrap}.dt-rec i{flex:1}.dt-rec b{font-weight:600;font-variant-numeric:tabular-nums}.dt-recsum{margin:4px 14px 12px;font-size:12.5px;color:#4f5f55;font-variant-numeric:tabular-nums}
 /* Celular: la pantalla queda fija (cabecera arriba, barra abajo) y solo se desplaza el contenido. Evita que Safari de iPhone mueva la barra inferior al ocultar sus propias barras y que el contenido pase bajo la hora. */
 @media(max-width:760px){html.in-app,html.in-app body{height:100%;overflow:hidden}html.in-app #app{height:100dvh;display:flex;flex-direction:column}html.in-app .main{flex:1;min-height:0;display:flex;flex-direction:column}html.in-app .topbar{flex:none;height:calc(62px + env(safe-area-inset-top));padding-top:calc(12px + env(safe-area-inset-top))}html.in-app .content{flex:1;min-height:0;width:100%;margin:0 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}}
+#page-control{max-width:760px}#page-control .sr-main b{white-space:normal;overflow:visible;text-overflow:clip}#page-control .tab-count:empty{display:none}.ctl-tabs{grid-template-columns:repeat(4,1fr)!important;margin:4px 0 14px!important}.ctl-tabs button{font-size:13px!important;padding:0 4px}.ctl-filters{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}.ctl-filters select{font-size:16px;min-height:44px;border:1px solid #e2e0d9;border-radius:12px;padding:0 10px;background:#fff}.ctl-day{font-size:12px;font-weight:700;color:#4f5f55;background:#f5f4f0;padding:8px 14px;text-transform:capitalize}.ctl-ico{width:30px;height:30px;border-radius:9px;background:#f5f4f0;display:grid;place-items:center;flex:none;font-size:14px}.ctl-bad .ctl-ico{background:#fbe9ec;color:#b3263b}.sr-main em{font-style:normal;color:#4f5f55;font-weight:500}.sr-side small{display:block;color:#4f5f55;font-size:11.5px;text-align:right}.ctl-sum{font-size:14px;margin:2px 2px 12px;color:#10201f}.ctl-note{font-size:12px;margin:10px 2px}.ctl-ok{margin:0 2px 8px;color:#1f8f4e!important;font-weight:600}.ctl-dot{width:12px;height:12px;border-radius:50%;background:#c9cfca;flex:none;margin:0 4px}.ctl-dot.on{background:#1f8f4e;box-shadow:0 0 0 4px #1f8f4e22}#page-control .ord-main[disabled]{opacity:1;cursor:default}#page-control .ord-main{justify-content:flex-start}#page-control .sr-side{margin-left:auto}
 .home-hero{background:#1f3b2d;color:#fff;border-radius:20px;padding:20px 20px 16px;display:grid;gap:4px;box-shadow:0 10px 24px -14px #1f3b2d}
 .hero-label{font-size:13px;font-weight:600;color:#d9c48f;letter-spacing:.02em}.hero-total{font-size:34px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}.hero-sub{font-size:13px;color:#c9d6cd}
 .hero-split{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.hero-split button{border:0;background:#ffffff14;border-radius:12px;padding:10px 12px;text-align:left;color:#fff}.hero-split small{display:block;font-size:11.5px;color:#c9d6cd}.hero-split b{font-size:16px;font-variant-numeric:tabular-nums}
@@ -146,6 +147,7 @@ html,body,*,*::before,*::after{touch-action:manipulation}
         <button data-page="clientes"><span>♙</span> Clientes</button>
         <button data-page="productos"><span>◫</span> Productos</button>
         <button data-page="ingresos"><span>▥</span> Ingresos de mercadería</button>
+        <button data-page="control" id="nav-control" hidden><span>◉</span> Control</button>
         <button data-page="usuarios" id="nav-usuarios" hidden><span>⚿</span> Usuarios</button>
         <button data-page="negocio" id="nav-negocio" hidden><span>⌂</span> Negocio</button>
       </nav>
@@ -169,8 +171,9 @@ html,body,*,*::before,*::after{touch-action:manipulation}
         <section id="page-usuarios" class="page" hidden><div class="section-heading"><div><h2>Usuarios</h2><p>Crea cuentas para tu equipo o aprueba las que se registraron solas. Sin rol no pueden ver nada.</p></div><button class="button primary" data-open="user">+ Crear cuenta</button></div><div class="panel" id="users-table"></div></section>
         <section id="page-negocio" class="page" hidden><div class="section-heading"><div><h2>Datos del negocio</h2><p>Aparecen en la cabecera de la nota de pedido en PDF.</p></div></div><form id="negocio-form" class="panel modal-content"><div class="field-grid"><label class="wide">Nombre comercial<input name="nombre" maxlength="80" placeholder="Comercializadora Viviana"></label><label>RUC<input name="ruc" inputmode="numeric" maxlength="11"></label><label>Teléfono / WhatsApp<input name="telefono" type="tel" maxlength="25"></label><label class="wide">Dirección<input name="direccion" maxlength="150"></label></div><div class="modal-footer"><button class="button primary" type="submit">Guardar datos</button></div></form></section>
         <section id="page-cobros" class="page" hidden><div id="cobros-hero" class="home-hero"></div><div class="home-section"><div class="home-row-head"><h3 class="home-h">Quién debe <span id="debtors-count" class="tab-count"></span></h3></div><div id="cobros-lista" class="sale-rows"></div></div><div class="home-section"><div class="home-row-head"><h3 class="home-h">Pagos recibidos</h3></div><div id="abonos-lista" class="sale-rows"></div></div></section>
+        <section id="page-control" class="page" hidden><div class="wseg ctl-tabs" id="ctl-tabs"></div><div id="ctl-body"></div></section>
         <section id="page-caja" class="page" hidden><div class="cj-day"><button id="caja-prev" aria-label="Día anterior">‹</button><strong id="caja-fecha"></strong><button id="caja-next" aria-label="Día siguiente">›</button></div><div id="caja-hero" class="home-hero"></div><div id="caja-body"></div></section>
-        <section id="page-mas" class="page" hidden><div class="section-heading"><div><h2>Más opciones</h2><p>Lo que usas con menos frecuencia.</p></div></div><div class="more-list"><button id="install-app" hidden>Instalar en el celular <span>›</span></button><button data-page="caja">Caja del día <span>›</span></button><button data-export>Exportar a Excel <span>›</span></button><button data-page="ingresos">Ingresos de mercadería <span>›</span></button><button data-page="clientes">Clientes <span>›</span></button><button data-page="productos">Productos <span>›</span></button><button data-page="usuarios" id="more-usuarios" hidden>Usuarios <span>›</span></button><button data-page="negocio" id="more-negocio" hidden>Datos del negocio <span>›</span></button><button data-logout>Cerrar sesión <span>›</span></button></div></section>
+        <section id="page-mas" class="page" hidden><div class="section-heading"><div><h2>Más opciones</h2><p>Lo que usas con menos frecuencia.</p></div></div><div class="more-list"><button id="install-app" hidden>Instalar en el celular <span>›</span></button><button data-page="caja">Caja del día <span>›</span></button><button data-page="control" id="more-control" hidden>Control (administrador) <span>›</span></button><button data-export>Exportar a Excel <span>›</span></button><button data-page="ingresos">Ingresos de mercadería <span>›</span></button><button data-page="clientes">Clientes <span>›</span></button><button data-page="productos">Productos <span>›</span></button><button data-page="usuarios" id="more-usuarios" hidden>Usuarios <span>›</span></button><button data-page="negocio" id="more-negocio" hidden>Datos del negocio <span>›</span></button><button data-logout>Cerrar sesión <span>›</span></button></div></section>
       </div>
     </main>
   </div>
@@ -184,8 +187,9 @@ html,body,*,*::before,*::after{touch-action:manipulation}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
 'use strict';
-const APP_VERSION='2.36';
+const APP_VERSION='2.37';
 const CHANGELOG=[
+  {v:'2.37',f:'2026-10-13',t:'Nueva pantalla «Control» para el administrador: todos los movimientos con quién y a qué hora, historial de WhatsApp (y si el cliente abrió su nota), quién está en línea y con qué versión, y alertas: ventas anuladas, cambios de forma de pago, precios distintos al de la semana, ventas sin pesar y notas no enviadas.'},
   {v:'2.36',f:'2026-10-13',t:'iPhone: la cabecera y la barra de abajo quedan fijas y solo se desplaza el contenido. Arregla la barra que quedaba flotando a media pantalla y el contenido que pasaba debajo de la hora.'},
   {v:'2.35',f:'2026-10-13',t:'Detalle del pedido: los pesos por jaba quedan plegados en una línea (cantidad y promedio); al tocarla se ven como en un ticket, en dos columnas ordenadas, con el menor, el mayor y el total.'},
   {v:'2.34',f:'2026-10-13',t:'Importar contactos: si el navegador no permite abrir los contactos (por ejemplo Samsung Internet), la app lo explica y ofrece «Abrir en Chrome» en vez de abrir la galería.'},
@@ -234,7 +238,7 @@ const money=(cents)=>'S/ '+(cents/100).toLocaleString('es-PE',{minimumFractionDi
 const date=(value)=>value?new Date(value).toLocaleString('es-PE',{dateStyle:'short',timeStyle:'short',timeZone:'America/Lima'}):'—';
 // Perú no tiene horario de verano: la hora del negocio es siempre UTC-5.
 const nowLima=()=>new Date(Date.now()-5*3600e3).toISOString().slice(0,19)+'-05:00';
-const state={noteLinks:{},abonos:[],ingresos:[],ingresoId:null,user:null,profile:null,orders:[],clients:[],products:[],users:[],page:'inicio',cajaDay:null,orderTab:'pending',mode:'login'};
+const state={noteLinks:{},abonos:[],ingresos:[],ingresoId:null,user:null,profile:null,orders:[],clients:[],products:[],users:[],page:'inicio',cajaDay:null,ctlTab:'mov',ctlWho:'',ctlDays:'1',actividad:[],presencia:{},notaVista:{},orderTab:'pending',mode:'login'};
 let auth,db,appConfig,local=false,profileOff=null,dataOffs=[],dataRole=null,pendingName='';
 
 function notify(message){const el=$('#toast');el.textContent=message;el.classList.add('visible');clearTimeout(notify.timer);notify.timer=setTimeout(()=>el.classList.remove('visible'),3500);}
@@ -303,7 +307,8 @@ function route(){
   $('#username').textContent=state.profile.nombre||state.user.email;{const nm=(state.profile.nombre||state.user.email).trim(),ini=nm.charAt(0).toUpperCase();$('#user-initial').textContent=ini;$('#um-initial').textContent=ini;$('#um-name').textContent=nm;$('#um-role').textContent=ROLES[state.profile.rol]||'';$('#um-email').textContent=state.user.email+' · v'+APP_VERSION;}
   $('#avatar-initial').textContent=(state.profile.nombre||state.user.email).trim().charAt(0).toUpperCase();
   $('#user-role').textContent=ROLES[rol];
-  $('#nav-usuarios').hidden=rol!=='admin';
+  $('#nav-usuarios').hidden=rol!=='admin';$('#nav-control').hidden=rol!=='admin';$('#more-control').hidden=rol!=='admin';
+  if(state.page==='control'&&rol!=='admin')state.page='inicio';
   $('#more-usuarios').hidden=rol!=='admin';$('#more-negocio').hidden=rol!=='admin';$('#nav-negocio').hidden=rol!=='admin';
   if(state.page==='negocio'&&rol!=='admin')state.page='inicio';
   if(state.page==='usuarios'&&rol!=='admin')state.page='inicio';
@@ -311,7 +316,7 @@ function route(){
   $('#business-date').textContent=new Date().toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long',timeZone:'America/Lima'});
   const hour=Number(nowLima().slice(11,13));
   $('#greeting').textContent=`${hour<12?'Buenos días':hour<19?'Buenas tardes':'Buenas noches'}, ${(state.profile.nombre||'Viviana').trim().split(' ')[0]}`;
-  show('app');nav(state.page);
+  show('app');startPresence();if(!sessionLogged){sessionLogged=true;logAct('sesion','Entró a la app · v'+APP_VERSION);}nav(state.page);
 }
 function listen(path,fn){const ref=db.ref(path);const cb=ref.on('value',snap=>{fn(snap);render();},err=>notify(err.message));dataOffs.push(()=>ref.off('value',cb));}
 function attachData(rol){
@@ -319,7 +324,8 @@ function attachData(rol){
   listen('clientes',s=>{state.clients=listOf(s).sort((a,b)=>a.name.localeCompare(b.name,'es'));syncClients();});
   listen('productos',s=>state.products=listOf(s).sort((a,b)=>(a.active===false)-(b.active===false)||(a.category+a.name).localeCompare(b.category+b.name,'es')));
   listen('pedidos',s=>{state.orders=listOf(s).map(o=>({...o,weights:o.weights||[]}));mergeOutbox();syncClients();});
-  if(rol==='admin')listen('usuarios',s=>state.users=listOf(s));
+  if(rol==='admin'){listen('usuarios',s=>state.users=listOf(s));listen('presencia',s=>state.presencia=s.val()||{});listen('nota_vista',s=>state.notaVista=s.val()||{});
+    const aref=db.ref('actividad').orderByChild('t').limitToLast(1500),acb=aref.on('value',s=>{state.actividad=listOf(s).sort((a,b)=>b.t-a.t);render();},()=>{});dataOffs.push(()=>aref.off('value',acb));}
   listen('config/negocio',s=>{state.negocio=s.val()||{};fillNegocio();});
   listen('nota_link',s=>state.noteLinks=s.val()||{});
   listen('abonos',s=>{state.abonos=listOf(s);mergeOutbox();});
@@ -344,7 +350,7 @@ function showAuth(){
 }
 
 // ---------- Vistas ----------
-function nav(page){state.page=page;document.querySelectorAll('.page').forEach(el=>el.hidden=el.id!==`page-${page}`);document.querySelectorAll('[data-page]').forEach(el=>el.classList.toggle('active',el.dataset.page===page||(el.dataset.page==='mas'&&['clientes','productos','usuarios','negocio','ingresos','conteo','caja'].includes(page))));$('#page-title').textContent=page==='conteo'&&state.ingresos.find(i=>i.id===state.ingresoId)?.tipo==='otros'?'Ingreso de productos':{inicio:'Inicio',pedidos:'Pedidos',cobros:'Cobros',caja:'Caja del día',clientes:'Clientes',productos:'Productos',ingresos:'Ingresos',conteo:'Conteo de jabas',usuarios:'Usuarios',negocio:'Negocio',mas:'Más'}[page];$('#brand-sub').textContent=page==='inicio'?'Mayorista de huevo y abarrotes':$('#page-title').textContent;$('#user-menu').hidden=true;render();window.scrollTo(0,0);const sc=document.querySelector('.content');if(sc)sc.scrollTop=0;}
+function nav(page){state.page=page;document.querySelectorAll('.page').forEach(el=>el.hidden=el.id!==`page-${page}`);document.querySelectorAll('[data-page]').forEach(el=>el.classList.toggle('active',el.dataset.page===page||(el.dataset.page==='mas'&&['clientes','productos','usuarios','negocio','ingresos','conteo','caja','control'].includes(page))));$('#page-title').textContent=page==='conteo'&&state.ingresos.find(i=>i.id===state.ingresoId)?.tipo==='otros'?'Ingreso de productos':{inicio:'Inicio',pedidos:'Pedidos',cobros:'Cobros',caja:'Caja del día',control:'Control',clientes:'Clientes',productos:'Productos',ingresos:'Ingresos',conteo:'Conteo de jabas',usuarios:'Usuarios',negocio:'Negocio',mas:'Más'}[page];$('#brand-sub').textContent=page==='inicio'?'Mayorista de huevo y abarrotes':$('#page-title').textContent;$('#user-menu').hidden=true;render();window.scrollTo(0,0);const sc=document.querySelector('.content');if(sc)sc.scrollTop=0;}
 function statusPill(s){const cls={'En preparación':'preparacion','Listo':'listo','Atendido':'atendido','Cancelado':'cancelado','Anulado':'cancelado'}[s]||'';return `<span class="pill ${cls}">${esc(s)}</span>`;}
 const CLOSED=['Atendido','Cancelado','Anulado'];
 const NEGOCIO_DEFAULT={nombre:'Comercializadora Viviana',ruc:'',telefono:'903 228 069 / 960 656 381',direccion:'Av. Grau D4 Lt. 21, Casma'};
@@ -401,7 +407,7 @@ function openPayment(cid){
     const k=db.ref('abonos').push().key,rec={client_id:cid,monto_cents:monto,metodo:el.metodo.value,fecha:nowLima(),por:state.user.uid,por_nombre:state.profile.nombre||state.user.email,nota:el.nota.value.trim()};
     addOutbox({k:'w',id:k,check:'abonos/'+k,paths:{['abonos/'+k]:rec},show:[{id:k,...rec}],label:'el pago de '+c.name});
     const nuevo=l.saldo-monto,text=`Hola ${c.name.split(' ')[0]}, recibimos tu pago de ${money(monto)} (${el.metodo.value}). ${nuevo>0?`Tu saldo pendiente es ${money(nuevo)}.`:'Tu cuenta quedó al día.'} ¡Gracias!`;
-    openModal('Pago registrado',c.name,`<div class="sale-body sale-success"><div class="success-mark">✓</div><h3>${money(monto)} recibido</h3><p class="muted">${nuevo>0?`Saldo pendiente: ${money(nuevo)}`:'Cuenta al día'}</p></div><div class="sale-actions"><a class="button primary wa-button" href="${esc(waTo(c.phone,text))}" target="_blank" rel="noopener">${WA_ICON}Enviar recibo por WhatsApp</a><button class="button" data-close>Listo</button></div>`);
+    openModal('Pago registrado',c.name,`<div class="sale-body sale-success"><div class="success-mark">✓</div><h3>${money(monto)} recibido</h3><p class="muted">${nuevo>0?`Saldo pendiente: ${money(nuevo)}`:'Cuenta al día'}</p></div><div class="sale-actions"><a class="button primary wa-button" href="${esc(waTo(c.phone,text))}" target="_blank" rel="noopener" data-wa="Recibo de pago" data-wa-client="${esc(cid)}">${WA_ICON}Enviar recibo por WhatsApp</a><button class="button" data-close>Listo</button></div>`);
   });
 }
 function voidAbono(id){
@@ -412,7 +418,7 @@ function voidAbono(id){
 function openChangePay(id){
   const o=state.orders.find(x=>x.id===id);if(!o||o.status!=='Atendido')return;
   openModal('Forma de pago',o.code,`<form id="chpay-form" class="modal-content"><p class="muted">Venta de ${money(o.total_cents)} a ${esc(o.client_name)}.</p>${payBlock('chpay',{acuenta:false,selected:o.cobro==='fiado'?'Fiado':(o.metodo_pago||'Efectivo')})}${footer('Guardar')}</form>`);
-  submitWith($('#chpay-form'),async()=>{const pay=readPay('chpay');await db.ref('pedidos/'+id).update({cobro:pay.cobro,metodo_pago:pay.metodo_pago});closeModal();notify('Forma de pago actualizada');});
+  submitWith($('#chpay-form'),async()=>{const pay=readPay('chpay');await db.ref('pedidos/'+id).update({cobro:pay.cobro,metodo_pago:pay.metodo_pago});const antes=o.cobro==='fiado'?'Fiado':o.metodo_pago,ahora=pay.cobro==='fiado'?'Fiado':pay.metodo_pago;if(antes!==ahora)logAct('cambio_pago',`${o.code} · ${o.client_name}: ${antes} → ${ahora} (${money(o.total_cents)})`,{ref:id,cliente:o.client_id});closeModal();notify('Forma de pago actualizada');});
 }
 
 const nextStatus={'Pendiente':'En preparación','En preparación':'Listo','Listo':'Atendido'};
@@ -494,7 +500,7 @@ function renderCobros(L,debtors,porCobrar){
   $('#debtors-count').textContent=debtors.length||'';
   const byId=Object.fromEntries(state.clients.map(c=>[c.id,c]));
   $('#cobros-lista').innerHTML=debtors.length?debtors.map(([id,l])=>{const c=byId[id]||{name:'Cliente',phone:''},old=l.pendientes[0],dias=old?daysAgo(old.o.attended_at):0,hasPhone=!!(c.phone||'').replace(/\D/g,'');
-    return `<div class="ord-row debtor"><button class="ord-main" data-pay-client="${esc(id)}"><span class="db-ini">${esc((c.name||'?').trim().charAt(0).toUpperCase())}</span><span class="sr-main"><b>${esc(c.name)}</b><small>${l.pendientes.length} ${l.pendientes.length===1?'nota':'notas'} · <span class="${dias>7?'late':''}">${dias===0?'desde hoy':`hace ${dias} ${dias===1?'día':'días'}`}</span>${l.abonado?` · abonó ${money(l.abonado)}`:''}</small></span><span class="sr-side"><b class="debt">${money(l.saldo)}</b></span></button><div class="db-acts">${hasPhone?`<a class="ord-wa" href="${esc(waTo(c.phone,reminderMessage(c,l)))}" target="_blank" rel="noopener">${WA_ICON}Recordar</a>`:''}<button class="ord-act" data-pay-client="${esc(id)}">Cobrar</button></div></div>`;}).join(''):'<div class="empty"><strong>Nadie te debe por ahora</strong>Las ventas al fiado aparecerán aquí.</div>';
+    return `<div class="ord-row debtor"><button class="ord-main" data-pay-client="${esc(id)}"><span class="db-ini">${esc((c.name||'?').trim().charAt(0).toUpperCase())}</span><span class="sr-main"><b>${esc(c.name)}</b><small>${l.pendientes.length} ${l.pendientes.length===1?'nota':'notas'} · <span class="${dias>7?'late':''}">${dias===0?'desde hoy':`hace ${dias} ${dias===1?'día':'días'}`}</span>${l.abonado?` · abonó ${money(l.abonado)}`:''}</small></span><span class="sr-side"><b class="debt">${money(l.saldo)}</b></span></button><div class="db-acts">${hasPhone?`<a class="ord-wa" href="${esc(waTo(c.phone,reminderMessage(c,l)))}" target="_blank" rel="noopener" data-wa="Recordatorio de deuda" data-wa-client="${esc(id)}">${WA_ICON}Recordar</a>`:''}<button class="ord-act" data-pay-client="${esc(id)}">Cobrar</button></div></div>`;}).join(''):'<div class="empty"><strong>Nadie te debe por ahora</strong>Las ventas al fiado aparecerán aquí.</div>';
   $('#abonos-lista').innerHTML=state.abonos.length?state.abonos.slice(0,20).map(a=>`<div class="ord-row${a.anulado?' void':''}"><button class="ord-main" ${a.anulado?'disabled':`data-void-abono="${esc(a.id)}"`}><span class="sr-main"><b>${esc(byId[a.client_id]?.name||'Cliente')}</b><small>${esc(date(a.fecha))} · ${esc(a.por_nombre||'')}${a.nota?' · '+esc(a.nota):''}${a.anulado?' · anulado: '+esc(a.anulado_motivo||''):''}</small></span><span class="sr-side"><b>${money(a.monto_cents)}</b><span class="pt${a.anulado?' void':''}">${a.anulado?'Anulado':esc(a.metodo)}</span></span></button></div>`).join(''):'<div class="empty"><strong>Todavía no hay pagos registrados</strong></div>';
 }
 // ---------- Caja del día: resumen financiero de un día y envío del cierre por WhatsApp ----------
@@ -533,7 +539,7 @@ function renderCaja(L,debtors,porCobrar){
   const row=(k,v,cls='')=>`<div class="dt-row ${cls}"><small>${k}</small><span>${v}</span></div>`;
   const week=Array.from({length:7},(_,i)=>shiftDay(day,i-6)).map(d=>({d,...dayFinance(d)})),max=Math.max(1,...week.map(w=>w.vendido));
   const msg=cierreMessage(day,f,debtors,porCobrar);
-  $('#caja-body').innerHTML=`<button class="button full cj-xls" data-export>▦ Descargar reporte en Excel</button><a class="button primary wa-button full cj-send" href="${esc(waTo('',msg))}" target="_blank" rel="noopener">${WA_ICON}Enviar cierre por WhatsApp</a>
+  $('#caja-body').innerHTML=`<button class="button full cj-xls" data-export>▦ Descargar reporte en Excel</button><a class="button primary wa-button full cj-send" href="${esc(waTo('',msg))}" target="_blank" rel="noopener" data-wa="Cierre del día">${WA_ICON}Enviar cierre por WhatsApp</a>
   <div class="home-section"><h3 class="home-h">Cobrado por medio de pago</h3><div class="sale-rows dt-list">${f.metodos.map(([k,v])=>row(esc(k),money(v),v?'':'zero')).join('')}${row('<b>Total cobrado</b>',`<b>${money(f.cobrado)}</b>`)}</div>${f.cobrado?`<p class="cj-note">Ventas al contado ${money(f.contado)}${f.acuenta?` · a cuenta de fiados ${money(f.acuenta)}`:''}${f.deudas>0?` · pagos de deudas ${money(f.deudas)}`:''}</p>`:''}</div>
   <div class="home-section"><h3 class="home-h">Fiado del día</h3><div class="sale-rows dt-list">${f.fiados.length?f.fiados.map(x=>row(esc(x.name),`<b class="debt">${money(x.c)}</b>`)).join(''):row('Nadie quedó debiendo','—')}</div></div>
   <div class="home-section"><h3 class="home-h">Últimos 7 días</h3><div class="sale-rows cj-week">${week.map(w=>`<button class="cj-w${w.d===day?' on':''}" data-caja-day="${w.d}"><span>${new Date(w.d+'T12:00:00Z').toLocaleDateString('es-PE',{weekday:'short',day:'numeric',timeZone:'UTC'})}</span><i><em style="width:${Math.round(w.vendido/max*100)}%"></em></i><b>${money(w.vendido)}</b></button>`).join('')}<div class="dt-row"><small>Vendido en la semana</small><span><b>${money(week.reduce((n,w)=>n+w.vendido,0))}</b></span></div><div class="dt-row"><small>Cobrado en la semana</small><span>${money(week.reduce((n,w)=>n+w.cobrado,0))}</span></div></div></div>
@@ -587,6 +593,79 @@ function watchConnection(){db.ref('.info/connected').on('value',s=>{state.online
 function updateNet(){const p=$('#net-pill');if(!p)return;const n=state.user?outbox().length:0;
   const txt=!state.online?`Sin señal${n?` · ${n} por subir`:''}`:n?`Subiendo ${n}…`:'';
   p.hidden=!txt;p.textContent=txt;p.classList.toggle('off',!state.online);const ms=$('#net-sub');if(ms){ms.hidden=!txt;ms.textContent='● '+txt;$('#brand-sub').hidden=!!txt;}netShown=netShown||!!txt;if(!txt)netShown=false;}
+// ---------- Control (solo administrador): movimientos, WhatsApp, quién está en línea y alertas de flujo ----------
+// Las ventas, pagos, anulaciones, clientes, precios e ingresos salen de los datos de siempre (también hacia atrás).
+// Lo que antes no quedaba guardado (cambios de forma de pago, pesos, quién atendió, WhatsApp, sesiones) va a `actividad`.
+const CONTROL_DESDE='2026-10-14';
+let sessionLogged=false,presenceStarted=null;
+function logAct(tipo,txt,extra={}){if(!state.user||!db)return;const rec={t:firebase.database.ServerValue.TIMESTAMP,uid:state.user.uid,nombre:(state.profile?.nombre||state.user.email||'').slice(0,80),tipo,txt:String(txt||'').slice(0,300)};
+  if(extra.ref)rec.ref=String(extra.ref).slice(0,40);if(extra.cliente)rec.cliente=String(extra.cliente).slice(0,40);db.ref('actividad').push(rec).catch(()=>{});}
+function startPresence(){if(!state.user||presenceStarted===state.user.uid)return;presenceStarted=state.user.uid;const uid=state.user.uid,ref=db.ref('presencia/'+uid),TS=firebase.database.ServerValue.TIMESTAMP;
+  db.ref('.info/connected').on('value',s=>{if(!s.val()||presenceStarted!==uid)return;ref.onDisconnect().set({on:false,last:TS,ver:APP_VERSION}).then(()=>ref.set({on:true,last:TS,ver:APP_VERSION})).catch(()=>{});});}
+function presenceOff(){if(!state.user)return;const ref=db.ref('presencia/'+state.user.uid);ref.set({on:false,last:firebase.database.ServerValue.TIMESTAMP,ver:APP_VERSION}).catch(()=>{});ref.onDisconnect().cancel();presenceStarted=null;sessionLogged=false;}
+// Cuando ya hay un registro de WhatsApp: el anchor (recordatorio, recibo, cierre, mensaje) se anota al tocarlo.
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="https://wa.me"]');if(!a)return;const d=a.dataset;logAct('whatsapp',d.wa||'Mensaje',{ref:d.waRef,cliente:d.waClient});},true);
+const tms=iso=>{const t=Date.parse(iso||'');return Number.isFinite(t)?t:0;};
+const limaFmt=(t,opt)=>new Date(t).toLocaleString('es-PE',{timeZone:'America/Lima',...opt});
+const hhmm=t=>limaFmt(t,{hour:'2-digit',minute:'2-digit'});
+const dayKey=t=>limaFmt(t,{year:'numeric',month:'2-digit',day:'2-digit'}).split('/').reverse().join('-');
+function ago(t){const m=Math.round((Date.now()-t)/6e4);return m<1?'hace un momento':m<60?`hace ${m} min`:m<1440?`hace ${Math.round(m/60)} h`:`hace ${Math.round(m/1440)} ${Math.round(m/1440)===1?'día':'días'}`;}
+const ACT_ICON={venta:'🧾',pedido:'📝',atendido:'✓',anulado:'✖',pago:'💵',pago_anulado:'✖',cliente:'👤',precio:'🏷',ingreso:'📦',cambio_pago:'⇄',peso:'⚖',whatsapp:'💬',sesion:'↪'};
+const ACT_NAME={venta:'Venta',pedido:'Pedido registrado',atendido:'Atendió pedido',anulado:'Anuló',pago:'Pago recibido',pago_anulado:'Pago anulado',cliente:'Cliente nuevo',precio:'Cambio de precio',ingreso:'Ingreso de mercadería',cambio_pago:'Cambió forma de pago',peso:'Registró peso',whatsapp:'WhatsApp',sesion:'Sesión'};
+function controlEvents(){
+  const ev=[],uname=Object.fromEntries((state.users||[]).map(u=>[u.id,u.nombre])),cname=Object.fromEntries(state.clients.map(c=>[c.id,c.name]));
+  state.orders.filter(o=>!o._local).forEach(o=>{const direct=o.attended_at&&o.attended_at===o.created_at;
+    const qty=unitOrder(o)?orderAmount(o):jabasText(jabasOf(o))+(pendingWeights(o)?' · sin pesar':' · '+(o.weight_grams/1000).toFixed(3)+' kg');
+    ev.push({t:tms(o.created_at),tipo:direct?'venta':'pedido',quien:o.created_by_name||'',txt:`${o.code} · ${o.client_name} · ${qty}${direct&&o.cobro?' · '+(o.cobro==='fiado'?'Fiado':o.metodo_pago):''}`,monto:o.total_cents,ref:o.id});
+    if(o.anulado_at)ev.push({t:tms(o.anulado_at),tipo:'anulado',quien:o.anulado_por_nombre||'',txt:`${o.status==='Anulado'?'Venta':'Pedido'} ${o.code} · ${o.client_name} · motivo: ${o.anulado_motivo||''}`,monto:o.total_cents,ref:o.id,bad:true});});
+  state.abonos.filter(a=>!a._local).forEach(a=>{ev.push({t:tms(a.fecha),tipo:'pago',quien:a.por_nombre||'',txt:`${cname[a.client_id]||'Cliente'} · ${a.metodo}${a.nota?' · '+a.nota:''}`,monto:a.monto_cents});
+    if(a.anulado)ev.push({t:tms(a.anulado_at),tipo:'pago_anulado',quien:uname[a.anulado_por]||'',txt:`${cname[a.client_id]||'Cliente'} · ${money(a.monto_cents)} · motivo: ${a.anulado_motivo||''}`,bad:true});});
+  state.clients.forEach(c=>c.created_at&&ev.push({t:tms(c.created_at),tipo:'cliente',quien:'',txt:`${c.code||''} · ${c.name}`}));
+  state.products.forEach(p=>Object.values(p.historial||{}).forEach(h=>ev.push({t:tms(h.fecha),tipo:'precio',quien:uname[h.por]||h.por||'',txt:`${p.name} · ${money(h.price_cents)}`})));
+  state.ingresos.forEach(i=>ev.push({t:tms(i.creado),tipo:'ingreso',quien:i.por_nombre||'',txt:`${i.proveedor||'Proveedor'}${i.tipo==='otros'?' · otros productos':''}`}));
+  (state.actividad||[]).forEach(a=>ev.push({t:a.t,tipo:a.tipo,quien:a.nombre||'',txt:(a.tipo==='whatsapp'?`${a.txt}${a.cliente&&cname[a.cliente]?' · '+cname[a.cliente]:''}`:a.txt),ref:a.ref,bad:a.tipo==='cambio_pago'}));
+  return ev.filter(e=>e.t).sort((a,b)=>b.t-a.t);
+}
+// Precio vigente del producto en la fecha de la venta (según su historial).
+function weekPriceAt(o){const p=state.products.find(x=>x.id===o.product_id);if(!p)return null;const h=Object.values(p.historial||{}).filter(x=>x.fecha<=o.created_at).sort((a,b)=>a.fecha.localeCompare(b.fecha)).pop();if(h)return h.price_cents;return p.price_updated_at&&p.price_updated_at<=o.created_at?p.price_cents:null;}
+function controlAlerts(){
+  const now=Date.now(),mes=now-30*864e5,waRefs=new Set((state.actividad||[]).filter(a=>a.tipo==='whatsapp'&&a.ref).map(a=>a.ref)),ok=state.orders.filter(o=>!o._local);
+  return[
+    ['Ventas anuladas (30 días)',ok.filter(o=>o.status==='Anulado'&&tms(o.anulado_at)>mes).map(o=>({ref:o.id,t:tms(o.anulado_at),a:`${o.code} · ${o.client_name}`,b:`${o.anulado_por_nombre||''} · ${o.anulado_motivo||''}`,m:o.total_cents}))],
+    ['Cambios de forma de pago',(state.actividad||[]).filter(a=>a.tipo==='cambio_pago'&&a.t>mes).map(a=>({ref:a.ref,t:a.t,a:a.txt,b:a.nombre}))],
+    ['Precio distinto al de la semana (30 días)',ok.filter(o=>o.status==='Atendido'&&!unitOrder(o)&&tms(o.created_at)>mes).map(o=>({o,w:weekPriceAt(o)})).filter(x=>x.w&&x.w!==x.o.price_cents).map(({o,w})=>({ref:o.id,t:tms(o.created_at),a:`${o.code} · ${o.client_name}`,b:`${money(o.price_cents)}/kg en vez de ${money(w)}/kg · ${o.created_by_name||''}`,m:o.total_cents}))],
+    ['Sin pesar hace más de 24 h',ok.filter(o=>o.status==='Atendido'&&pendingWeights(o)&&now-tms(o.attended_at)>864e5).map(o=>({ref:o.id,t:tms(o.attended_at),a:`${o.code} · ${o.client_name}`,b:`${jabasText(jabasOf(o))} · ${ago(tms(o.attended_at))}`}))],
+    ['Nota no enviada por WhatsApp',ok.filter(o=>o.status==='Atendido'&&!pendingWeights(o)&&(o.attended_at||'')>=CONTROL_DESDE&&(o.client_phone||'').replace(/\D/g,'')&&!waRefs.has(o.id)).map(o=>({ref:o.id,t:tms(o.attended_at),a:`${o.code} · ${o.client_name}`,b:o.created_by_name||'',m:o.total_cents}))],
+    ['Pagos anulados (30 días)',state.abonos.filter(a=>a.anulado&&tms(a.anulado_at)>mes).map(a=>({t:tms(a.anulado_at),a:`${(state.clients.find(c=>c.id===a.client_id)||{}).name||'Cliente'} · ${a.metodo}`,b:a.anulado_motivo||'',m:a.monto_cents}))]
+  ];
+}
+function renderControl(){
+  const alerts=controlAlerts(),nAl=alerts.reduce((n,[,l])=>n+l.length,0);
+  $('#ctl-tabs').innerHTML=[['mov','Movimientos'],['wa','WhatsApp'],['linea','En línea'],['alertas',`Alertas${nAl?` (${nAl})`:''}`]].map(([k,t])=>`<button type="button" data-ctl-tab="${k}" class="${state.ctlTab===k?'on':''}">${t}</button>`).join('');
+  const body=$('#ctl-body');
+  const row=(icon,a,b,side,cls='',ref='')=>`<div class="ord-row ${cls}"><button class="ord-main"${ref?` data-detail="${esc(ref)}"`:' disabled'}><span class="ctl-ico">${icon}</span><span class="sr-main"><b>${a}</b><small>${b}</small></span><span class="sr-side">${side}</span></button></div>`;
+  if(state.ctlTab==='mov'){
+    const all=controlEvents(),people=[...new Set(all.map(e=>e.quien).filter(Boolean))].sort(),since=state.ctlDays==='todo'?0:Date.now()-Number(state.ctlDays)*864e5;
+    const today0=tms(nowLima().slice(0,10)+'T00:00:00-05:00'),from=state.ctlDays==='1'?today0:since;
+    const list=all.filter(e=>e.t>=from&&(!state.ctlWho||e.quien===state.ctlWho)).slice(0,400);let last='';
+    body.innerHTML=`<div class="ctl-filters"><select id="ctl-days">${[['1','Hoy'],['2','Desde ayer'],['7','7 días'],['30','30 días'],['todo','Todo']].map(([v,t])=>`<option value="${v}" ${state.ctlDays===v?'selected':''}>${t}</option>`).join('')}</select><select id="ctl-who"><option value="">Todas las personas</option>${people.map(p=>`<option ${state.ctlWho===p?'selected':''}>${esc(p)}</option>`).join('')}</select></div>
+      ${list.length?`<div class="sale-rows">${list.map(e=>{const d=dayKey(e.t),head=d!==last?`<div class="ctl-day">${esc(dayLabel(d))}</div>`:'';last=d;return head+row(ACT_ICON[e.tipo]||'•',`${esc(ACT_NAME[e.tipo]||e.tipo)}${e.quien?` <em>· ${esc(e.quien)}</em>`:''}`,esc(e.txt),`<b${e.bad?' class="debt"':''}>${e.monto!=null?money(e.monto):''}</b><small>${hhmm(e.t)}</small>`,e.bad?'ctl-bad':'',e.ref&&state.orders.some(o=>o.id===e.ref)?e.ref:'');}).join('')}</div>`:'<div class="empty"><strong>Sin movimientos en este periodo</strong></div>'}`;
+    $('#ctl-days').onchange=e=>{state.ctlDays=e.target.value;render();};$('#ctl-who').onchange=e=>{state.ctlWho=e.target.value;render();};
+  }else if(state.ctlTab==='wa'){
+    const cname=Object.fromEntries(state.clients.map(c=>[c.id,c.name])),wa=(state.actividad||[]).filter(a=>a.tipo==='whatsapp').slice(0,300),today=nowLima().slice(0,10);
+    const notas=wa.filter(a=>a.ref&&state.noteLinks[a.ref]),vistas=notas.filter(a=>state.notaVista[state.noteLinks[a.ref]]);
+    body.innerHTML=`<p class="ctl-sum">Hoy: <b>${wa.filter(a=>dayKey(a.t)===today).length}</b> mensajes abiertos · notas vistas por el cliente: <b>${new Set(vistas.map(a=>a.ref)).size}</b> de ${new Set(notas.map(a=>a.ref)).size}</p>
+      ${wa.length?`<div class="sale-rows">${wa.map(a=>{const tok=a.ref&&state.noteLinks[a.ref],v=tok&&state.notaVista[tok];return row('💬',`${esc(a.txt)}${a.cliente&&cname[a.cliente]?` · ${esc(cname[a.cliente])}`:''}`,`${esc(a.nombre||'')} · ${esc(dayLabel(dayKey(a.t)))} ${hhmm(a.t)}`,tok?(v?`<span class="pt">Vista ✓</span><small>${hhmm(v)}</small>`:'<span class="pt wait">No abierta</span>'):'','',a.ref&&state.orders.some(o=>o.id===a.ref)?a.ref:'');}).join('')}</div>`:'<div class="empty"><strong>Todavía no hay mensajes registrados</strong>Desde ahora, cada WhatsApp que se abra desde la app aparecerá aquí.</div>'}
+      <p class="muted ctl-note">La app registra cuando se abre WhatsApp con el mensaje listo. «Vista ✓» es cuando el cliente abrió el enlace de su nota.</p>`;
+  }else if(state.ctlTab==='linea'){
+    const ev=controlEvents(),today0=tms(nowLima().slice(0,10)+'T00:00:00-05:00');
+    const users=[...(state.users||[])].filter(u=>u.rol).sort((a,b)=>((state.presencia[b.id]||{}).last||0)-((state.presencia[a.id]||{}).last||0));
+    body.innerHTML=`<div class="sale-rows">${users.map(u=>{const p=state.presencia[u.id]||{},on=p.on===true,hoy=ev.filter(e=>e.quien===u.nombre&&e.t>=today0),v=hoy.filter(e=>e.tipo==='venta').length,pg=hoy.filter(e=>e.tipo==='pago').length;
+      return `<div class="ord-row"><div class="ord-main"><span class="ctl-dot${on?' on':''}"></span><span class="sr-main"><b>${esc(u.nombre||u.email)}</b><small>${on?'En línea ahora':p.last?'Última vez '+ago(p.last):'Sin conexión registrada'}${p.ver?` · app v${esc(p.ver)}${p.ver!==APP_VERSION?' (desactualizada)':''}`:''}</small></span><span class="sr-side"><small>Hoy: ${v} ${v===1?'venta':'ventas'} · ${pg} ${pg===1?'pago':'pagos'}</small><span class="pt">${esc(ROLES[u.rol]||'')}</span></span></div></div>`;}).join('')}</div><p class="muted ctl-note">«Desactualizada»: esa persona tiene una versión anterior; debe cerrar y volver a abrir la app.</p>`;
+  }else{
+    body.innerHTML=alerts.map(([t,l])=>`<div class="home-section"><div class="home-row-head"><h3 class="home-h">${esc(t)} <span class="tab-count">${l.length||''}</span></h3></div>${l.length?`<div class="sale-rows">${l.slice(0,50).map(x=>row('!',esc(x.a),esc(x.b),`${x.m!=null?`<b>${money(x.m)}</b>`:''}<small>${esc(dayLabel(dayKey(x.t)))}</small>`,'ctl-bad',x.ref&&state.orders.some(o=>o.id===x.ref)?x.ref:'')).join('')}</div>`:'<p class="muted ctl-ok">✓ Todo en orden</p>'}</div>`).join('');
+  }
+}
 // ---------- Reporte en Excel (ExcelJS se descarga solo al exportar, desde /vendor) ----------
 const MONTHS=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const monthLabel=ym=>`${MONTHS[Number(ym.slice(5,7))-1]} ${ym.slice(0,4)}`;
@@ -779,6 +858,7 @@ function render(){
   renderCobros(L,debtors,porCobrar);
   renderHome(d,debtors,porCobrar);
   if(state.page==='caja')renderCaja(L,debtors,porCobrar);
+  if(state.page==='control'&&state.profile?.rol==='admin')renderControl(L);
   const term=$('#order-search').value.trim().toLowerCase();
   const visible=state.orders.filter(o=>(!term||`${o.code} ${o.client_name}`.toLowerCase().includes(term))&&(state.orderTab==='all'||(state.orderTab==='attended'?o.status==='Atendido':needsAction(o))));
   renderOrderList(visible);
@@ -799,7 +879,7 @@ function renderClients(LB){
   const list=state.clients.filter(c=>!term||`${c.name} ${c.phone||''} ${c.code||''} ${c.district||''}`.toLowerCase().includes(term)).sort((a,b)=>(info[b.id]?.last||'').localeCompare(info[a.id]?.last||'')||a.name.localeCompare(b.name));
   $('#clients-count').textContent=state.clients.length||'';
   $('#clients-table').innerHTML=list.length?list.map(c=>{const i=info[c.id],saldo=LB[c.id]?.saldo||0,hasPhone=!!(c.phone||'').replace(/\D/g,''),d0=i?.last?Math.round((Date.parse(today)-Date.parse(i.last.slice(0,10)))/864e5):NaN,d=Number.isFinite(d0)?Math.max(0,d0):null;
-    return `<div class="ord-row debtor"><button class="ord-main" data-edit-client="${esc(c.id)}"><span class="db-ini${saldo>0?'':' ok'}">${esc((c.name||'?').trim().charAt(0).toUpperCase())}</span><span class="sr-main"><b>${esc(c.name)}</b><small>${i?`${i.n} ${i.n===1?'compra':'compras'}${d===null?'':` · última ${d===0?'hoy':d===1?'ayer':`hace ${d} días`}`}`:'Sin compras todavía'}${c.district?' · '+esc(c.district):''}</small></span><span class="sr-side">${saldo>0?`<b class="debt">${money(saldo)}</b><span class="pt fiado">Debe</span>`:'<span class="pt">Al día</span>'}</span></button><div class="db-acts">${hasPhone?`<a class="ord-wa" href="${esc(waTo(c.phone,''))}" target="_blank" rel="noopener">${WA_ICON}Escribir</a>`:''}<button class="ord-act" data-sell-client="${esc(c.id)}">Vender</button></div></div>`;}).join(''):`<div class="empty"><strong>${term?'No encontré ese cliente':'Todavía no hay clientes'}</strong>${term?'Revisa el nombre o créalo con «+ Nuevo».':''}</div>`;
+    return `<div class="ord-row debtor"><button class="ord-main" data-edit-client="${esc(c.id)}"><span class="db-ini${saldo>0?'':' ok'}">${esc((c.name||'?').trim().charAt(0).toUpperCase())}</span><span class="sr-main"><b>${esc(c.name)}</b><small>${i?`${i.n} ${i.n===1?'compra':'compras'}${d===null?'':` · última ${d===0?'hoy':d===1?'ayer':`hace ${d} días`}`}`:'Sin compras todavía'}${c.district?' · '+esc(c.district):''}</small></span><span class="sr-side">${saldo>0?`<b class="debt">${money(saldo)}</b><span class="pt fiado">Debe</span>`:'<span class="pt">Al día</span>'}</span></button><div class="db-acts">${hasPhone?`<a class="ord-wa" href="${esc(waTo(c.phone,''))}" target="_blank" rel="noopener" data-wa="Mensaje" data-wa-client="${esc(c.id)}">${WA_ICON}Escribir</a>`:''}<button class="ord-act" data-sell-client="${esc(c.id)}">Vender</button></div></div>`;}).join(''):`<div class="empty"><strong>${term?'No encontré ese cliente':'Todavía no hay clientes'}</strong>${term?'Revisa el nombre o créalo con «+ Nuevo».':''}</div>`;
 }
 // ---------- Importar clientes desde los contactos del celular (Android: selector de contactos; otros: archivo .vcf) ----------
 const normPhone=p=>{let d=String(p||'').replace(/\D/g,'');if(d.length>9&&d.startsWith('51'))d=d.slice(2);return d;};
@@ -963,7 +1043,7 @@ function openOrder(clientId){
     const ref=db.ref('pedidos').push(),id=ref.key,token=r.complete?newToken():null,created=nowLima(),client=draft.client;
     const base={id,code:'',client_id:client.id,client_name:client.name,client_phone:client.phone||'',product_id:draft.product.id,product_name:draft.product.name,created_by:state.user.uid,created_by_name:state.profile.nombre||state.user.email,created_at:created,attended_at:created,status:'Atendido',sale_type:draft.sale_type,notes:draft.notes,price_cents:r.price,weight_grams:r.grams,total_cents:r.total,cobro:pay.cobro,metodo_pago:pay.metodo_pago};
     if(draft.product.sold_by_weight){base.weights=r.weights;base.jabas=draft.count;if(!r.complete)base.peso_pendiente=true;}else{base.por_unidad=true;base.unidad=draft.product.unit;base.cantidad=draft.count;}
-    if(draft.wa&&(client.phone||'').replace(/\D/g,''))window.open(waTo(client.phone,r.complete?waNoteMessage(base,token):waPendingMessage(base)),'_blank','noopener');
+    if(draft.wa&&(client.phone||'').replace(/\D/g,'')){window.open(waTo(client.phone,r.complete?waNoteMessage(base,token):waPendingMessage(base)),'_blank','noopener');logAct('whatsapp',r.complete?'Nota de venta':'Aviso de venta (sin pesar)',{ref:id,cliente:client.id});}
     const show=pay.acuenta>0?Object.entries(acuentaPaths(base,pay)).map(([k,v])=>({id:k.slice(7),...v})):[];
     try{addOutbox({k:'sale',id,base,pay,token,show,label:'la venta de '+client.name});}catch(err){alert(err.message);return;}
     closeModal();nav('inicio');notify(r.complete?`Venta registrada · ${money(r.total)}`:'Venta registrada · falta pesar');
@@ -1004,13 +1084,14 @@ function weighOrder(id,mode){
   submitWith($('#weigh-form'),async e=>{
     const el=e.target.elements,weights=parseWeights(byCrate?Array.from({length:n},(_,i)=>el[`weight${i}`].value):[el.total.value],false),{grams,total}=calc(weights,o.price_cents);
     const upd={['pedidos/'+id+'/weights']:weights,['pedidos/'+id+'/weight_grams']:grams,['pedidos/'+id+'/total_cents']:total,['pedidos/'+id+'/jabas']:n};
+    logAct('peso',`${o.code} · ${o.client_name}: ${(grams/1000).toFixed(3)} kg · ${money(total)}`,{ref:id,cliente:o.client_id});
     if(o.status!=='Atendido'){await db.ref().update(upd);showOrder(id);notify('Peso registrado');return;}
     upd['pedidos/'+id+'/peso_pendiente']=null;
     const done={...o,weights,weight_grams:grams,total_cents:total,jabas:n,peso_pendiente:null};
     let token=state.noteLinks[id];if(!token){token=newToken();Object.assign(upd,notePaths(done,token));}
     await db.ref().update(upd);state.noteLinks[id]=token;
     const hasPhone=!!(o.client_phone||'').replace(/\D/g,'');
-    openModal('Peso registrado',o.client_name,`<div class="sale-body sale-success"><div class="success-mark">✓</div><h3>${money(total)}</h3><p class="muted">${jabasText(n)} · ${(grams/1000).toFixed(3)} kg${o.cobro==='fiado'?' · fiado':''}</p></div><div class="sale-actions">${hasPhone?`<a class="button primary wa-button" href="${esc(waTo(o.client_phone,waNoteMessage(done,token)))}" target="_blank" rel="noopener" data-close>${WA_ICON}Enviar total por WhatsApp</a>`:''}<button class="button" data-close>Listo</button></div>`);
+    openModal('Peso registrado',o.client_name,`<div class="sale-body sale-success"><div class="success-mark">✓</div><h3>${money(total)}</h3><p class="muted">${jabasText(n)} · ${(grams/1000).toFixed(3)} kg${o.cobro==='fiado'?' · fiado':''}</p></div><div class="sale-actions">${hasPhone?`<a class="button primary wa-button" href="${esc(waTo(o.client_phone,waNoteMessage(done,token)))}" target="_blank" rel="noopener" data-close data-wa="Nota de venta" data-wa-ref="${esc(id)}" data-wa-client="${esc(o.client_id)}">${WA_ICON}Enviar total por WhatsApp</a>`:''}<button class="button" data-close>Listo</button></div>`);
   });
 }
 async function advance(id){
@@ -1026,7 +1107,7 @@ async function attendOrder(id){
   openModal('¿Cómo pagó?',o.code,`<div class="modal-content">${payChooser('att-pay',o)}</div>`);
   wirePayChooser('att-pay',async pay=>{const at=nowLima(),token=missing?null:newToken(),done={...o,status:'Atendido',attended_at:at,cobro:pay.cobro,metodo_pago:pay.metodo_pago};
     await db.ref().update({['pedidos/'+id+'/status']:'Atendido',['pedidos/'+id+'/attended_at']:at,['pedidos/'+id+'/cobro']:pay.cobro,['pedidos/'+id+'/metodo_pago']:pay.metodo_pago,...(missing?{['pedidos/'+id+'/peso_pendiente']:true}:notePaths(done,token)),...acuentaPaths(done,pay)});
-    if(token)state.noteLinks[id]=token;closeModal();notify(missing?'Venta atendida · falta pesar':pay.cobro==='fiado'?'Venta atendida al fiado':'Venta atendida');});
+    if(token)state.noteLinks[id]=token;logAct('atendido',`${o.code} · ${o.client_name} · ${pay.cobro==='fiado'?'Fiado':pay.metodo_pago}`,{ref:id,cliente:o.client_id});closeModal();notify(missing?'Venta atendida · falta pesar':pay.cobro==='fiado'?'Venta atendida al fiado':'Venta atendida');});
 }
 function cancelOrder(id){
   const o=state.orders.find(x=>x.id===id);if(!o||!['Pendiente','En preparación','Listo','Atendido'].includes(o.status))return;
@@ -1120,6 +1201,7 @@ function waNoteMessage(o,token){return `Hola ${o.client_name.split(' ')[0]}, gra
 async function sendWhatsApp(target){
   const o=orderOf(target);if(!o)return;
   let token=state.noteLinks[o.id];
+  logAct('whatsapp','Nota de venta '+(o.code||''),{ref:o.id,cliente:o.client_id||''});
   if(token){window.open(whatsapp(o,waNoteMessage(o,token)),'_blank','noopener');return;}
   // Venta antigua sin nota: se crea ahora y se abre WhatsApp en la misma pestaña (después de esperar no se permiten ventanas nuevas).
   try{token=newToken();await db.ref().update(notePaths(o,token));state.noteLinks[o.id]=token;location.href=whatsapp(o,waNoteMessage(o,token));}
@@ -1128,6 +1210,7 @@ async function sendWhatsApp(target){
 async function showPublicNote(token){
   const box=$('#public-note');show('public-note');
   let n=null;try{n=(await db.ref('notas/'+token).once('value')).val();}catch{}
+  if(n)db.ref('nota_vista/'+token).set(firebase.database.ServerValue.TIMESTAMP).catch(()=>{});
   if(!n){box.innerHTML='<div class="pn-card"><h1>Nota no encontrada</h1><p class="muted">Revisa que el enlace esté completo.</p></div>';return;}
   const neg=n.negocio||{},cli=n.cliente||{},w=n.weights||[];
   document.title=`Nota de pedido ${n.code}`;
@@ -1171,7 +1254,7 @@ document.addEventListener('click',e=>{
   const t=e.target,get=(attr)=>t.closest(`[data-${attr}]`)?.dataset;
   const lid=[['weigh','weigh'],['attend','attend'],['cancel','cancel'],['chpay','chpay'],['share','share'],['pdf','pdf'],['void-abono','voidAbono']].map(([a,k])=>get(a)?.[k]).find(Boolean);
   if(lid&&(state.orders.some(o=>o.id===lid&&o._local)||state.abonos.some(a=>a.id===lid&&a._local))){notify('Todavía se está subiendo. Espera a tener señal.');return;}
-  if(t.closest('[data-logout]')){auth.signOut();return;}
+  if(t.closest('[data-logout]')){presenceOff();auth.signOut();return;}
   if(get('page')&&!t.closest('[data-role]'))nav(get('page').page);
   if(get('income-open')){state.ingresoId=get('income-open').incomeOpen;nav('conteo');($('#income-weight')||$('#other-form [name=producto]'))?.focus();}
   if(get('income-edit'))editarJaba(get('income-edit').incomeEdit);
@@ -1182,6 +1265,7 @@ document.addEventListener('click',e=>{
   if(get('edit-client'))openClient(get('edit-client').editClient);
   if(get('sell-client'))openOrder(get('sell-client').sellClient);
   if(get('export'))openExport();
+  if(get('ctl-tab')){state.ctlTab=get('ctl-tab').ctlTab;render();}
   if(get('import-contacts'))importContacts();
   if(get('xls'))exportExcel(get('xls').xls);
   if(get('caja-day')){state.cajaDay=get('caja-day').cajaDay;render();}

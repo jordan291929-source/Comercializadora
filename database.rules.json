@@ -373,6 +373,66 @@
           ".validate": false
         }
       }
+    },
+    "actividad": {
+      ".read": "auth != null && root.child('usuarios/' + auth.uid + '/rol').val() === 'admin'",
+      ".indexOn": [
+        "t"
+      ],
+      "$id": {
+        ".write": "auth != null && root.child('usuarios/' + auth.uid + '/rol').exists() && !data.exists() && newData.child('uid').val() === auth.uid",
+        ".validate": "newData.hasChildren(['t', 'uid', 'tipo'])",
+        "t": {
+          ".validate": "newData.isNumber() && newData.val() <= now"
+        },
+        "uid": {
+          ".validate": "newData.isString()"
+        },
+        "nombre": {
+          ".validate": "newData.isString() && newData.val().length <= 80"
+        },
+        "tipo": {
+          ".validate": "newData.isString() && newData.val().length <= 30"
+        },
+        "txt": {
+          ".validate": "newData.isString() && newData.val().length <= 300"
+        },
+        "ref": {
+          ".validate": "newData.isString() && newData.val().length <= 40"
+        },
+        "cliente": {
+          ".validate": "newData.isString() && newData.val().length <= 40"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "presencia": {
+      ".read": "auth != null && root.child('usuarios/' + auth.uid + '/rol').val() === 'admin'",
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid",
+        ".validate": "newData.hasChildren(['on', 'last'])",
+        "on": {
+          ".validate": "newData.isBoolean()"
+        },
+        "last": {
+          ".validate": "newData.isNumber() && newData.val() <= now"
+        },
+        "ver": {
+          ".validate": "newData.isString() && newData.val().length <= 10"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "nota_vista": {
+      ".read": "auth != null && root.child('usuarios/' + auth.uid + '/rol').val() === 'admin'",
+      "$token": {
+        ".write": "!data.exists() && root.child('notas/' + $token).exists()",
+        ".validate": "newData.isNumber() && newData.val() <= now"
+      }
     }
   }
 }
