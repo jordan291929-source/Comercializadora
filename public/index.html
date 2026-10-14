@@ -187,8 +187,9 @@ html,body,*,*::before,*::after{touch-action:manipulation}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
 'use strict';
-const APP_VERSION='2.37';
+const APP_VERSION='2.38';
 const CHANGELOG=[
+  {v:'2.38',f:'2026-10-14',t:'Los kilos se muestran con 2 decimales en toda la app, la nota, el PDF, WhatsApp y el Excel (43.57 kg en vez de 43.570).'},
   {v:'2.37',f:'2026-10-13',t:'Nueva pantalla «Control» para el administrador: todos los movimientos con quién y a qué hora, historial de WhatsApp (y si el cliente abrió su nota), quién está en línea y con qué versión, y alertas: ventas anuladas, cambios de forma de pago, precios distintos al de la semana, ventas sin pesar y notas no enviadas.'},
   {v:'2.36',f:'2026-10-13',t:'iPhone: la cabecera y la barra de abajo quedan fijas y solo se desplaza el contenido. Arregla la barra que quedaba flotando a media pantalla y el contenido que pasaba debajo de la hora.'},
   {v:'2.35',f:'2026-10-13',t:'Detalle del pedido: los pesos por jaba quedan plegados en una línea (cantidad y promedio); al tocarla se ven como en un ticket, en dos columnas ordenadas, con el menor, el mayor y el total.'},
@@ -423,7 +424,7 @@ function openChangePay(id){
 
 const nextStatus={'Pendiente':'En preparación','En preparación':'Listo','Listo':'Atendido'};
 function table(headers,rows,empty){if(!rows.length)return `<div class="empty"><strong>${esc(empty)}</strong>Los registros aparecerán aquí.</div>`;return `<table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table>`;}
-function orderCard(o){const open=!CLOSED.includes(o.status),missing=pendingWeights(o)&&(open||o.status==='Atendido'),debt=o.status==='Atendido'&&o.cobro==='fiado'&&!pendingWeights(o)?(state.due?.[o.id]||0):null;return `<article class="order-card"><div class="order-card-top"><small>${esc(o.code)} · ${date(o.created_at)}</small>${statusPill(o.status)}</div><div class="order-card-main"><strong>${esc(o.client_name)}</strong><strong class="order-amount">${missing?'Por pesar':money(o.total_cents)}</strong></div><div class="order-card-detail">${unitOrder(o)?'📦 '+esc(orderAmount(o)):'🥚 '+jabasText(jabasOf(o))+' · '+(missing?'Peso pendiente':(o.weight_grams/1000).toFixed(3)+' kg')} · ${esc(o.product_name)}</div><div class="order-card-bottom"><span class="muted" style="font-size:11px">${o.status==='Atendido'?date(o.attended_at):''}${o.status==='Atendido'&&missing?` <span class="pill fiado">Falta pesar${o.cobro==='fiado'?' · fiado':''}</span>`:''}${debt!==null?` <span class="pill ${debt>0?'fiado':'atendido'}">${debt>0?'Fiado · debe '+money(debt):'Fiado · pagado'}</span>`:''}</span><div class="row-actions"><button class="mini-button" data-detail="${esc(o.id)}">Ver detalle</button>${missing?`<button class="mini-button" data-weigh="${esc(o.id)}">⚖ Registrar peso</button>`:''}${open?`<button class="mini-button" data-attend="${esc(o.id)}">✓ Atender</button>`:''}</div></div></article>`;}
+function orderCard(o){const open=!CLOSED.includes(o.status),missing=pendingWeights(o)&&(open||o.status==='Atendido'),debt=o.status==='Atendido'&&o.cobro==='fiado'&&!pendingWeights(o)?(state.due?.[o.id]||0):null;return `<article class="order-card"><div class="order-card-top"><small>${esc(o.code)} · ${date(o.created_at)}</small>${statusPill(o.status)}</div><div class="order-card-main"><strong>${esc(o.client_name)}</strong><strong class="order-amount">${missing?'Por pesar':money(o.total_cents)}</strong></div><div class="order-card-detail">${unitOrder(o)?'📦 '+esc(orderAmount(o)):'🥚 '+jabasText(jabasOf(o))+' · '+(missing?'Peso pendiente':(o.weight_grams/1000).toFixed(2)+' kg')} · ${esc(o.product_name)}</div><div class="order-card-bottom"><span class="muted" style="font-size:11px">${o.status==='Atendido'?date(o.attended_at):''}${o.status==='Atendido'&&missing?` <span class="pill fiado">Falta pesar${o.cobro==='fiado'?' · fiado':''}</span>`:''}${debt!==null?` <span class="pill ${debt>0?'fiado':'atendido'}">${debt>0?'Fiado · debe '+money(debt):'Fiado · pagado'}</span>`:''}</span><div class="row-actions"><button class="mini-button" data-detail="${esc(o.id)}">Ver detalle</button>${missing?`<button class="mini-button" data-weigh="${esc(o.id)}">⚖ Registrar peso</button>`:''}${open?`<button class="mini-button" data-attend="${esc(o.id)}">✓ Atender</button>`:''}</div></div></article>`;}
 // ---------- Pedidos: filas compactas agrupadas por día ----------
 function dayLabel(iso){const d=(iso||'').slice(0,10),today=nowLima().slice(0,10),y=new Date(Date.now()-29*3600e3).toISOString().slice(0,10);return d===today?'Hoy':d===y?'Ayer':ingresoFecha(d);}
 function orderTag(o){
@@ -437,7 +438,7 @@ function orderTag(o){
 }
 function orderRow(o){
   const missing=pendingWeights(o)&&!['Cancelado','Anulado'].includes(o.status),open=!CLOSED.includes(o.status),closed=['Cancelado','Anulado'].includes(o.status);
-  const when=(o.status==='Atendido'?o.attended_at:o.created_at)||'',qty=unitOrder(o)?orderAmount(o):jabasText(jabasOf(o))+(missing?'':' · '+(o.weight_grams/1000).toFixed(3)+' kg');
+  const when=(o.status==='Atendido'?o.attended_at:o.created_at)||'',qty=unitOrder(o)?orderAmount(o):jabasText(jabasOf(o))+(missing?'':' · '+(o.weight_grams/1000).toFixed(2)+' kg');
   const action=open?`<button class="ord-act" data-attend="${esc(o.id)}">Atender</button>`:missing?`<button class="ord-act pesar" data-weigh="${esc(o.id)}">⚖ Pesar</button>`:'';
   return `<div class="ord-row${closed?' void':''}"><button class="ord-main" data-detail="${esc(o.id)}"><span class="sr-main"><b>${esc(o.client_name)}</b><small>${esc(o.code||'')} · ${when.slice(11,16)} · ${esc(qty)}</small></span><span class="sr-side"><b>${missing?'Al pesar':money(o.total_cents)}</b>${orderTag(o)}</span></button>${action}</div>`;
 }
@@ -476,7 +477,7 @@ function todayCollections(){
 }
 function renderHome(d,debtors,porCobrar){
   const c=todayCollections();
-  $('#home-hero').innerHTML=`<span class="hero-label">Vendido hoy</span><strong class="hero-total">${money(d.sales_today_cents)}</strong><span class="hero-sub">${d.attended_today} ${d.attended_today===1?'venta':'ventas'} · ${jabasText(d.jabas_today)} · ${d.kg_today.toFixed(3)} kg</span><button class="hero-link" data-page="caja">Ver caja del día ›</button><div class="hero-split"><button data-page="cobros"><small>Cobrado hoy</small><b>${money(c.cobrado)}</b></button><button data-page="cobros"><small>Fiado hoy</small><b>${money(c.fiado)}</b></button></div>`;
+  $('#home-hero').innerHTML=`<span class="hero-label">Vendido hoy</span><strong class="hero-total">${money(d.sales_today_cents)}</strong><span class="hero-sub">${d.attended_today} ${d.attended_today===1?'venta':'ventas'} · ${jabasText(d.jabas_today)} · ${d.kg_today.toFixed(2)} kg</span><button class="hero-link" data-page="caja">Ver caja del día ›</button><div class="hero-split"><button data-page="cobros"><small>Cobrado hoy</small><b>${money(c.cobrado)}</b></button><button data-page="cobros"><small>Fiado hoy</small><b>${money(c.fiado)}</b></button></div>`;
   $('#quick-actions').innerHTML=[['vender','Vender','data-open="order"','main'],['cobrar','Cobrar','data-page="cobros"',''],['ingreso','Ingreso','data-page="ingresos"',''],['clientes','Clientes','data-page="clientes"','']].map(([i,t,attr,cls])=>`<button class="qa ${cls}" ${attr}><span class="qa-ico">${HOME_ICON[i]}</span>${t}</button>`).join('');
   const porAtender=state.orders.filter(o=>!CLOSED.includes(o.status)).length,abierto=state.ingresos.find(i=>!i.cerrado);
   const alerts=[];
@@ -487,7 +488,7 @@ function renderHome(d,debtors,porCobrar){
   $('#home-alerts').innerHTML=alerts.length?alerts.map(([i,t,sub,attr])=>`<button class="alert-row ${i}" ${attr}><span class="alert-ico">${HOME_ICON[i]}</span><span class="alert-txt"><b>${t}</b><small>${sub}</small></span><span class="alert-go">${HOME_ICON.chevron}</span></button>`).join(''):`<div class="alert-row ok"><span class="alert-ico">${HOME_ICON.ok}</span><span class="alert-txt"><b>Todo al día</b><small>No hay nada pendiente por ahora</small></span></div>`;
   const recent=state.orders.filter(o=>o.status==='Atendido').sort((a,b)=>(b.attended_at||'').localeCompare(a.attended_at||'')).slice(0,6);
   const payTag=(o)=>pendingWeights(o)?'<span class="pt pesar">Sin pesar</span>':o.cobro==='fiado'?'<span class="pt fiado">Fiado</span>':o.metodo_pago?`<span class="pt">${esc(o.metodo_pago)}</span>`:'';
-  $('#recent-orders').innerHTML=recent.length?recent.map(o=>`<button class="sale-row" data-detail="${esc(o.id)}"><span class="sr-main"><b>${esc(o.client_name)}</b><small>${(o.attended_at||'').slice(11,16)} · ${esc(unitOrder(o)?orderAmount(o):jabasText(jabasOf(o)))}${!unitOrder(o)&&!pendingWeights(o)?' · '+(o.weight_grams/1000).toFixed(3)+' kg':''}</small></span><span class="sr-side"><b>${pendingWeights(o)?'—':money(o.total_cents)}</b>${payTag(o)}</span></button>`).join(''):'<div class="empty"><strong>Aún no hay ventas hoy</strong>Toca «Vender» para registrar la primera.</div>';
+  $('#recent-orders').innerHTML=recent.length?recent.map(o=>`<button class="sale-row" data-detail="${esc(o.id)}"><span class="sr-main"><b>${esc(o.client_name)}</b><small>${(o.attended_at||'').slice(11,16)} · ${esc(unitOrder(o)?orderAmount(o):jabasText(jabasOf(o)))}${!unitOrder(o)&&!pendingWeights(o)?' · '+(o.weight_grams/1000).toFixed(2)+' kg':''}</small></span><span class="sr-side"><b>${pendingWeights(o)?'—':money(o.total_cents)}</b>${payTag(o)}</span></button>`).join(''):'<div class="empty"><strong>Aún no hay ventas hoy</strong>Toca «Vender» para registrar la primera.</div>';
 }
 function renderCobros(L,debtors,porCobrar){
   const today=nowLima().slice(0,10),byM={Efectivo:0,'Yape/Plin':0,Transferencia:0};let fiadoHoy=0;
@@ -517,7 +518,7 @@ function dayFinance(day){
   return{ventas:ok.length,vendido:ok.reduce((n,o)=>n+o.total_cents,0),jabas,grams,units,contado,fiado,abonos,acuenta,deudas:abonos-acuenta,cobrado:contado+abonos,metodos,fiados:Object.values(fiados).sort((a,b)=>b.c-a.c),sinPesar:ok.filter(o=>pendingWeights(o)),anuladas:att.filter(o=>o.status==='Anulado')};
 }
 function cierreMessage(day,f,debtors,porCobrar){
-  const n=negocio(),L=[`*CIERRE DEL DÍA – ${n.nombre||'Comercializadora Viviana'}*`,longDay(day).replace(/^./,c=>c.toUpperCase()),'',`*VENDIDO: ${money(f.vendido)}*`,`${f.ventas} ${f.ventas===1?'venta':'ventas'} · ${jabasText(f.jabas)} · ${(f.grams/1000).toFixed(3)} kg`];
+  const n=negocio(),L=[`*CIERRE DEL DÍA – ${n.nombre||'Comercializadora Viviana'}*`,longDay(day).replace(/^./,c=>c.toUpperCase()),'',`*VENDIDO: ${money(f.vendido)}*`,`${f.ventas} ${f.ventas===1?'venta':'ventas'} · ${jabasText(f.jabas)} · ${(f.grams/1000).toFixed(2)} kg`];
   Object.entries(f.units).forEach(([u,q])=>L.push(`+ ${q} ${saleUnit(u,q)}`));
   L.push('',`*COBRADO: ${money(f.cobrado)}*`,...f.metodos.filter(([,v])=>v).map(([k,v])=>`• ${k}: ${money(v)}`));
   if(f.deudas>0)L.push(`(incluye ${money(f.deudas)} de deudas anteriores)`);
@@ -535,7 +536,7 @@ function renderCaja(L,debtors,porCobrar){
   $('#caja-next').disabled=day>=today;
   $('#caja-prev').onclick=()=>{state.cajaDay=shiftDay(day,-1);render();};$('#caja-next').onclick=()=>{state.cajaDay=shiftDay(day,1);render();};
   const uTxt=Object.entries(f.units).map(([u,q])=>` · ${q} ${saleUnit(u,q)}`).join('');
-  $('#caja-hero').innerHTML=`<span class="hero-label">Vendido</span><strong class="hero-total">${money(f.vendido)}</strong><span class="hero-sub">${f.ventas} ${f.ventas===1?'venta':'ventas'} · ${jabasText(f.jabas)} · ${(f.grams/1000).toFixed(3)} kg${esc(uTxt)}</span><div class="hero-split"><div class="hs"><small>Cobrado</small><b>${money(f.cobrado)}</b></div><div class="hs"><small>Fiado</small><b>${money(f.fiado)}</b></div></div>`;
+  $('#caja-hero').innerHTML=`<span class="hero-label">Vendido</span><strong class="hero-total">${money(f.vendido)}</strong><span class="hero-sub">${f.ventas} ${f.ventas===1?'venta':'ventas'} · ${jabasText(f.jabas)} · ${(f.grams/1000).toFixed(2)} kg${esc(uTxt)}</span><div class="hero-split"><div class="hs"><small>Cobrado</small><b>${money(f.cobrado)}</b></div><div class="hs"><small>Fiado</small><b>${money(f.fiado)}</b></div></div>`;
   const row=(k,v,cls='')=>`<div class="dt-row ${cls}"><small>${k}</small><span>${v}</span></div>`;
   const week=Array.from({length:7},(_,i)=>shiftDay(day,i-6)).map(d=>({d,...dayFinance(d)})),max=Math.max(1,...week.map(w=>w.vendido));
   const msg=cierreMessage(day,f,debtors,porCobrar);
@@ -615,7 +616,7 @@ const ACT_NAME={venta:'Venta',pedido:'Pedido registrado',atendido:'Atendió pedi
 function controlEvents(){
   const ev=[],uname=Object.fromEntries((state.users||[]).map(u=>[u.id,u.nombre])),cname=Object.fromEntries(state.clients.map(c=>[c.id,c.name]));
   state.orders.filter(o=>!o._local).forEach(o=>{const direct=o.attended_at&&o.attended_at===o.created_at;
-    const qty=unitOrder(o)?orderAmount(o):jabasText(jabasOf(o))+(pendingWeights(o)?' · sin pesar':' · '+(o.weight_grams/1000).toFixed(3)+' kg');
+    const qty=unitOrder(o)?orderAmount(o):jabasText(jabasOf(o))+(pendingWeights(o)?' · sin pesar':' · '+(o.weight_grams/1000).toFixed(2)+' kg');
     ev.push({t:tms(o.created_at),tipo:direct?'venta':'pedido',quien:o.created_by_name||'',txt:`${o.code} · ${o.client_name} · ${qty}${direct&&o.cobro?' · '+(o.cobro==='fiado'?'Fiado':o.metodo_pago):''}`,monto:o.total_cents,ref:o.id});
     if(o.anulado_at)ev.push({t:tms(o.anulado_at),tipo:'anulado',quien:o.anulado_por_nombre||'',txt:`${o.status==='Anulado'?'Venta':'Pedido'} ${o.code} · ${o.client_name} · motivo: ${o.anulado_motivo||''}`,monto:o.total_cents,ref:o.id,bad:true});});
   state.abonos.filter(a=>!a._local).forEach(a=>{ev.push({t:tms(a.fecha),tipo:'pago',quien:a.por_nombre||'',txt:`${cname[a.client_id]||'Cliente'} · ${a.metodo}${a.nota?' · '+a.nota:''}`,monto:a.monto_cents});
@@ -680,7 +681,7 @@ async function exportExcel(period){
   try{
     await loadExcel();
     const inP=iso=>!!iso&&(period==='todo'||iso.startsWith(period)),Lg=ledger(),n=negocio(),name=n.nombre||'Comercializadora Viviana';
-    const G='FF1F3B2D',GOLD='FFC8A04A',BG='FFF5F4F0',MON='"S/ "#,##0.00_)_)',KG='#,##0.000_)_)';
+    const G='FF1F3B2D',GOLD='FFC8A04A',BG='FFF5F4F0',MON='"S/ "#,##0.00_)_)',KG='#,##0.00_)_)';
     const wb=new ExcelJS.Workbook();wb.creator=name;wb.created=new Date();
     let logo=null;try{const r=await fetch('/icons/logo-mark.png');const buf=await r.arrayBuffer();logo=wb.addImage({buffer:buf,extension:'png'});}catch(e){}
     const title=(ws,sub,cols)=>{
@@ -743,7 +744,7 @@ async function exportExcel(period){
 // ---------- Ingresos de mercadería: cada jaba se guarda con su propia clave push() ----------
 function ingresoJabas(i){return Object.entries(i.jabas||{}).map(([id,j])=>({id,...j})).sort((a,b)=>a.hora.localeCompare(b.hora)||a.id.localeCompare(b.id));}
 function ingresoStats(i){const j=ingresoJabas(i),total=j.reduce((n,x)=>n+x.g,0),fuera=j.map((x,k)=>({...x,n:k+1})).filter(x=>x.g<i.min_g||x.g>i.max_g);return{j,total,fuera,promedio:j.length?Math.round(total/j.length):0,menor:j.length?Math.min(...j.map(x=>x.g)):0,mayor:j.length?Math.max(...j.map(x=>x.g)):0};}
-const kg=g=>(g/1000).toLocaleString('es-PE',{minimumFractionDigits:3,maximumFractionDigits:3});
+const kg=g=>(g/1000).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2});
 function isoWeek(fecha){const d=new Date(fecha+'T12:00:00Z');d.setUTCHours(0,0,0,0);d.setUTCDate(d.getUTCDate()+4-(d.getUTCDay()||7));const year=d.getUTCFullYear();return{year,week:Math.ceil((((d-new Date(Date.UTC(year,0,1)))/86400000)+1)/7)};}
 function ingresoFecha(fecha){const d=new Date(fecha+'T12:00:00Z'),dia=new Intl.DateTimeFormat('es-PE',{weekday:'short',timeZone:'UTC'}).format(d).replace('.','');return `${dia} ${fecha.slice(8,10)}/${fecha.slice(5,7)}`;}
 function ingresoMes(fecha){return new Intl.DateTimeFormat('es-PE',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(fecha+'T12:00:00Z'));}
@@ -1017,7 +1018,7 @@ function openOrder(clientId){
   const saleWeights=()=>draft.mode==='total'?[draft.totalKg]:draft.weights;
   function saleNumbers(){try{const price=priceCents(draft.price);if(!draft.product.sold_by_weight){const total=draft.count*price;if(!Number.isSafeInteger(total))throw new Error('El total es demasiado alto');return{grams:0,total,weights:[],price,complete:true,valid:true};}const weights=parseWeights(saleWeights(),true),values=calc(weights,price);return{...values,weights,price,complete:weights.every(Boolean)&&values.total>0,valid:true};}catch(err){return{grams:0,total:0,complete:false,valid:false,error:err.message};}}
   function updateTotal(){collectSale();const r=saleNumbers();
-    $('#sale-kg').innerHTML=!draft.product.sold_by_weight?`Total <small>· ${draft.count} ${saleUnit(draft.product.unit,draft.count)}</small>`:r.complete?`Total <small>· ${(r.grams/1000).toFixed(3)} kg</small>`:'Total';
+    $('#sale-kg').innerHTML=!draft.product.sold_by_weight?`Total <small>· ${draft.count} ${saleUnit(draft.product.unit,draft.count)}</small>`:r.complete?`Total <small>· ${(r.grams/1000).toFixed(2)} kg</small>`:'Total';
     $('#sale-grand-total').innerHTML=r.complete?money(r.total):'<small>se calcula al pesar</small>';
   }
   function showSale(){
@@ -1059,13 +1060,13 @@ function openOrder(clientId){
   }
   const pre=typeof clientId==='string'&&state.clients.find(c=>c.id===clientId);if(pre)chooseClient(pre);else showClients();
 }
-function whatsapp(o,message){const name=o.client_name.split(' ')[0];const detail=message||`Hola ${name}, te compartimos el detalle de tu pedido:\n\nNota: ${o.code}\nProducto: ${o.product_name}\n${unitOrder(o)?`Cantidad: ${orderAmount(o)}\nPrecio por ${o.unidad}: ${money(o.price_cents)}`:`Jabas: ${jabasOf(o)}\nPeso total: ${(o.weight_grams/1000).toFixed(3)} kg\nPrecio: ${money(o.price_cents)}/kg`}\nTotal: ${money(o.total_cents)}\n\nGracias por tu compra.`;const digits=(o.client_phone||'').replace(/\D/g,'');return `https://wa.me/${digits.startsWith('51')?digits:digits?'51'+digits:''}?text=${encodeURIComponent(detail)}`;}
+function whatsapp(o,message){const name=o.client_name.split(' ')[0];const detail=message||`Hola ${name}, te compartimos el detalle de tu pedido:\n\nNota: ${o.code}\nProducto: ${o.product_name}\n${unitOrder(o)?`Cantidad: ${orderAmount(o)}\nPrecio por ${o.unidad}: ${money(o.price_cents)}`:`Jabas: ${jabasOf(o)}\nPeso total: ${(o.weight_grams/1000).toFixed(2)} kg\nPrecio: ${money(o.price_cents)}/kg`}\nTotal: ${money(o.total_cents)}\n\nGracias por tu compra.`;const digits=(o.client_phone||'').replace(/\D/g,'');return `https://wa.me/${digits.startsWith('51')?digits:digits?'51'+digits:''}?text=${encodeURIComponent(detail)}`;}
 function showOrder(id){
   const o=state.orders.find(x=>x.id===id);if(!o)return;
   const pending=pendingWeights(o),unit=unitOrder(o),open=!!nextStatus[o.status],done=o.status==='Atendido',debe=done&&o.cobro==='fiado'?(ledger().due[o.id]||0):0,n=jabasOf(o);
-  const qty=unit?`${esc(orderAmount(o))} × ${money(o.price_cents)} por ${esc(o.unidad)}`:`${esc(jabasText(n))}${pending?'':' · '+(o.weight_grams/1000).toFixed(3)+' kg'} × ${money(o.price_cents)}/kg`;
+  const qty=unit?`${esc(orderAmount(o))} × ${money(o.price_cents)} por ${esc(o.unidad)}`:`${esc(jabasText(n))}${pending?'':' · '+(o.weight_grams/1000).toFixed(2)+' kg'} × ${money(o.price_cents)}/kg`;
   const row=(k,v)=>`<div class="dt-row"><small>${k}</small><span>${v}</span></div>`;
-  const gw=o.weights.map(w=>w?Math.round(Number(String(w).replace(',','.'))*1000):0),fk=g=>(g/1000).toFixed(gw.some(x=>x%10)?3:2),ok=gw.filter(g=>g>0);
+  const gw=o.weights.map(w=>w?Math.round(Number(String(w).replace(',','.'))*1000):0),fk=g=>(g/1000).toFixed(2),ok=gw.filter(g=>g>0);
   const half=Math.ceil(gw.length/2),col=a=>`<div>${a.map(([g,i])=>`<p><span>Jaba ${i+1}</span><i></i><b>${g?fk(g):'—'}</b></p>`).join('')}</div>`,idx=gw.map((g,i)=>[g,i]);
   const pesos=!unit&&o.weights.length===n&&n>1?`<div class="dt-rec">${col(idx.slice(0,half))}${col(idx.slice(half))}</div>`:'';
   const pesoSum=ok.length>1?`prom. ${fk(Math.round(ok.reduce((a,b)=>a+b,0)/ok.length))} · ${fk(Math.min(...ok))}–${fk(Math.max(...ok))}`:'';
@@ -1084,14 +1085,14 @@ function weighOrder(id,mode){
   submitWith($('#weigh-form'),async e=>{
     const el=e.target.elements,weights=parseWeights(byCrate?Array.from({length:n},(_,i)=>el[`weight${i}`].value):[el.total.value],false),{grams,total}=calc(weights,o.price_cents);
     const upd={['pedidos/'+id+'/weights']:weights,['pedidos/'+id+'/weight_grams']:grams,['pedidos/'+id+'/total_cents']:total,['pedidos/'+id+'/jabas']:n};
-    logAct('peso',`${o.code} · ${o.client_name}: ${(grams/1000).toFixed(3)} kg · ${money(total)}`,{ref:id,cliente:o.client_id});
+    logAct('peso',`${o.code} · ${o.client_name}: ${(grams/1000).toFixed(2)} kg · ${money(total)}`,{ref:id,cliente:o.client_id});
     if(o.status!=='Atendido'){await db.ref().update(upd);showOrder(id);notify('Peso registrado');return;}
     upd['pedidos/'+id+'/peso_pendiente']=null;
     const done={...o,weights,weight_grams:grams,total_cents:total,jabas:n,peso_pendiente:null};
     let token=state.noteLinks[id];if(!token){token=newToken();Object.assign(upd,notePaths(done,token));}
     await db.ref().update(upd);state.noteLinks[id]=token;
     const hasPhone=!!(o.client_phone||'').replace(/\D/g,'');
-    openModal('Peso registrado',o.client_name,`<div class="sale-body sale-success"><div class="success-mark">✓</div><h3>${money(total)}</h3><p class="muted">${jabasText(n)} · ${(grams/1000).toFixed(3)} kg${o.cobro==='fiado'?' · fiado':''}</p></div><div class="sale-actions">${hasPhone?`<a class="button primary wa-button" href="${esc(waTo(o.client_phone,waNoteMessage(done,token)))}" target="_blank" rel="noopener" data-close data-wa="Nota de venta" data-wa-ref="${esc(id)}" data-wa-client="${esc(o.client_id)}">${WA_ICON}Enviar total por WhatsApp</a>`:''}<button class="button" data-close>Listo</button></div>`);
+    openModal('Peso registrado',o.client_name,`<div class="sale-body sale-success"><div class="success-mark">✓</div><h3>${money(total)}</h3><p class="muted">${jabasText(n)} · ${(grams/1000).toFixed(2)} kg${o.cobro==='fiado'?' · fiado':''}</p></div><div class="sale-actions">${hasPhone?`<a class="button primary wa-button" href="${esc(waTo(o.client_phone,waNoteMessage(done,token)))}" target="_blank" rel="noopener" data-close data-wa="Nota de venta" data-wa-ref="${esc(id)}" data-wa-client="${esc(o.client_id)}">${WA_ICON}Enviar total por WhatsApp</a>`:''}<button class="button" data-close>Listo</button></div>`);
   });
 }
 async function advance(id){
@@ -1171,14 +1172,14 @@ function buildPdf(o,n=negocio(),c=state.clients.find(x=>x.id===o.client_id)||{})
   rows.forEach(([num,desc,w],i)=>{
     if(y>H-200){doc.addPage();y=50;head();}
     if(i%2){doc.setFillColor(...SOFT);doc.rect(L,y,R-L,20,'F');}
-    font('normal',9.5);doc.text(num,L+14,y+14);doc.text(desc,L+60,y+14,{maxWidth:330});doc.text(unitOrder(o)?soles(o.price_cents):Number(w).toFixed(3),R-14,y+14,{align:'right'});y+=20;
+    font('normal',9.5);doc.text(num,L+14,y+14);doc.text(desc,L+60,y+14,{maxWidth:330});doc.text(unitOrder(o)?soles(o.price_cents):Number(w).toFixed(2),R-14,y+14,{align:'right'});y+=20;
   });
   doc.setDrawColor(...LINE);doc.setLineWidth(.8);doc.line(L,y,R,y);y+=18;
   if(y>H-170){doc.addPage();y=50;}
   // Resumen y total.
   const sx=R-220,row=(k,v)=>{font('normal',9.5,MUT);doc.text(k,sx,y);font('bold',10);doc.text(v,R-14,y,{align:'right'});y+=17;};
   const ly=y;
-  if(unitOrder(o)){row('Cantidad',orderAmount(o));row('Precio por '+o.unidad,soles(o.price_cents));}else{row('Jabas',String(jabasOf(o)));row('Peso total',`${(o.weight_grams/1000).toFixed(3)} kg`);row('Precio por kg',soles(o.price_cents));}
+  if(unitOrder(o)){row('Cantidad',orderAmount(o));row('Precio por '+o.unidad,soles(o.price_cents));}else{row('Jabas',String(jabasOf(o)));row('Peso total',`${(o.weight_grams/1000).toFixed(2)} kg`);row('Precio por kg',soles(o.price_cents));}
   doc.setFillColor(...TEAL);doc.roundedRect(sx-10,y-4,230,34,6,6,'F');font('bold',10,[255,255,255]);doc.text('TOTAL A PAGAR',sx,y+17);font('bold',14,[255,255,255]);doc.text(soles(o.total_cents),R-14,y+18,{align:'right'});
   font('normal',8.5,MUT);doc.text(`Atendido por: ${o.created_by_name||'—'}`,L,ly);let oy=ly+15;if(o.cobro){doc.text(`Forma de pago: ${payLabel(o)}`,L,oy);oy+=15;}if(o.notes){doc.text('Observaciones:',L,oy);font('normal',9);doc.text(o.notes,L,oy+13,{maxWidth:sx-L-30});}
   // Pie en todas las páginas.
@@ -1197,7 +1198,7 @@ function noteOf(o){const c=state.clients.find(x=>x.id===o.client_id)||{},note={p
 function notePaths(o,token){return{['notas/'+token]:noteOf(o),['nota_link/'+o.id]:token};}
 const noteUrl=(token)=>`${location.origin}/?nota=${token}`;
 function waPendingMessage(o){return unitOrder(o)?`Hola ${o.client_name.split(' ')[0]}, gracias por tu compra.\n\n${orderAmount(o)} de ${o.product_name}.\nTotal: ${money(o.total_cents)}.`:`Hola ${o.client_name.split(' ')[0]}, gracias por tu compra.\n\nLlevas ${jabasText(jabasOf(o))} de ${o.product_name.toLowerCase()}.\nTe enviamos el total apenas registremos el peso.`;}
-function waNoteMessage(o,token){return `Hola ${o.client_name.split(' ')[0]}, gracias por tu compra.\n\n${o.code?'Nota de pedido '+o.code+'\n':''}${unitOrder(o)?orderAmount(o)+' · '+o.product_name+' · '+money(o.price_cents)+' por '+o.unidad:jabasText(jabasOf(o))+' · '+(o.weight_grams/1000).toFixed(3)+' kg'}\nTotal: ${money(o.total_cents)}${o.cobro==='fiado'?'\nForma de pago: fiado (pendiente)':''}\n\nVer y descargar tu nota:\n${noteUrl(token)}`;}
+function waNoteMessage(o,token){return `Hola ${o.client_name.split(' ')[0]}, gracias por tu compra.\n\n${o.code?'Nota de pedido '+o.code+'\n':''}${unitOrder(o)?orderAmount(o)+' · '+o.product_name+' · '+money(o.price_cents)+' por '+o.unidad:jabasText(jabasOf(o))+' · '+(o.weight_grams/1000).toFixed(2)+' kg'}\nTotal: ${money(o.total_cents)}${o.cobro==='fiado'?'\nForma de pago: fiado (pendiente)':''}\n\nVer y descargar tu nota:\n${noteUrl(token)}`;}
 async function sendWhatsApp(target){
   const o=orderOf(target);if(!o)return;
   let token=state.noteLinks[o.id];
@@ -1214,7 +1215,7 @@ async function showPublicNote(token){
   if(!n){box.innerHTML='<div class="pn-card"><h1>Nota no encontrada</h1><p class="muted">Revisa que el enlace esté completo.</p></div>';return;}
   const neg=n.negocio||{},cli=n.cliente||{},w=n.weights||[];
   document.title=`Nota de pedido ${n.code}`;
-  box.innerHTML=`<div class="pn-card"><div class="pn-head"><span class="brand-icon"><img src="/icons/logo-mark.png" alt="Comercializadora Viviana"></span><div><strong>${esc(neg.nombre||'Comercializadora Viviana')}</strong><small>${esc([neg.ruc?'RUC '+neg.ruc:'',neg.telefono].filter(Boolean).join(' · '))}</small></div></div>${n.anulada?'<div class="void-note"><strong>Esta venta fue anulada.</strong></div>':''}<p class="eyebrow">NOTA DE PEDIDO</p><h1>${esc(n.code)}</h1><p class="muted">${esc(n.client_name)} · ${date(n.attended_at)}</p><div class="pn-rows">${unitOrder(n)?`<div><span>Producto</span><strong>${esc(n.product_name)}</strong></div><div><span>Cantidad</span><strong>${esc(orderAmount(n))}</strong></div><div><span>Precio por ${esc(n.unidad)}</span><strong>${money(n.price_cents)}</strong></div>`:`${w.length===(n.jabas||w.length)?w.map((x,i)=>`<div><span>Jaba ${i+1}</span><span>${Number(x).toFixed(3)} kg</span></div>`).join(''):`<div><span>Jabas</span><span>${n.jabas}</span></div>`}<div><span>Peso total</span><strong>${(n.weight_grams/1000).toFixed(3)} kg</strong></div><div><span>Precio por kg</span><strong>${money(n.price_cents)}</strong></div>`}</div><div class="pn-total"><span>Total</span><strong>${money(n.total_cents)}</strong></div><button class="button primary full" id="pn-pdf">Descargar PDF</button><p class="muted pn-foot">Documento interno sin valor tributario. No reemplaza la boleta ni la factura electrónica.</p></div>`;
+  box.innerHTML=`<div class="pn-card"><div class="pn-head"><span class="brand-icon"><img src="/icons/logo-mark.png" alt="Comercializadora Viviana"></span><div><strong>${esc(neg.nombre||'Comercializadora Viviana')}</strong><small>${esc([neg.ruc?'RUC '+neg.ruc:'',neg.telefono].filter(Boolean).join(' · '))}</small></div></div>${n.anulada?'<div class="void-note"><strong>Esta venta fue anulada.</strong></div>':''}<p class="eyebrow">NOTA DE PEDIDO</p><h1>${esc(n.code)}</h1><p class="muted">${esc(n.client_name)} · ${date(n.attended_at)}</p><div class="pn-rows">${unitOrder(n)?`<div><span>Producto</span><strong>${esc(n.product_name)}</strong></div><div><span>Cantidad</span><strong>${esc(orderAmount(n))}</strong></div><div><span>Precio por ${esc(n.unidad)}</span><strong>${money(n.price_cents)}</strong></div>`:`${w.length===(n.jabas||w.length)?w.map((x,i)=>`<div><span>Jaba ${i+1}</span><span>${Number(x).toFixed(2)} kg</span></div>`).join(''):`<div><span>Jabas</span><span>${n.jabas}</span></div>`}<div><span>Peso total</span><strong>${(n.weight_grams/1000).toFixed(2)} kg</strong></div><div><span>Precio por kg</span><strong>${money(n.price_cents)}</strong></div>`}</div><div class="pn-total"><span>Total</span><strong>${money(n.total_cents)}</strong></div><button class="button primary full" id="pn-pdf">Descargar PDF</button><p class="muted pn-foot">Documento interno sin valor tributario. No reemplaza la boleta ni la factura electrónica.</p></div>`;
   $('#pn-pdf').onclick=()=>buildPdf(n,neg,cli).save(`Nota-${n.code}.pdf`);
 }
 function fillNegocio(){const f=$('#negocio-form');if(!f||f.contains(document.activeElement))return;const n=negocio();['nombre','ruc','telefono','direccion'].forEach(k=>f.elements[k].value=n[k]||'');}
