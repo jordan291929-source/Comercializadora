@@ -8,7 +8,10 @@ Primera fase de un sistema web para ventas mayoristas de huevo. Permite registra
 2. Se indica cuántas jabas pidió. Los pesos pueden quedar pendientes si todavía no se preparó la mercadería.
 3. Al pesar las jabas, se registran los pesos reales. El total se calcula sobre su suma, sin asumir un peso promedio fijo.
 4. El pedido pasa por **Pendiente → En preparación → Listo → Atendido**. No se puede atender mientras falte algún peso. También se puede cancelar antes de atender.
-5. La atención fija la fecha y hora, habilita el PDF interno y el mensaje de WhatsApp. El pedido atendido no puede modificarse.
+5. La atención fija la fecha y hora, y habilita el PDF interno y el mensaje de WhatsApp.
+6. Si hubo un error, el pedido se corrige con **✎ Editar**, incluso si ya fue atendido; no hace falta cancelarlo y volver a registrarlo. Es obligatorio indicar el motivo. Cada corrección guarda la fecha, el usuario, el motivo y lo que cambió, y se muestra en el historial del pedido y en el PDF. Los pedidos cancelados no se editan.
+
+Los cambios del sistema se registran en [`CHANGELOG.md`](CHANGELOG.md).
 
 El sustento interno no es una boleta o factura electrónica. La salida de inventario se agregará cuando exista un módulo de stock, para que la atención la registre una sola vez y evite doble digitación. El enlace de WhatsApp comparte texto; el PDF se descarga desde el pedido y puede adjuntarse manualmente.
 

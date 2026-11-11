@@ -79,6 +79,13 @@ def init_db():
             weights_json TEXT NOT NULL, price_cents INTEGER NOT NULL, weight_grams INTEGER NOT NULL,
             total_cents INTEGER NOT NULL
         );
+        CREATE TABLE IF NOT EXISTS order_edits (
+            id INTEGER PRIMARY KEY, order_id INTEGER NOT NULL REFERENCES orders(id),
+            edited_by INTEGER NOT NULL REFERENCES users(id), edited_at TEXT NOT NULL,
+            reason TEXT NOT NULL, changes_json TEXT NOT NULL,
+            before_json TEXT NOT NULL, after_json TEXT NOT NULL
+        );
+        CREATE INDEX IF NOT EXISTS idx_order_edits_order ON order_edits(order_id);
         CREATE INDEX IF NOT EXISTS idx_orders_created ON orders(created_at);
         CREATE INDEX IF NOT EXISTS idx_orders_client ON orders(client_id);
         """)
@@ -153,6 +160,10 @@ class OrderIn(BaseModel):
     notes: str = Field(default="", max_length=500)
 
 
+class OrderEditIn(OrderIn):
+    reason: str = Field(min_length=5, max_length=300)
+
+
 class StatusIn(BaseModel):
     status: str
 
@@ -203,7 +214,43 @@ def order_row(db, order_id):
         raise HTTPException(404, "Pedido no encontrado")
     order = dict(row)
     order["weights"] = json.loads(order.pop("weights_json"))
+    last = db.execute("SELECT COUNT(*) n, MAX(edited_at) last_at FROM order_edits WHERE order_id=?", (order_id,)).fetchone()
+    order["edit_count"] = last["n"]
+    order["last_edited_at"] = last["last_at"]
     return order
+
+
+def kg_text(grams):
+    return f"{grams/1000:.3f} kg"
+
+
+def soles(value):
+    return f"S/ {value/100:.2f}"
+
+
+def describe_changes(before, after):
+    """Human-readable list of what an edit changed, kept with the edit record."""
+    changes = []
+    if before["client_id"] != after["client_id"]:
+        changes.append(f"Cliente: {before['client_name']} → {after['client_name']}")
+    if before["product_id"] != after["product_id"]:
+        changes.append(f"Producto: {before['product_name']} → {after['product_name']}")
+    if before["sale_type"] != after["sale_type"]:
+        changes.append(f"Tipo de venta: {before['sale_type']} → {after['sale_type']}")
+    if before["price_cents"] != after["price_cents"]:
+        changes.append(f"Precio: {soles(before['price_cents'])}/kg → {soles(after['price_cents'])}/kg")
+    if len(before["weights"]) != len(after["weights"]):
+        changes.append(f"Jabas: {len(before['weights'])} → {len(after['weights'])}")
+    if before["weights"] != after["weights"]:
+        fmt = lambda ws: ", ".join("pendiente" if w is None else w for w in ws)
+        changes.append(f"Pesos (kg): {fmt(before['weights'])} → {fmt(after['weights'])}")
+    if before["weight_grams"] != after["weight_grams"]:
+        changes.append(f"Peso total: {kg_text(before['weight_grams'])} → {kg_text(after['weight_grams'])}")
+    if before["total_cents"] != after["total_cents"]:
+        changes.append(f"Total: {soles(before['total_cents'])} → {soles(after['total_cents'])}")
+    if before["notes"] != after["notes"]:
+        changes.append("Observaciones actualizadas")
+    return changes
 
 
 @app.get("/")
@@ -329,6 +376,58 @@ def create_order(data: OrderIn, request: Request):
         return order_row(db, cur.lastrowid)
 
 
+@app.put("/api/orders/{order_id}")
+def edit_order(order_id: int, data: OrderEditIn, request: Request):
+    """Correct an order (also an attended one) keeping a record of who, when, why and what."""
+    user = require_user(request)
+    reason = data.reason.strip()
+    if len(reason) < 5:
+        raise HTTPException(422, "Indica el motivo de la corrección")
+    with database() as db:
+        db.execute("BEGIN IMMEDIATE")
+        before = order_row(db, order_id)
+        if before["status"] == "Cancelado":
+            raise HTTPException(409, "Un pedido cancelado no se puede editar")
+        if not db.execute("SELECT 1 FROM clients WHERE id=?", (data.client_id,)).fetchone():
+            raise HTTPException(422, "Cliente no encontrado")
+        product = db.execute("SELECT * FROM products WHERE id=?", (data.product_id,)).fetchone()
+        if not product or (not product["active"] and product["id"] != before["product_id"]):
+            raise HTTPException(422, "Producto no encontrado")
+        if not product["sold_by_weight"]:
+            raise HTTPException(422, "Los pedidos por unidad estarán disponibles en una fase posterior")
+        weights = parse_weights(data.weights, allow_missing=True)
+        if before["status"] == "Atendido" and any(w is None for w in weights):
+            raise HTTPException(422, "Un pedido atendido debe tener el peso de todas las jabas")
+        price = cents(data.price)
+        if price == 0:
+            raise HTTPException(422, "Ingresa un precio por kg mayor que cero")
+        total_grams, total = calculate(weights, price)
+        db.execute("""UPDATE orders SET client_id=?, product_id=?, sale_type=?, notes=?, weights_json=?,
+            price_cents=?, weight_grams=?, total_cents=? WHERE id=?""", (data.client_id, data.product_id, data.sale_type.strip(), data.notes.strip(), json.dumps([str(w) if w is not None else None for w in weights]), price, total_grams, total, order_id))
+        after = order_row(db, order_id)
+        changes = describe_changes(before, after)
+        if not changes:
+            raise HTTPException(422, "No hay cambios para guardar")
+        snapshot = lambda o: json.dumps({k: o[k] for k in ("client_id", "client_name", "product_id", "product_name", "sale_type", "notes", "weights", "price_cents", "weight_grams", "total_cents", "status")}, ensure_ascii=False)
+        db.execute("INSERT INTO order_edits(order_id,edited_by,edited_at,reason,changes_json,before_json,after_json) VALUES (?,?,?,?,?,?,?)", (order_id, user["id"], now(), reason, json.dumps(changes, ensure_ascii=False), snapshot(before), snapshot(after)))
+        return order_row(db, order_id)
+
+
+@app.get("/api/orders/{order_id}/edits")
+def order_edits(order_id: int, request: Request):
+    require_user(request)
+    with database() as db:
+        order_row(db, order_id)
+        rows = db.execute("""SELECT e.id, e.edited_at, e.reason, e.changes_json, u.username edited_by_name
+            FROM order_edits e JOIN users u ON u.id=e.edited_by WHERE e.order_id=? ORDER BY e.id DESC""", (order_id,)).fetchall()
+    result = []
+    for row in rows:
+        item = dict(row)
+        item["changes"] = json.loads(item.pop("changes_json"))
+        result.append(item)
+    return result
+
+
 @app.patch("/api/orders/{order_id}/status")
 def update_status(order_id: int, data: StatusIn, request: Request):
     require_user(request)
@@ -376,6 +475,7 @@ def order_pdf(order_id: int, request: Request):
     require_user(request)
     with database() as db:
         order = order_row(db, order_id)
+        last_edit = db.execute("SELECT edited_at, reason FROM order_edits WHERE order_id=? ORDER BY id DESC LIMIT 1", (order_id,)).fetchone()
     if order["status"] != "Atendido":
         raise HTTPException(409, "El sustento está disponible al atender el pedido")
     stream = io.BytesIO()
@@ -404,6 +504,9 @@ def order_pdf(order_id: int, request: Request):
     line(f"Precio: S/ {order['price_cents']/100:.2f} por kg")
     line(f"TOTAL: S/ {order['total_cents']/100:.2f}", 15, 32)
     line("Estado: ATENDIDO")
+    if last_edit:
+        line(f"Documento corregido ({order['edit_count']} correccion(es)). Ultima: {last_edit['edited_at'][:16].replace('T', ' ')}", 9, 15)
+        line(f"Motivo: {last_edit['reason'][:110]}", 9, 22)
     line("Documento interno. No reemplaza boleta ni factura electronica.", 9)
     pdf.save()
     stream.seek(0)
