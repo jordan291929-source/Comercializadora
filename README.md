@@ -1,48 +1,86 @@
-# Comercializadora 
+# Comercializadora Viviana
 
-Primera fase de un sistema web para ventas mayoristas de huevo. Permite registrar clientes, productos vendidos por peso y pedidos con una o varias jabas; registrar el peso real de cada jaba; avanzar por los estados de preparación; calcular el total; descargar un sustento interno en PDF; y compartir el resumen por WhatsApp. Incluye un panel con pedidos, ventas y kilos atendidos durante el día.
+Sistema web para ventas mayoristas de huevo. Permite registrar clientes, productos vendidos por peso y pedidos con una o varias jabas; registrar el peso real de cada jaba; avanzar por los estados de preparación; calcular el total; descargar un sustento interno en PDF; y compartir el resumen por WhatsApp. Incluye un panel con pedidos, ventas y kilos atendidos durante el día.
 
-## Flujo de trabajo
+Es una sola página (`public/index.html`) sobre **Firebase**: Hosting, Authentication (correo y contraseña) y Realtime Database. No hay servidor propio: el navegador habla directo con Firebase y la seguridad la aplican las reglas de `database.rules.json`. Los cambios se ven al instante en todos los equipos conectados.
 
-1. Se registra el cliente y el precio por kg del pedido.
-2. Se indica cuántas jabas pidió. Los pesos pueden quedar pendientes si todavía no se preparó la mercadería.
-3. Al pesar las jabas, se registran los pesos reales. El total se calcula sobre su suma, sin asumir un peso promedio fijo.
-4. El pedido pasa por **Pendiente → En preparación → Listo → Atendido**. No se puede atender mientras falte algún peso. También se puede cancelar antes de atender.
-5. La atención fija la fecha y hora, y habilita el PDF interno y el mensaje de WhatsApp.
-6. Si hubo un error, el pedido se corrige con **✎ Editar**, incluso si ya fue atendido; no hace falta cancelarlo y volver a registrarlo. Es obligatorio indicar el motivo. Cada corrección guarda la fecha, el usuario, el motivo y lo que cambió, y se muestra en el historial del pedido y en el PDF. Los pedidos cancelados no se editan.
+## Qué hace (v2.10)
 
-Los cambios del sistema se registran en [`CHANGELOG.md`](CHANGELOG.md).
+- **Vender en 2 pasos:** elegir o crear el cliente; jabas con −/+, peso por jaba y precio por kg con el total en vivo. «Atender ahora» pregunta **¿Cómo pagó?**: Efectivo, Yape/Plin, Transferencia (un toque) o Fiado, con lo que dejó a cuenta.
+- **Pedidos:** Pendiente → En preparación → Listo → Atendido. Un pedido pendiente se atiende con el mismo selector de pago. Cancelar o anular pide motivo; nada se borra.
+- **Cobros:** saldo por cliente (ventas fiadas menos pagos), «Registrar pago» con recibo por WhatsApp, «Recordar por WhatsApp» con el detalle de notas pendientes, cobrado hoy por medio de pago y pagos anulables con motivo. Lo dejado a cuenta al vender se aplica a esa nota y el resto de los pagos a las notas más antiguas.
+- **Nota de pedido:** PDF con los datos del negocio y enlace público de solo lectura (`/?nota=TOKEN`) que se envía por WhatsApp en dos toques.
+- **Productos** con precio semanal e historial; **clientes** editables; **usuarios** con roles admin/ventas.
+- **App instalable** en el celular (Más → Instalar en el celular).
 
-El sustento interno no es una boleta o factura electrónica. La salida de inventario se agregará cuando exista un módulo de stock, para que la atención la registre una sola vez y evite doble digitación. El enlace de WhatsApp comparte texto; el PDF se descarga desde el pedido y puede adjuntarse manualmente.
+## Cómo seguimos mejorando
 
-## Ejecutar
+1. **Usar y anotar.** Durante la semana, anota lo que molesta o falta (con captura si se puede).
+2. **Pedir el cambio.** Una cosa por pedido, contando el problema real («mi mamá no encuentra…»), no solo la solución.
+3. **Construir y probar.** Cada cambio se prueba en los emuladores (`firebase emulators:start --project demo-comercializadora`), sube `APP_VERSION` y agrega una entrada al `CHANGELOG`.
+4. **Revisión antes de publicar.** Todo cambio hecho con ChatGPT pasa primero por Claude: lo prueba en los emuladores, lo corrige y entrega la versión lista. Recién entonces se publica con `firebase deploy --only database,hosting` y se comprueba la versión en la barra lateral.
+5. **Revisar con ella.** Ver a tu mamá usarlo unos minutos; ahí aparecen los siguientes cambios.
 
-Requiere Python 3.12. Desde la raíz del repositorio:
+### Próximas mejoras
+
+| Prioridad | Mejora | Para qué |
+|---|---|---|
+| Alta | Repetir último pedido | Clientes fijos en un toque |
+| Alta | Cierre del día por WhatsApp | Resumen diario de ventas, cobros y fiado |
+| Media | Ingreso de mercadería semanal | Stock, costo y ganancia por semana |
+| Media | Exportar a Excel | Contador y respaldo |
+| Media | Modo letra grande | Lectura más cómoda |
+
+## Usuarios y roles
+
+- Cualquiera puede crear una cuenta, pero queda **sin acceso** («Cuenta pendiente de aprobación») hasta que el administrador le asigne un rol en la pestaña **Usuarios**.
+- **La primera cuenta que se crea en el proyecto queda como dueña y administradora.** Créala apenas publiques el sitio.
+- Roles: `admin` (todo, más gestionar usuarios) y `ventas` (clientes, productos y pedidos).
+
+## Crear el proyecto en Firebase (una sola vez)
+
+Se usa el plan gratuito Spark; no necesita tarjeta.
+
+1. En https://console.firebase.google.com crea un proyecto nuevo. El ID sugerido es `comercializadora-viviana`; si Firebase te da otro, cámbialo en `.firebaserc`.
+2. **Authentication → Comenzar → Correo electrónico/contraseña → Habilitar.**
+3. **Realtime Database → Crear base de datos →** ubicación `us-central1`, **modo bloqueado** (las reglas reales se suben con el deploy).
+4. **Configuración del proyecto → Tus apps → Agregar app → Web (`</>`)**, con cualquier apodo. No hace falta copiar la configuración: Firebase Hosting la entrega sola en `/__/firebase/init.json`.
+
+## Publicar
+
+Requiere Node.js y Firebase CLI (`npm install -g firebase-tools`). Desde la raíz del repositorio:
 
 ```sh
-python -m venv .venv
-.venv/bin/pip install -r requirements.txt
-.venv/bin/uvicorn app:app --host 127.0.0.1 --port 8000
+firebase login
+firebase deploy --only database,hosting
 ```
 
-Abre la aplicación en el navegador y crea la cuenta inicial. La contraseña debe tener al menos 10 caracteres. La base de datos SQLite se crea en `data/app.sqlite3` y se excluye de Git. Haz copias de seguridad periódicas de ese archivo. Para una instalación accesible desde Internet se necesita HTTPS, establecer `COMERCIALIZADORA_SECURE_COOKIE=1` y un servicio con almacenamiento persistente. El archivo SQLite permite un despliegue pequeño de una sola instancia; una futura versión multiinstancia requerirá migrar la capa de datos a PostgreSQL.
+Queda en `https://<id-del-proyecto>.web.app`. Después de cada deploy, recarga con Ctrl+F5.
 
-En Windows, usa `py -m venv .venv`, `.venv\Scripts\python -m pip install -r requirements.txt` y `.venv\Scripts\python -m uvicorn app:app --host 127.0.0.1 --port 8000`. La dependencia `tzdata` proporciona la zona horaria de Perú en instalaciones de Windows que no la incluyen.
+## Probar en local (emuladores)
 
-## Publicación en Render
+```sh
+firebase emulators:start --project demo-comercializadora
+```
 
-El archivo `render.yaml` prepara un servicio Python con disco persistente de 1 GB. **El plan con disco tiene costo**; Render solicita una cuenta, conexión al repositorio de GitHub y método de pago antes de crearlo. En el panel de Render, crea un Blueprint desde este repositorio y proporciona `COMERCIALIZADORA_SETUP_KEY` como valor secreto largo y aleatorio. Al abrir la URL publicada, introduce esa clave una sola vez para crear la primera cuenta. La clave protege el registro inicial mientras el sitio ya es público. La cuenta y los pedidos se guardan en el disco del servicio, no en GitHub. Programa copias de seguridad del archivo `/var/data/app.sqlite3` antes de usar datos reales.
+Abre http://127.0.0.1:5000. Desde `localhost` la app se conecta sola a los emuladores de Auth y Database, con las mismas reglas; no toca los datos reales.
 
-GitHub Pages puede servir una vista estática, pero no puede ejecutar el servidor Python ni guardar pedidos. El repositorio de GitHub contiene el código; la aplicación completa necesita un alojamiento como el Blueprint anterior.
+## Convenciones
 
-Para pruebas aisladas, `COMERCIALIZADORA_DB=/ruta/temporal.sqlite3` cambia la ubicación de la base de datos. No guardes credenciales en el repositorio.
+- Cada cambio sube `APP_VERSION` en `public/index.html` y agrega una entrada al inicio de `CHANGELOG`. La versión se ve en la barra lateral; al pulsarla se muestran las novedades.
+- Los montos se guardan en céntimos y los pesos en gramos, como enteros, para evitar errores de redondeo.
+- Hora del negocio: America/Lima (UTC-5).
+
+## Copias de seguridad
+
+El plan gratuito no tiene respaldos automáticos. Exporta la base periódicamente desde **Realtime Database → ⋮ → Exportar JSON** y guarda el archivo en un lugar seguro.
 
 ## Decisiones y siguientes fases
 
 - El precio por kg se fija en cada pedido. El monto final queda pendiente hasta registrar todos los pesos. Así no se cobra un estimado como si fuera peso real.
 - Esta fase admite productos vendidos por peso. El catálogo deja preparados nombre, categoría y unidad; las ventas por unidad se habilitarán junto con abarrotes.
-- Fase 2: ingresos y salidas de inventario, proveedores y costos. La salida debe generarse de forma idempotente al atender un pedido y descontar tanto jabas como kilos.
+- Fase 2: ingresos y salidas de inventario, proveedores y costos. La salida debe generarse una sola vez al atender un pedido y descontar tanto jabas como kilos.
 - Fase 3: OCR de comprobantes de compra con revisión humana obligatoria antes de generar un ingreso.
-- Fase 4: reportes de margen, cuentas por cobrar, permisos de usuario y abarrotes.
+- Fase 4: reportes de margen, cuentas por cobrar y abarrotes.
 
-Antes de usar inventario en producción hay que definir si el peso registrado es neto de huevo o incluye la tara de la jaba, y cómo se contabilizan las jabas retornables. Los importes actuales usan el peso ingresado tal como se registra.
+El precio por kg se aplica al peso que marca la balanza, con la jaba incluida; las jabas se van con el cliente, así que no hay tara ni control de jabas retornables.

@@ -1,4 +1,0 @@
-fastapi==0.141.1
-uvicorn==0.52.1
-reportlab==4.4.9
-tzdata==2026.1
